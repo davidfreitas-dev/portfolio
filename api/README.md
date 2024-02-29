@@ -1,6 +1,15 @@
-# Personal Portfolio Site API with Slim Framework 4 and JWT Auth 
+# Personal Portfolio Site API
 
 This template should help get you started developing with this API in Docker.
+
+## Technologies Used
+
+- Slim Framework 4: A micro-framework for PHP that helps you quickly write simple yet powerful web applications and APIs.
+- JWT Auth: JSON Web Token authentication mechanism for securing API endpoints.
+- Docker: Containerization platform used to ensure consistency and portability across environments.
+- MySQL: Database management system utilized for storing application data.
+- PHP DotEnv: Library for loading environment variables from `.env` files to configure the application.
+- PHP Mailer: Library for sending emails from PHP applications.
 
 ## Build Containers
 
@@ -288,15 +297,15 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 #### Project Create/Update
 
 ```http
-  POST /technologies/save
+  POST /projects/save
 ```
 
-| Parameter      | Type      | Description                                        |
-| :------------- | :-------- | :------------------------------------------------- |
-| `idproject`    | `integer` | **Required**. Project ID                           |
-| `destitle`     | `string`  | **Required**. Project title                        |
-| `desimage`     | `string`  | **Required**. Project image name                   |
-| `technologies` | `string`  | **Required**. String with techs ID's(Ex.: "1, 2" ) |
+| Parameter        | Type      | Description                                        |
+| :--------------- | :-------- | :------------------------------------------------- |
+| `idproject`      | `integer` | **Required**. Project ID                           |
+| `destitle`       | `string`  | **Required**. Project title                        |
+| `desdescription` | `string`  | **Required**. Project image name                   |
+| `technologies`   | `string`  | **Required**. String with techs ID's (Ex.: "1, 2") |
 
 **Note:** When the Project ID is greater than zero, an update will be made based on the Project ID, otherwise an insertion will be made.
 
