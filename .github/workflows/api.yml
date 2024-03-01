@@ -23,7 +23,5 @@ jobs:
           REMOTE_USER: ${{secrets.API_REMOTE_USER}}
           REMOTE_PORT: ${{secrets.API_REMOTE_PORT}}
           EXCLUDE: "/.git/, .gitignore, .env.example, .dockerignore, docker-compose.yml, Dockerfile, README.md"
-      - name: Change Directory to API
-        run: cd api
       - name: Install Dependencies
-        run: composer install
+        run: composer install --working-dir=api
