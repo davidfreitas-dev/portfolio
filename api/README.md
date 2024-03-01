@@ -288,9 +288,9 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
   GET /projects/id
 ```
 
-| Parameter   | Type      | Description                                           |
-| :---------- | :-------- | :---------------------------------------------------- |
-| `idproject` | `integer` | **Required**. Project ID                              |
+| Parameter   | Type      | Description                                             |
+| :---------- | :-------- | :------------------------------------------------------ |
+| `idproject` | `integer` | **Required**. Project ID                                |
 
 **Response:** Project details
 
