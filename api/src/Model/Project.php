@@ -97,7 +97,6 @@ class Project
       :idproject, 
       :destitle, 
       :desdescription, 
-      :desimage, 
       :technologies
     )";
 
@@ -109,7 +108,6 @@ class Project
 				":idproject"=>$project['idproject'],
 				":destitle"=>$project['destitle'],
 				":desdescription"=>$project['desdescription'],
-				":desimage"=>$_ENV['BASE_URL']."/images/projects/".$project['idproject'].".jpg",
 				":technologies"=>$project['technologies']
 			));
 
@@ -178,6 +176,36 @@ class Project
 
   }
 
+  private static function setPhoto($idproject) 
+	{
+
+    $imageUrl = $_ENV['BASE_URL']."/images/projects/".$idproject.".jpg";
+
+    $sql = "UPDATE tb_projects
+            SET desimage = :desimage
+            WHERE idproject = :idproject";
+		
+		try {
+
+			$db = new Database();
+			
+			$db->query($sql, array(
+				':idproject'=>$idproject,
+				':desimage'=>$imageUrl
+			));
+
+		} catch (\PDOException $e) {
+
+			return ApiResponseFormatter::formatResponse(
+        500, 
+        "error", 
+        "Falha ao definir imagem do projeto: " . $e->getMessage()
+      );
+			
+		}
+
+  }
+
   private static function uploadPhoto($idproject, $file)
 	{
 
@@ -215,6 +243,8 @@ class Project
         imagejpeg($image, $dist);
 
         imagedestroy($image);
+
+        Project::setPhoto($idproject);
 
       }
 

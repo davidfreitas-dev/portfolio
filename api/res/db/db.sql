@@ -29,11 +29,10 @@ DELIMITER $$
 --
 -- Procedimentos
 --
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_projects_create`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_projects_create`(
   `pidproject` INT, 
   `pdestitle` VARCHAR(128), 
   `pdesdescription` TEXT, 
-  `pdesimage` VARCHAR(255), 
   `ptechnologies` VARCHAR(255)
 )
 BEGIN
@@ -45,8 +44,7 @@ BEGIN
     UPDATE tb_projects
     SET 
       destitle = pdestitle,
-      desdescription = pdesdescription,
-      desimage = pdesimage
+      desdescription = pdesdescription
     WHERE idproject = pidproject;
       
     SET vidproject = pidproject;
@@ -54,8 +52,8 @@ BEGIN
     DELETE FROM tb_projectstechnologies 
     WHERE idproject = pidproject;
   ELSE
-    INSERT INTO tb_projects (destitle, desdescription, desimage) 
-    VALUES (pdestitle, pdesdescription, pdesimage);
+    INSERT INTO tb_projects (destitle, desdescription) 
+    VALUES (pdestitle, pdesdescription);
     
     SET vidproject = LAST_INSERT_ID();
   END IF;
