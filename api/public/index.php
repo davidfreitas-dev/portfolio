@@ -33,9 +33,10 @@ $app->add(new Tuupola\Middleware\JwtAuthentication([
     "/forgot/token", 
     "/forgot/reset", 
     "/images", 
-    "/experiences", 
-    "/technologies", 
-    "/projects"
+    "/experiences($|/)",
+    "/technologies($|/)",
+    "/projects($|/)",
+    "/($|/)"
   ],
   "secret" => $_ENV['JWT_SECRET_KEY'],
   "algorithm" => "HS256",
@@ -47,26 +48,7 @@ $app->add(new Tuupola\Middleware\JwtAuthentication([
   }
 ]));
 
-$app->get('/images/{folder}/{image}', function (Request $request, Response $response, array $args) {
-
-  $imageDirectoryPath = '/../res/img/';
-
-  $imagePath = __DIR__ . $imageDirectoryPath . $args['folder'] . '/' . $args['image'];
-
-  if (!file_exists($imagePath)) {
-
-    $imagePath = __DIR__ . $imageDirectoryPath . '/no-image.png';
-
-  }
-
-  $image = file_get_contents($imagePath);
-
-  $response->getBody()->write($image);
-
-  return $response->withHeader('Content-Type', 'image/jpeg');
-
-});
-
+require_once('base.php');
 require_once('auth.php');
 require_once('user.php');
 require_once('project.php');
