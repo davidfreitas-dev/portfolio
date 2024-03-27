@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Model;
+namespace App\Models;
 
 use App\DB\Database;
 use App\Utils\ApiResponseFormatter;
 
-class Experience
+class Technology
 {
 
   public static function list() 
   {    
-    $sql = "SELECT * FROM tb_experiences
-            ORDER BY dtstart DESC";
+    $sql = "SELECT * FROM tb_technologies
+            ORDER BY idtechnology DESC";
 		
 		try {
 
@@ -32,7 +32,7 @@ class Experience
       return ApiResponseFormatter::formatResponse(
         204, 
         "success", 
-        "Nenhuma experiência encontrada"
+        "Nenhuma tecnologia encontrada"
       );
 
 		} catch (\PDOException $e) {
@@ -40,25 +40,25 @@ class Experience
 			return ApiResponseFormatter::formatResponse(
         500, 
         "error", 
-        "Falha ao obter experiências: " . $e->getMessage()
+        "Falha ao obter tecnologias: " . $e->getMessage()
       );
 			
 		}
 
 	}
 
-  public static function get($idexperience)
+  public static function get($idtechnology)
 	{
 
-    $sql = "SELECT * FROM tb_experiences
-            WHERE idexperience = :idexperience";
+    $sql = "SELECT * FROM tb_technologies
+            WHERE idtechnology = :idtechnology";
 
 		try {
 
 			$db = new Database();
 
 			$results = $db->select($sql, array(
-				":idexperience"=>$idexperience
+				":idtechnology"=>$idtechnology
 			));
 
       if (count($results)) {
@@ -74,7 +74,7 @@ class Experience
 			return ApiResponseFormatter::formatResponse(
         404, 
         "error", 
-        "Experiência não encontrada"
+        "Tecnologia não encontrada"
       );
 
 		} catch (\PDOException $e) {
@@ -82,34 +82,31 @@ class Experience
 			return ApiResponseFormatter::formatResponse(
         500, 
         "error", 
-        "Falha ao obter experiência: " . $e->getMessage()
+        "Falha ao obter tecnologia: " . $e->getMessage()
       );
 			
 		}
 
   }
 
-  public static function create($experience)
+  public static function create($technology)
   {
 
-    $sql = "INSERT INTO tb_experiences (destitle, desdescription, dtstart, dtend)
-            VALUES (:destitle, :desdescription, :dtstart, :dtend)";
+    $sql = "INSERT INTO tb_technologies (desname)
+            VALUES (:desname)";
 
     try {
       
       $db = new Database();
 
 			$db->query($sql, array(
-				":destitle"=>$experience['destitle'],
-				":desdescription"=>$experience['desdescription'],
-				":dtstart"=>$experience['dtstart'],
-				":dtend"=>$experience['dtend']
+				":desname"=>$technology['desname']
 			));
 
       return ApiResponseFormatter::formatResponse(
         201, 
         "success", 
-        "Experiência criada com sucesso"
+        "Tecnologia criada com sucesso"
       );
 
     } catch (\PDOException $e) {
@@ -117,39 +114,33 @@ class Experience
 			return ApiResponseFormatter::formatResponse(
         500, 
         "error", 
-        "Falha ao criar experiência: " . $e->getMessage()
+        "Falha ao criar tecnologia: " . $e->getMessage()
       );
 			
 		}
 
   }
 
-  public static function update($idexperience, $experience) 
+  public static function update($idtechnology, $technology) 
 	{
 
-    $sql = "UPDATE tb_experiences
-            SET destitle = :destitle,
-                desdescription = :desdescription,
-                dtstart = :dtstart,
-                dtend = :dtend
-            WHERE idexperience = :idexperience";
+    $sql = "UPDATE tb_technologies
+            SET desname = :desname
+            WHERE idtechnology = :idtechnology";
 
     try {
 
       $db = new Database();
       
       $db->query($sql, array(
-				":idexperience"=>$idexperience,
-        ":destitle"=>$experience['destitle'],
-        ":desdescription"=>$experience['desdescription'],
-        ":dtstart"=>$experience['dtstart'],
-        ":dtend"=>$experience['dtend']
+				":idtechnology"=>$idtechnology,
+        ":desname"=>$technology['desname']
       ));
 
       return ApiResponseFormatter::formatResponse(
         200, 
         "success", 
-        "Experiência atualizada com sucesso"
+        "Tecnologia atualizada com sucesso"
       );
 
     } catch (\PDOException $e) {
@@ -157,31 +148,31 @@ class Experience
       return ApiResponseFormatter::formatResponse(
         500, 
         "error", 
-        "Falha ao atualizar experiência: " . $e->getMessage()
+        "Falha ao atualizar tecnologia: " . $e->getMessage()
       );
       
     }
 
   }
 
-  public static function delete($idexperience) 
+  public static function delete($idtechnology) 
 	{
 
-    $sql = "DELETE FROM tb_experiences
-            WHERE idexperience = :idexperience";		
+    $sql = "DELETE FROM tb_technologies
+            WHERE idtechnology = :idtechnology";		
 		
 		try {
 
 			$db = new Database();
 			
 			$db->query($sql, array(
-				":idexperience"=>$idexperience
+				":idtechnology"=>$idtechnology
 			));
 			
 			return ApiResponseFormatter::formatResponse(
         200, 
         "success", 
-        "Experiência excluida com sucesso"
+        "Tecnologia excluida com sucesso"
       );
 
 		} catch (\PDOException $e) {
@@ -189,7 +180,7 @@ class Experience
 			return ApiResponseFormatter::formatResponse(
         500, 
         "error", 
-        "Falha ao excluir experiência: " . $e->getMessage()
+        "Falha ao excluir tecnologia: " . $e->getMessage()
       );
 			
 		}

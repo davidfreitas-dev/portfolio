@@ -2,7 +2,7 @@
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use App\Model\Technology;
+use App\Models\Technology;
 
 $app->get('/technologies', function (Request $request, Response $response) {
 

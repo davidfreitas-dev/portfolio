@@ -2,7 +2,7 @@
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use App\Model\Project;
+use App\Models\Project;
 
 $app->get('/projects', function (Request $request, Response $response) {
 

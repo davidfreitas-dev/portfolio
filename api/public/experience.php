@@ -2,7 +2,7 @@
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use App\Model\Experience;
+use App\Models\Experience;
 
 $app->get('/experiences', function (Request $request, Response $response) {
 

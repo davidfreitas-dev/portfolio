@@ -1,14 +1,14 @@
 <?php 
 
-namespace App\Model;
+namespace App\Models;
 
 use App\DB\Database;
 use App\Mail\Mailer;
-use App\Model\User;
+use App\Models\User;
 use App\Utils\AESCryptographer;
 use App\Utils\ApiResponseFormatter;
 
-class Auth extends User {
+class Auth {
 
   public static function signup($user) 
 	{
