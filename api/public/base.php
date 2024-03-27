@@ -5,11 +5,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/', function (Request $request, Response $response) {
 
-  $welcomeMessage = [
+  $response->getBody()->write(json_encode([
     'message' => 'Welcome to the Personal Portfolio Site API!'
-  ];
-
-  $response->getBody()->write(json_encode($welcomeMessage));
+  ]));
 
   return $response->withHeader('content-type', 'application/json');
 

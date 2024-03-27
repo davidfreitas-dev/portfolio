@@ -196,7 +196,11 @@ class Auth extends User {
 
       } 
       
-      return $results[0];
+      return ApiResponseFormatter::formatResponse(
+        200, 
+        "success", 
+        $results[0]
+      );
 
     } catch (\PDOException $e) {
       
