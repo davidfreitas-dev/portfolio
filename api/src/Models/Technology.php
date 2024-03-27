@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DB\Database;
+use App\Enums\HttpStatus as HTTPStatus;
 use App\Utils\ApiResponseFormatter;
 
 class Technology
@@ -22,7 +23,7 @@ class Technology
 			if (count($results)) {
 
 				return ApiResponseFormatter::formatResponse(
-          200, 
+          HTTPStatus::OK, 
           "success", 
           $results
         );
@@ -30,7 +31,7 @@ class Technology
 			}
       
       return ApiResponseFormatter::formatResponse(
-        204, 
+        HTTPStatus::NO_CONTENT,
         "success", 
         "Nenhuma tecnologia encontrada"
       );
@@ -38,7 +39,7 @@ class Technology
 		} catch (\PDOException $e) {
 
 			return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao obter tecnologias: " . $e->getMessage()
       );
@@ -64,7 +65,7 @@ class Technology
       if (count($results)) {
 			
 			  return ApiResponseFormatter::formatResponse(
-          200, 
+          HTTPStatus::OK, 
           "success", 
           $results[0]
         );
@@ -72,7 +73,7 @@ class Technology
       }
 
 			return ApiResponseFormatter::formatResponse(
-        404, 
+        HTTPStatus::NOT_FOUND,
         "error", 
         "Tecnologia não encontrada"
       );
@@ -80,7 +81,7 @@ class Technology
 		} catch (\PDOException $e) {
 			
 			return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao obter tecnologia: " . $e->getMessage()
       );
@@ -104,7 +105,7 @@ class Technology
 			));
 
       return ApiResponseFormatter::formatResponse(
-        201, 
+        HTTPStatus::CREATED, 
         "success", 
         "Tecnologia criada com sucesso"
       );
@@ -112,7 +113,7 @@ class Technology
     } catch (\PDOException $e) {
 			
 			return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao criar tecnologia: " . $e->getMessage()
       );
@@ -138,7 +139,7 @@ class Technology
       ));
 
       return ApiResponseFormatter::formatResponse(
-        200, 
+        HTTPStatus::OK, 
         "success", 
         "Tecnologia atualizada com sucesso"
       );
@@ -146,7 +147,7 @@ class Technology
     } catch (\PDOException $e) {
 
       return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao atualizar tecnologia: " . $e->getMessage()
       );
@@ -170,7 +171,7 @@ class Technology
 			));
 			
 			return ApiResponseFormatter::formatResponse(
-        200, 
+        HTTPStatus::OK, 
         "success", 
         "Tecnologia excluida com sucesso"
       );
@@ -178,7 +179,7 @@ class Technology
 		} catch (\PDOException $e) {
 
 			return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao excluir tecnologia: " . $e->getMessage()
       );

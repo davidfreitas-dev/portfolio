@@ -5,6 +5,7 @@ namespace App\Models;
 use App\DB\Database;
 use App\Mail\Mailer;
 use App\Models\User;
+use App\Enums\HttpStatus as HTTPStatus;
 use App\Utils\AESCryptographer;
 use App\Utils\ApiResponseFormatter;
 
@@ -18,7 +19,7 @@ class Auth {
 		if ($userExists) {
 
 			return ApiResponseFormatter::formatResponse(
-        400, 
+        HTTPStatus::BAD_REQUEST,
         "error", 
         "Usuário já cadastrado no banco de dados"
       );
@@ -52,7 +53,7 @@ class Auth {
       if (empty($results)) {
 
         return ApiResponseFormatter::formatResponse(
-          404, 
+          HTTPStatus::NOT_FOUND,
           "error", 
           "Usuário inexistente ou senha inválida."
         );
@@ -68,7 +69,7 @@ class Auth {
       } 
       
       return ApiResponseFormatter::formatResponse(
-        404, 
+        HTTPStatus::NOT_FOUND,
         "error", 
         "Usuário inexistente ou senha inválida."
       );
@@ -76,7 +77,7 @@ class Auth {
     } catch (\PDOException $e) {
       
       return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha na autenticação do usuário: " . $e->getMessage()
       );
@@ -104,7 +105,7 @@ class Auth {
       if (empty($results)) {
 
         return ApiResponseFormatter::formatResponse(
-          404, 
+          HTTPStatus::NOT_FOUND,
           "error", 
           "O e-mail informado não consta no banco de dados"
         );
@@ -123,7 +124,7 @@ class Auth {
       if (empty($query))	{
 
         return ApiResponseFormatter::formatResponse(
-          400, 
+          HTTPStatus::BAD_REQUEST,
           "error", 
           "Não foi possível recuperar a senha"
         );
@@ -149,7 +150,7 @@ class Auth {
       $mailer->send();
 
       return ApiResponseFormatter::formatResponse(
-        200, 
+        HTTPStatus::OK, 
         "success", 
         "Link de redefinição de senha enviado para o e-mail informado"
       );
@@ -157,7 +158,7 @@ class Auth {
     } catch (\PDOException $e) {
       
       return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao recuperar senha: " . $e->getMessage()
       );
@@ -189,7 +190,7 @@ class Auth {
       if (empty($results)) {
 
         return ApiResponseFormatter::formatResponse(
-          401, 
+          HTTPStatus::UNAUTHORIZED,
           "error", 
           "O link de redefinição utilizado expirou"
         );
@@ -197,7 +198,7 @@ class Auth {
       } 
       
       return ApiResponseFormatter::formatResponse(
-        200, 
+        HTTPStatus::OK, 
         "success", 
         $results[0]
       );
@@ -205,7 +206,7 @@ class Auth {
     } catch (\PDOException $e) {
       
       return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao validar token: " . $e->getMessage()
       );
@@ -232,7 +233,7 @@ class Auth {
     } catch (\PDOException $e) {
 
       return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao definir senha antiga como usada: " . $e->getMessage()
       );
@@ -258,7 +259,7 @@ class Auth {
       ));
 
       return ApiResponseFormatter::formatResponse(
-        200, 
+        HTTPStatus::OK, 
         "success", 
         "Senha alterada com sucesso"
       );
@@ -266,7 +267,7 @@ class Auth {
     } catch (\PDOException $e) {
 
       return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao gravar nova senha: " . $e->getMessage()
       );
@@ -310,7 +311,11 @@ class Auth {
 
       $data['token'] = $token;
 
-      return ApiResponseFormatter::formatResponse(200, "success", $data);
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        $data
+      );
 
   }
   

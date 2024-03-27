@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DB\Database;
+use App\Enums\HttpStatus as HTTPStatus;
 use App\Utils\ApiResponseFormatter;
 
 class Experience
@@ -22,7 +23,7 @@ class Experience
 			if (count($results)) {
 
 				return ApiResponseFormatter::formatResponse(
-          200, 
+          HTTPStatus::OK, 
           "success", 
           $results
         );
@@ -30,7 +31,7 @@ class Experience
 			}
       
       return ApiResponseFormatter::formatResponse(
-        204, 
+        HTTPStatus::NO_CONTENT,
         "success", 
         "Nenhuma experiência encontrada"
       );
@@ -38,7 +39,7 @@ class Experience
 		} catch (\PDOException $e) {
 
 			return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao obter experiências: " . $e->getMessage()
       );
@@ -64,7 +65,7 @@ class Experience
       if (count($results)) {
 			
 			  return ApiResponseFormatter::formatResponse(
-          200, 
+          HTTPStatus::OK, 
           "success", 
           $results[0]
         );
@@ -72,7 +73,7 @@ class Experience
       }
 
 			return ApiResponseFormatter::formatResponse(
-        404, 
+        HTTPStatus::NOT_FOUND,
         "error", 
         "Experiência não encontrada"
       );
@@ -80,7 +81,7 @@ class Experience
 		} catch (\PDOException $e) {
 			
 			return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao obter experiência: " . $e->getMessage()
       );
@@ -107,7 +108,7 @@ class Experience
 			));
 
       return ApiResponseFormatter::formatResponse(
-        201, 
+        HTTPStatus::CREATED, 
         "success", 
         "Experiência criada com sucesso"
       );
@@ -115,7 +116,7 @@ class Experience
     } catch (\PDOException $e) {
 			
 			return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao criar experiência: " . $e->getMessage()
       );
@@ -147,7 +148,7 @@ class Experience
       ));
 
       return ApiResponseFormatter::formatResponse(
-        200, 
+        HTTPStatus::OK, 
         "success", 
         "Experiência atualizada com sucesso"
       );
@@ -155,7 +156,7 @@ class Experience
     } catch (\PDOException $e) {
 
       return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao atualizar experiência: " . $e->getMessage()
       );
@@ -179,7 +180,7 @@ class Experience
 			));
 			
 			return ApiResponseFormatter::formatResponse(
-        200, 
+        HTTPStatus::OK, 
         "success", 
         "Experiência excluida com sucesso"
       );
@@ -187,7 +188,7 @@ class Experience
 		} catch (\PDOException $e) {
 
 			return ApiResponseFormatter::formatResponse(
-        500, 
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
         "Falha ao excluir experiência: " . $e->getMessage()
       );
