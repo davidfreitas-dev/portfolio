@@ -6,23 +6,27 @@ use App\Models\Project;
 
 $app->get('/projects', function (Request $request, Response $response) {
 
-  $result = Project::list();
+  $results = Project::list();
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
 
-$app->get('/projects/{id}', function (Request $request, Response $response) {
+$app->get('/projects/{id}', function (Request $request, Response $response, array $args) {
 
-  $id = $request->getAttribute('id');
+  $id = $args['id'];
 
-  $result = Project::get($id);
+  $results = Project::get($id);
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
 
@@ -32,22 +36,26 @@ $app->post('/projects/save', function (Request $request, Response $response) {
 
   $payload['image'] = isset($_FILES['photo']) ? $_FILES['photo'] : null;
 
-  $result = Project::save($payload);
+  $results = Project::save($payload);
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
 
-$app->delete('/projects/delete/{id}', function (Request $request, Response $response) {
+$app->delete('/projects/delete/{id}', function (Request $request, Response $response, array $args) {
 
-  $id = $request->getAttribute('id');
+  $id = $args['id'];
 
-  $result = Project::delete($id);
+  $results = Project::delete($id);
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });

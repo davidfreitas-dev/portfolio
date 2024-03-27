@@ -6,23 +6,27 @@ use App\Models\Experience;
 
 $app->get('/experiences', function (Request $request, Response $response) {
 
-  $result = Experience::list();
+  $results = Experience::list();
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
 
-$app->get('/experiences/{id}', function (Request $request, Response $response) {
+$app->get('/experiences/{id}', function (Request $request, Response $response, array $args) {
 
-  $id = $request->getAttribute('id');
+  $id = $args['id'];
 
-  $result = Experience::get($id);
+  $results = Experience::get($id);
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
 
@@ -30,36 +34,42 @@ $app->post('/experiences/create', function (Request $request, Response $response
 
   $payload = $request->getParsedBody();
 
-  $result = Experience::create($payload);
+  $results = Experience::create($payload);
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
 
-$app->put('/experiences/update/{id}', function (Request $request, Response $response) {
+$app->put('/experiences/update/{id}', function (Request $request, Response $response, array $args) {
 
-  $id = $request->getAttribute('id');
+  $id = $args['id'];
 
   $payload = $request->getParsedBody();
 
-  $result = Experience::update($id, $payload);
+  $results = Experience::update($id, $payload);
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
 
-$app->delete('/experiences/delete/{id}', function (Request $request, Response $response) {
+$app->delete('/experiences/delete/{id}', function (Request $request, Response $response, array $args) {
 
-  $id = $request->getAttribute('id');
+  $id = $args['id'];
 
-  $result = Experience::delete($id);
+  $results = Experience::delete($id);
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });

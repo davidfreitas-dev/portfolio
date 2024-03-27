@@ -6,23 +6,27 @@ use App\Models\Technology;
 
 $app->get('/technologies', function (Request $request, Response $response) {
 
-  $result = Technology::list();
+  $results = Technology::list();
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
 
-$app->get('/technologies/{id}', function (Request $request, Response $response) {
+$app->get('/technologies/{id}', function (Request $request, Response $response, array $args) {
 
-  $id = $request->getAttribute('id');
+  $id = $args['id'];
 
-  $result = Technology::get($id);
+  $results = Technology::get($id);
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
 
@@ -30,36 +34,42 @@ $app->post('/technologies/create', function (Request $request, Response $respons
 
   $payload = $request->getParsedBody();
 
-  $result = Technology::create($payload);
+  $results = Technology::create($payload);
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
 
-$app->put('/technologies/update/{id}', function (Request $request, Response $response) {
+$app->put('/technologies/update/{id}', function (Request $request, Response $response, array $args) {
 
-  $id = $request->getAttribute('id');
+  $id = $args['id'];
 
   $payload = $request->getParsedBody();
 
-  $result = Technology::update($id, $payload);
+  $results = Technology::update($id, $payload);
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
 
-$app->delete('/technologies/delete/{id}', function (Request $request, Response $response) {
+$app->delete('/technologies/delete/{id}', function (Request $request, Response $response, array $args) {
 
-  $id = $request->getAttribute('id');
+  $id = $args['id'];
 
-  $result = Technology::delete($id);
+  $results = Technology::delete($id);
 
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode($results));
 
-  return $response->withHeader('content-type', 'application/json');
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
 
 });
