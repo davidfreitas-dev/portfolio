@@ -21,7 +21,8 @@ class Auth {
 			return ApiResponseFormatter::formatResponse(
         HTTPStatus::BAD_REQUEST,
         "error", 
-        "Usuário já cadastrado no banco de dados"
+        "Usuário já cadastrado no banco de dados",
+        null
       );
 
 		}
@@ -55,7 +56,8 @@ class Auth {
         return ApiResponseFormatter::formatResponse(
           HTTPStatus::NOT_FOUND,
           "error", 
-          "Usuário inexistente ou senha inválida."
+          "Usuário inexistente ou senha inválida.",
+          null
         );
   
       }
@@ -71,7 +73,8 @@ class Auth {
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::NOT_FOUND,
         "error", 
-        "Usuário inexistente ou senha inválida."
+        "Usuário inexistente ou senha inválida.",
+        null
       );
 
     } catch (\PDOException $e) {
@@ -79,7 +82,8 @@ class Auth {
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Falha na autenticação do usuário: " . $e->getMessage()
+        "Falha na autenticação do usuário: " . $e->getMessage(),
+        null
       );
 
     }
@@ -107,7 +111,8 @@ class Auth {
         return ApiResponseFormatter::formatResponse(
           HTTPStatus::NOT_FOUND,
           "error", 
-          "O e-mail informado não consta no banco de dados"
+          "O e-mail informado não consta no banco de dados",
+          null
         );
 
       } 
@@ -126,7 +131,8 @@ class Auth {
         return ApiResponseFormatter::formatResponse(
           HTTPStatus::BAD_REQUEST,
           "error", 
-          "Não foi possível recuperar a senha"
+          "Não foi possível recuperar a senha",
+          null
         );
 
       }
@@ -152,7 +158,8 @@ class Auth {
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 
         "success", 
-        "Link de redefinição de senha enviado para o e-mail informado"
+        "Link de redefinição de senha enviado para o e-mail informado.",
+        null
       );
 
     } catch (\PDOException $e) {
@@ -160,7 +167,8 @@ class Auth {
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Falha ao recuperar senha: " . $e->getMessage()
+        "Falha ao recuperar senha: " . $e->getMessage(),
+        null
       );
 
     }		
@@ -192,7 +200,8 @@ class Auth {
         return ApiResponseFormatter::formatResponse(
           HTTPStatus::UNAUTHORIZED,
           "error", 
-          "O link de redefinição utilizado expirou"
+          "O link de redefinição utilizado expirou",
+          null
         );
 
       } 
@@ -200,6 +209,7 @@ class Auth {
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 
         "success", 
+        "Link de redefinição validado com sucesso.",
         $results[0]
       );
 
@@ -208,7 +218,8 @@ class Auth {
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Falha ao validar token: " . $e->getMessage()
+        "Falha ao validar token: " . $e->getMessage(),
+        null
       );
 
     }
@@ -235,7 +246,8 @@ class Auth {
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Falha ao definir senha antiga como usada: " . $e->getMessage()
+        "Falha ao definir senha antiga como usada: " . $e->getMessage(),
+        null
       );
 
     }
@@ -261,7 +273,8 @@ class Auth {
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 
         "success", 
-        "Senha alterada com sucesso"
+        "Senha alterada com sucesso.",
+        null
       );
 
     } catch (\PDOException $e) {
@@ -269,7 +282,8 @@ class Auth {
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Falha ao gravar nova senha: " . $e->getMessage()
+        "Falha ao gravar nova senha: " . $e->getMessage(),
+        null
       );
 
     }
@@ -314,6 +328,7 @@ class Auth {
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 
         "success", 
+        "Usuário autenticado com sucesso.",
         $data
       );
 

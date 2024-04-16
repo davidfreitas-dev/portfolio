@@ -26,6 +26,7 @@ class Project
 				return ApiResponseFormatter::formatResponse(
           HTTPStatus::OK, 
           "success", 
+          "Lista de projetos",
           $results
         );
 
@@ -34,7 +35,8 @@ class Project
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::NO_CONTENT,
         "success", 
-        "Nenhum projeto encontrado"
+        "Nenhum projeto encontrado",
+        null
       );
 
 		} catch (\PDOException $e) {
@@ -42,7 +44,8 @@ class Project
 			return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Falha ao obter projetos: " . $e->getMessage()
+        "Falha ao obter projetos: " . $e->getMessage(),
+        null
       );
 			
 		}
@@ -68,6 +71,7 @@ class Project
 			  return ApiResponseFormatter::formatResponse(
           HTTPStatus::OK, 
           "success", 
+          "Detalhes do projeto",
           $results[0]
         );
         
@@ -76,7 +80,8 @@ class Project
 			return ApiResponseFormatter::formatResponse(
         HTTPStatus::NOT_FOUND,
         "error", 
-        "Projeto não encontrada"
+        "Projeto não encontrado",
+        null
       );
 
 		} catch (\PDOException $e) {
@@ -84,7 +89,8 @@ class Project
 			return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Falha ao obter projeto: " . $e->getMessage()
+        "Falha ao obter projeto: " . $e->getMessage(),
+        null
       );
 			
 		}
@@ -117,7 +123,8 @@ class Project
         return ApiResponseFormatter::formatResponse(
           HTTPStatus::BAD_REQUEST,
           "error", 
-          "Falha ao criar/atualizar projeto"
+          "Falha ao criar/atualizar projeto",
+          null
         );
 
       }
@@ -131,7 +138,8 @@ class Project
       return ApiResponseFormatter::formatResponse(
         $status, 
         "success", 
-        $message
+        $message,
+        null
       );
 
     } catch (\PDOException $e) {
@@ -139,7 +147,8 @@ class Project
 			return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Falha ao criar projeto: " . $e->getMessage()
+        "Falha ao criar projeto: " . $e->getMessage(),
+        null
       );
 			
 		}
@@ -162,7 +171,8 @@ class Project
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 
         "success", 
-        "Projeto excluído com sucesso!"
+        "Projeto excluído com sucesso",
+        null
       );
 
 		} catch (\PDOException $e) {
@@ -170,7 +180,8 @@ class Project
 			return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Falha ao excluir projeto: " . $e->getMessage()
+        "Falha ao excluir projeto: " . $e->getMessage(),
+        null
       );
 			
 		}
@@ -200,7 +211,8 @@ class Project
 			return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Falha ao definir imagem do projeto: " . $e->getMessage()
+        "Falha ao definir imagem do projeto: " . $e->getMessage(),
+        null
       );
 			
 		}
@@ -254,7 +266,8 @@ class Project
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Erro: " . $e->getMessage()
+        "Erro: " . $e->getMessage(),
+        null
       );
       
     }	
