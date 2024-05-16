@@ -11,23 +11,42 @@ use App\Utils\ApiResponseFormatter;
 
 class Auth {
 
-  public static function signup($user) 
+  public static function signup($data) 
 	{
 
-		$userExists = User::getByCredentials($user);
-			
-		if ($userExists) {
+		try {
 
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::BAD_REQUEST,
+      if (self::checkUserExists($data)) {
+        
+        return ApiResponseFormatter::formatResponse(
+          HTTPStatus::CONFLICT,
+          "error", 
+          "Usuário já cadastrado no banco de dados",
+          null
+        );
+
+      }
+    
+      $response = User::create($data);
+
+      if ($response['status'] == 'error') {
+        
+        return $response;
+
+      }
+
+      return self::generateToken($response['data']);
+
+    } catch (\PDOException $e) {
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Usuário já cadastrado no banco de dados",
+        "Falha ao cadastrar usuário: " . $e->getMessage(),
         null
       );
 
-		}
-    
-    return User::create($user);
+    }
 
 	}
         
@@ -226,34 +245,6 @@ class Auth {
 
   }
 
-  public static function setForgotUsed($idrecovery)
-  {
-
-    $sql = "UPDATE tb_userspasswordsrecoveries 
-            SET dtrecovery = NOW() 
-            WHERE idrecovery = :idrecovery";
-
-    try {
-
-      $db = new Database();
-
-      $db->query($sql, array(
-        ":idrecovery"=>$idrecovery
-      ));
-
-    } catch (\PDOException $e) {
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao definir senha antiga como usada: " . $e->getMessage(),
-        null
-      );
-
-    }
-
-  }
-
   public static function setNewPassword($password, $iduser)
   {
 
@@ -290,6 +281,64 @@ class Auth {
 
   }
 
+  public static function setForgotUsed($idrecovery)
+  {
+
+    $sql = "UPDATE tb_userspasswordsrecoveries 
+            SET dtrecovery = NOW() 
+            WHERE idrecovery = :idrecovery";
+
+    try {
+
+      $db = new Database();
+
+      $db->query($sql, array(
+        ":idrecovery"=>$idrecovery
+      ));
+
+    } catch (\PDOException $e) {
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        "error", 
+        "Falha ao definir senha antiga como usada: " . $e->getMessage(),
+        null
+      );
+
+    }
+
+  }
+
+  private static function checkUserExists($data) 
+  {
+
+    $sql = "SELECT * FROM tb_users a 
+            INNER JOIN tb_persons b 
+            ON a.idperson = b.idperson 
+            WHERE a.deslogin = :deslogin 
+            OR b.desemail = :desemail	
+            OR b.nrcpf = :nrcpf";
+
+    try {
+
+      $db = new Database();
+        
+      $results = $db->select($sql, array(
+        ":deslogin" => $data['deslogin'],
+        ":desemail" => $data['desemail'],
+        ":nrcpf" => $data['nrcpf']
+      ));
+
+      return !empty($results);
+
+    } catch (\PDOException $e) {
+
+      return false;
+      
+    }
+
+  }
+
   private static function getPasswordHash($password)
 	{
 
@@ -299,38 +348,31 @@ class Auth {
 
 	}
 
-  private static function generateToken($data)
+  private static function generateToken($payload)
   {
 
-      $header = [
-          'typ' => 'JWT',
-          'alg' => 'HS256'
-      ];
+    $header = [
+      'typ' => 'JWT',
+      'alg' => 'HS256'
+    ];
 
-      $payload = [
-          'name' => $data['desperson'],
-          'email' => $data['desemail'],
-      ];
+    $header = json_encode($header);
+    $payload = json_encode($payload);
 
-      $header = json_encode($header);
-      $payload = json_encode($payload);
+    $header = self::base64UrlEncode($header);
+    $payload = self::base64UrlEncode($payload);
 
-      $header = self::base64UrlEncode($header);
-      $payload = self::base64UrlEncode($payload);
+    $sign = hash_hmac('sha256', $header . "." . $payload, $_ENV['JWT_SECRET_KEY'], true);
+    $sign = self::base64UrlEncode($sign);
 
-      $sign = hash_hmac('sha256', $header . "." . $payload, $_ENV['JWT_SECRET_KEY'], true);
-      $sign = self::base64UrlEncode($sign);
+    $token = $header . '.' . $payload . '.' . $sign;
 
-      $token = $header . '.' . $payload . '.' . $sign;
-
-      $data['token'] = $token;
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Usuário autenticado com sucesso.",
-        $data
-      );
+    return ApiResponseFormatter::formatResponse(
+      HTTPStatus::OK, 
+      "success", 
+      "Autenticação efetuada com sucesso",
+      $token
+    );
 
   }
   

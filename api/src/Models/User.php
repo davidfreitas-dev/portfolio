@@ -9,7 +9,8 @@ use App\Utils\ApiResponseFormatter;
 class User {
 
 	public static function list() 
-  {    
+  { 
+
     $sql = "SELECT * FROM tb_users a 
             INNER JOIN tb_persons b 
             ON a.idperson = b.idperson";
@@ -20,22 +21,22 @@ class User {
 
 			$results = $db->select($sql);
 			
-			if (count($results)) {
+			if (empty($results)) {
 
 				return ApiResponseFormatter::formatResponse(
-          HTTPStatus::OK, 
+          HTTPStatus::NO_CONTENT,  
           "success", 
-          "Lista de usuários",
-          $results
+          "Nenhum usuário encontrado",
+          null
         );
 
 			}
-      
+
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::NO_CONTENT,
+        HTTPStatus::OK, 
         "success", 
-        "Nenhum usuário encontrado",
-        null
+        "Lista de usuários",
+        $results
       );
 
 		} catch (\PDOException $e) {
@@ -67,22 +68,22 @@ class User {
 				":iduser"=>$iduser
 			));
 
-      if (count($results)) {
-			
-			  return ApiResponseFormatter::formatResponse(
-          HTTPStatus::OK, 
-          "success",
-          "Detalhes do usuário", 
-          $results[0]
+      if (empty($results)) {
+
+        return ApiResponseFormatter::formatResponse(
+          HTTPStatus::NOT_FOUND, 
+          "error", 
+          "Usuário não encontrado",
+          null
         );
         
       }
-
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::NOT_FOUND,
-        "error", 
-        "Usuário não encontrado",
-        null
+			
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Dados do usuário",
+        $results[0]
       );
 
 		} catch (\PDOException $e) {
@@ -98,7 +99,7 @@ class User {
 
 	}
   
-  public static function create($user)
+  public static function create($data)
   {
 
     $sql = "CALL sp_users_create(
@@ -116,25 +117,14 @@ class User {
       $db = new Database();
 
 			$results = $db->select($sql, array(
-				":desperson"=>$user['desperson'],
-				":deslogin"=>$user['deslogin'],
-				":despassword"=>User::getPasswordHash($user['despassword']),
-				":desemail"=>$user['desemail'],
-				":nrphone"=>$user['nrphone'],
-				":nrcpf"=>$user['nrcpf'],
-				":inadmin"=>$user['inadmin']
+				":desperson"=>$data['desperson'],
+				":deslogin"=>$data['deslogin'],
+				":despassword"=>User::getPasswordHash($data['despassword']),
+				":desemail"=>$data['desemail'],
+				":nrphone"=>$data['nrphone'],
+				":nrcpf"=>$data['nrcpf'],
+				":inadmin"=>$data['inadmin']
 			));
-
-      if (empty($results)) {
-        
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::BAD_REQUEST,
-          "error", 
-          "Não foi possível retornar os dados do usuário cadastrado",
-          null
-        );
-
-      }
 
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::CREATED, 
@@ -174,7 +164,7 @@ class User {
 
 			$db = new Database();
 			
-			$result = $db->select($sql, array(
+			$results = $db->select($sql, array(
 				":iduser"=>$iduser,
 				":desperson"=>$user['desperson'],
 				":deslogin"=>$user['deslogin'],
@@ -185,16 +175,12 @@ class User {
 				":inadmin"=>$user['inadmin']
 			));
 
-			if (count($result) == 0) {
-
-				return ApiResponseFormatter::formatResponse(
-          HTTPStatus::OK, 
-          "success", 
-          "Usuário atualizado com sucesso",
-          null
-        );
-				
-			}
+			return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Usuário atualizado com sucesso",
+        $results
+      );
 
 		} catch (\PDOException $e) {
 
@@ -238,41 +224,6 @@ class User {
         null
       );
 			
-		}		
-
-	}
-
-  public static function getByCredentials($user) 
-	{
-		
-		$sql = "SELECT * FROM tb_users a 
-            INNER JOIN tb_persons b 
-            ON a.idperson = b.idperson 
-            WHERE a.deslogin = :deslogin 
-            OR b.desemail = :desemail	
-            OR b.nrcpf = :nrcpf";
-		
-		try {
-
-			$db = new Database();
-			
-			$results = $db->select($sql, array(
-				":deslogin"=>$user['deslogin'],
-				":desemail"=>$user['desemail'],
-				":nrcpf"=>$user['nrcpf']
-			));
-
-			return count($results);
-
-		} catch (\PDOException $e) {
-
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao obter usuário: " . $e->getMessage(),
-        null
-      );
-
 		}		
 
 	}
