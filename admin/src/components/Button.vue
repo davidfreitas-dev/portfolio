@@ -3,41 +3,26 @@ import Loader from './Loader.vue';
 
 const props = defineProps({
   isLoading: Boolean,
-  text: { 
-    type: String, 
-    default: 'Text Button' 
-  },
   size: { 
     type: String, 
     default: '' 
   },
   color: { 
     type: String, 
-    default: 'main' 
+    default: 'primary' 
   },
 });
 </script>
 
 <template>
-  <button
-    type="submit"
-    :class="{ 
-      'main': color === 'main',
-      'secondary': color === 'secondary',
-      'outline': color === 'outline',
-      'w-full': size === 'full',
-    }"
-  >
+  <button type="submit" :class="['flex items-center gap-1.5', { 'primary': color === 'primary', 'secondary': color === 'secondary', 'outline': color === 'outline', 'w-full': size === 'full' }]">
     <Loader v-if="isLoading" />
-    
-    <span v-else>
-      {{ text }}
-    </span>
+    <slot v-else />
   </button>
 </template>
 
 <style scoped>
-.main {
+.primary {
   @apply py-3 px-4 bg-primary rounded-md font-semibold text-white text-base transition-colors hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-green-600 focus:bg-primary active:bg-primary-pressed
 }
 .secondary {
