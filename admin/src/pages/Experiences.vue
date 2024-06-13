@@ -1,7 +1,8 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import BaseLayout from '../components/BaseLayout.vue';
+import MainContainer from '../components/MainContainer.vue';
 import Breadcrumb from '../components/Breadcrumb.vue';
+import Wrapper from '../components/Wrapper.vue';
 import Button from '../components/Button.vue';
 import Pagination from '../components/Pagination.vue';
 
@@ -33,13 +34,8 @@ const experiences = ref([
 </script>
 
 <template>
-  <BaseLayout>
-    <div class="flex justify-between items-start">
-      <Breadcrumb 
-        title="Experiências" 
-        description="Adicione suas experiências profissionais ou colaborações em projetos." 
-      />
-
+  <MainContainer>
+    <Breadcrumb title="Experiências" description="Adicione suas experiências profissionais ou colaborações em projetos.">
       <Button :is-loading="isLoading">
         <span class="material-icons">
           add
@@ -49,10 +45,10 @@ const experiences = ref([
           Adicionar
         </span>
       </Button>
-    </div>
+    </Breadcrumb>
 
-    <div class="bg-white shadow-lg rounded-xl px-8 py-4 my-10">
-      <div class="relative overflow-x-auto my-3">
+    <Wrapper>
+      <div class="table relative overflow-x-auto my-3">
         <table class="w-full text-left text-gray-500">
           <thead class="border-b text-gray-500">
             <tr>
@@ -111,6 +107,6 @@ const experiences = ref([
         :total-pages="2"
         :total-items="10"
       />
-    </div>
-  </BaseLayout>
+    </Wrapper>
+  </MainContainer>
 </template>

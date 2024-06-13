@@ -1,12 +1,12 @@
 <template>
-  <BaseLayout>
+  <MainContainer>
     <h1 class="text-3xl font-semibold">
       Settings
     </h1>
     <p>This is the settings page</p>
-  </BaseLayout>
+  </MainContainer>
 </template>
 
 <script setup>
-import BaseLayout from '../components/BaseLayout.vue';
+import MainContainer from '../components/MainContainer.vue';
 </script>

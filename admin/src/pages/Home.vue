@@ -1,14 +1,14 @@
 <script setup>
-import BaseLayout from '../components/BaseLayout.vue';
+import MainContainer from '../components/MainContainer.vue';
 </script>
 
 <template>
-  <BaseLayout>
+  <MainContainer>
     <h1 class="text-3xl font-semibold">
       Home
     </h1>
     <p class="text-secondary">
       This is the home page
     </p>
-  </BaseLayout>
+  </MainContainer>
 </template>

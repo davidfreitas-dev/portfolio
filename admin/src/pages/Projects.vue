@@ -1,10 +1,10 @@
 <script setup>
-import BaseLayout from '../components/BaseLayout.vue';
+import MainContainer from '../components/MainContainer.vue';
 import Button from '../components/Button.vue';
 </script>
 
 <template>
-  <BaseLayout>
+  <MainContainer>
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-semibold">
         Projects
@@ -17,5 +17,5 @@ import Button from '../components/Button.vue';
     <p class="text-secondary">
       This is the projects page
     </p>
-  </BaseLayout>
+  </MainContainer>
 </template>
