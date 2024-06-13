@@ -36,7 +36,7 @@ const experiences = ref([
 <template>
   <MainContainer>
     <Breadcrumb title="Experiências" description="Adicione suas experiências profissionais ou colaborações em projetos.">
-      <Button :is-loading="isLoading">
+      <Button>
         <span class="material-icons">
           add
         </span>
@@ -48,7 +48,7 @@ const experiences = ref([
     </Breadcrumb>
 
     <Wrapper>
-      <div class="table relative overflow-x-auto my-3">
+      <div class="data-table relative overflow-x-auto my-3">
         <table class="w-full text-left text-gray-500">
           <thead class="border-b text-gray-500">
             <tr>
@@ -67,12 +67,9 @@ const experiences = ref([
             <tr
               v-for="(experience, i) in experiences"
               :key="i"
-              class="border-b"
+              class="border-b hover:bg-gray-50"
             >
-              <th
-                scope="row"
-                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-              >
+              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                 {{ i + 1 }}
               </th>
 
