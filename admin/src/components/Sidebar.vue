@@ -1,3 +1,21 @@
+<script setup>
+import { ref, watchEffect } from 'vue';
+import Logo from './Logo.vue';
+import MenuItem from './MenuItem.vue';
+
+const isExpanded = ref(localStorage.getItem('isExpanded') === 'true');
+const menuWidth = ref('w-[calc(2rem+32px)]');
+
+const toggleMenu = () => {
+  isExpanded.value = !isExpanded.value;
+  localStorage.setItem('isExpanded', isExpanded.value);
+};
+
+watchEffect(() => {
+  menuWidth.value = isExpanded.value ? 'w-sidebar-width' : 'w-[calc(2rem+32px)]';
+});
+</script>
+
 <template>
   <aside class="flex flex-col bg-background text-secondary overflow-hidden min-h-screen p-4 transition-all ease-in-out duration-200" :class="menuWidth">
     <Logo :is-expanded="isExpanded" />
@@ -49,21 +67,3 @@
     </div>
   </aside>
 </template>
-
-<script setup>
-import { ref, watchEffect } from 'vue';
-import Logo from './Logo.vue';
-import MenuItem from './MenuItem.vue';
-
-const isExpanded = ref(localStorage.getItem('isExpanded') === 'true');
-const menuWidth = ref('w-[calc(2rem+32px)]');
-
-const toggleMenu = () => {
-  isExpanded.value = !isExpanded.value;
-  localStorage.setItem('isExpanded', isExpanded.value);
-};
-
-watchEffect(() => {
-  menuWidth.value = isExpanded.value ? 'w-sidebar-width' : 'w-[calc(2rem+32px)]';
-});
-</script>
