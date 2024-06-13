@@ -1,15 +1,20 @@
 <script setup>
+import { ref } from 'vue';
 import { RouterView } from 'vue-router';
 import Sidebar from './components/Sidebar.vue';
+
+const sidebarWidth = ref('250px');
+
+const changeSidebarWidth = (event) => {
+  sidebarWidth.value = event;
+};
 </script>
 
 <template>
   <div class="app flex">
-    <Sidebar />
-    <RouterView />
+    <Sidebar @on-width-change="changeSidebarWidth" />
+    <RouterView v-slot="{ Component }">
+      <component :is="Component" :sidebar-width="sidebarWidth" />
+    </RouterView>
   </div>
 </template>
-
-<style scoped>
-
-</style>
