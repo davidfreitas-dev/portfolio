@@ -3,19 +3,23 @@ import { ref, watchEffect } from 'vue';
 import Logo from './Logo.vue';
 import MenuItem from './MenuItem.vue';
 
-const emit = defineEmits(['onWidthChange']);
-const sidebarWidth = ref('w-[calc(2rem+32px)]');
+const sidebarWidth = ref('w-[64px]');
 const isExpanded = ref(localStorage.getItem('isExpanded') === 'true');
 
-const toggleMenu = () => {
+const EXPANDED_WIDTH = '250px';
+const COLLAPSED_WIDTH = '64px';
+
+const emit = defineEmits(['onWidthChange']);
+
+watchEffect(() => {
+  sidebarWidth.value = isExpanded.value ? 'w-[250px]' : 'w-[64px]';
+  emit('onWidthChange', isExpanded.value ? EXPANDED_WIDTH : COLLAPSED_WIDTH);
+});
+
+const toggleSidebar = () => {
   isExpanded.value = !isExpanded.value;
   localStorage.setItem('isExpanded', isExpanded.value);
 };
-
-watchEffect(() => {
-  emit('onWidthChange', isExpanded.value ? '250px' : 'calc(2rem+32px)');
-  sidebarWidth.value = isExpanded.value ? 'w-[250px]' : 'w-[calc(2rem+32px)]';
-});
 </script>
 
 <template>
@@ -23,7 +27,7 @@ watchEffect(() => {
     <Logo :is-expanded="isExpanded" />
 
     <div :class="['menu-toggle-wrap flex mb-4 select-none transition-all duration-200 relative', { 'justify-end': isExpanded, 'top-[-3rem]': isExpanded, 'top-0': !isExpanded }]">
-      <button class="menu-toggle transition-all duration-200 rounded-xl focus:outline-none" @click="toggleMenu">
+      <button class="menu-toggle transition-all duration-200 rounded-xl focus:outline-none" @click="toggleSidebar">
         <span class="material-icons text-font p-1 text-2xl transition-all duration-200 hover:text-primary" :style="{ transform: isExpanded ? 'rotate(-180deg)' : 'none' }">
           keyboard_double_arrow_right
         </span>
