@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { RouterView } from 'vue-router';
 import Sidebar from './components/Sidebar.vue';
 
-const sidebarWidth = ref('250px');
+const sidebarWidth = ref('300px');
 
 const changeSidebarWidth = (event) => {
   sidebarWidth.value = event;

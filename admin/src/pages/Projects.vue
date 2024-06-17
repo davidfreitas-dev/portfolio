@@ -88,7 +88,7 @@ const projects = ref([
               </td>
 
               <td class="px-6 py-4">
-                <div class="flex items-center gap-3 min-w-[250px]">
+                <div class="flex items-center gap-3 min-w-[300px]">
                   {{ project.desdescription }}
                 </div>
               </td>

@@ -15,10 +15,7 @@ export default {
         background: '#ffffff',
         accent: '#f1f1f1',
         font: '#3c3c3c',
-      },
-      width: {
-        'sidebar-width': '250px',
-      },
+      }
     },
   },
   plugins: [],

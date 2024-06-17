@@ -2,7 +2,7 @@
 const props = defineProps({
   sidebarWidth: {
     type: String,
-    default: '250px'
+    default: '300px'
   }
 });
 </script>

@@ -6,13 +6,13 @@ import MenuItem from './MenuItem.vue';
 const sidebarWidth = ref('w-[64px]');
 const isExpanded = ref(localStorage.getItem('isExpanded') === 'true');
 
-const EXPANDED_WIDTH = '250px';
+const EXPANDED_WIDTH = '300px';
 const COLLAPSED_WIDTH = '64px';
 
 const emit = defineEmits(['onWidthChange']);
 
 watchEffect(() => {
-  sidebarWidth.value = isExpanded.value ? 'w-[250px]' : 'w-[64px]';
+  sidebarWidth.value = isExpanded.value ? 'w-[300px]' : 'w-[64px]';
   emit('onWidthChange', isExpanded.value ? EXPANDED_WIDTH : COLLAPSED_WIDTH);
 });
 
