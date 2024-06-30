@@ -1,0 +1,118 @@
+<script setup>
+import { ref, reactive, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useVuelidate } from '@vuelidate/core';
+import { required, email } from '@vuelidate/validators';
+import { useSessionStore } from '../../stores/session';
+import axios from '../../api/axios';
+import Wrapper from '../../components/Wrapper.vue';
+import Button from '../../components/Button.vue';
+import Checkbox from '../../components/Checkbox.vue';
+import Input from '../../components/Input.vue';
+import Toast from '../../components/Toast.vue';
+
+const router = useRouter();
+const storeSession = useSessionStore();
+const isLoading = ref(false);
+const remember = ref(false);
+const formData = reactive({
+  deslogin: '',
+  despassword: ''
+});
+
+const signIn = async () => {
+  isLoading.value = true;
+
+  const response = await axios.post('/signin', formData);
+
+  isLoading.value = false;
+
+  if (response.status === 'error') {
+    toastRef.value?.showToast(response.status, response.data);
+    return;
+  }
+
+  const isAdmin = response.data.inadmin === 1;
+
+  if (!isAdmin) {
+    toastRef.value?.showToast('error', 'Só são permitidos usuários com perfil de administrador');
+    return;  
+  }
+
+  storeSession.setSession(response.data);
+
+  router.push('/'); 
+};
+
+const rules = computed(() => {
+  return {
+    deslogin: { required, email },
+    despassword: { required }
+  };
+});
+
+const v$ = useVuelidate(rules, formData);
+
+const toastRef = ref(undefined);
+
+const submitForm = async (event) => {
+  event.preventDefault();
+
+  const isFormCorrect = await v$.value.$validate();
+
+  if (!isFormCorrect) {
+    toastRef.value?.showToast('error', 'Informe um e-mail válido e a senha.');
+    return;
+  } 
+  
+  signIn();
+};
+</script>
+
+<template>
+  <div class="flex items-center justify-center w-full h-screen text-gray-800 bg-gray-50">
+    <Wrapper class="w-full max-w-md m-10">
+      <header class="flex flex-col items-center">
+        <h1 class="text-gray-800 font-bold font-sans text-2xl mt-5">
+          Bem-vindo!
+        </h1>
+        <span class="font-sans text-sm text-secondary my-2">
+          Faça login para usar nossa plataforma
+        </span>
+      </header>
+      
+      <form @submit="submitForm" class="flex flex-col p-5">
+        <Input
+          v-model="formData.deslogin"
+          type="email"
+          label="Endereço de e-mail"
+          placeholder="johndoe@email.com"
+        />
+
+        <Input
+          v-model="formData.despassword"
+          type="password"
+          label="Sua senha"
+          placeholder="**********"
+        />
+
+        <Checkbox
+          v-model="remember"
+          :value="!remember"
+          label="Lembre-se de mim"
+          class="mb-7"
+        />
+
+        <Button :is-loading="isLoading" class="mb-5">
+          Entrar na plataforma
+        </Button>
+
+        <router-link to="/forgot" class="text-primary hover:text-primary-hover outline-primary text-center cursor-pointer mt-3">
+          Esqueci minha senha
+        </router-link>
+      </form>
+    </Wrapper>
+
+    <Toast ref="toastRef" />
+  </div>
+</template>
