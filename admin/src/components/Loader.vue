@@ -4,29 +4,20 @@ import { computed } from 'vue';
 const props = defineProps({
   color: { 
     type: String, 
-    default: '' 
+    default: 'white' 
   }
 });
 
 const bgColor = computed(() => {
-  return props.color === 'main' ? 'bg-main' : 'bg-white';
+  return props.color === 'primary' ? 'bg-primary' : 'bg-white';
 });
 </script>
 
 <template>
   <div class="dots">
-    <span
-      :class="bgColor"
-      class="dot-1"
-    />
-    <span
-      :class="bgColor"
-      class="dot-2"
-    />
-    <span
-      :class="bgColor"
-      class="dot-3"
-    />
+    <span :class="['dot-1', bgColor]" />
+    <span :class="['dot-2', bgColor]" />
+    <span :class="['dot-3', bgColor]" />
   </div>
 </template>
 
