@@ -98,7 +98,7 @@ const model = computed({
 
 /* Style the checkmark/indicator */
 .container .checkmark:after {
-  left: 5px;
+  left: 6px;
   top: 2px;
   width: 5px;
   height: 10px;

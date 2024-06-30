@@ -19,6 +19,7 @@ import Button from '../components/Button.vue';
         </span>
       </Button>
     </Breadcrumb>
+    
     <Wrapper>
       <form class="form flex flex-col px-4 my-10">
         <Input label="Nome de usuário" placeholder="johndoe" />
