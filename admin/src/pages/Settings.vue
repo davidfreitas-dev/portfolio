@@ -8,7 +8,17 @@ import Button from '../components/Button.vue';
 
 <template>
   <MainContainer>
-    <Breadcrumb title="Configurações" description="Atualize suas informações pessoais aqui." />
+    <Breadcrumb title="Configurações" description="Atualize suas informações pessoais aqui.">
+      <Button>
+        <span class="material-icons">
+          logout
+        </span>
+        
+        <span class="hidden md:block">
+          Sair
+        </span>
+      </Button>
+    </Breadcrumb>
     <Wrapper>
       <form class="form flex flex-col px-4 my-10">
         <Input label="Nome de usuário" placeholder="johndoe" />
