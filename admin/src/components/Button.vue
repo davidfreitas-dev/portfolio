@@ -15,7 +15,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <button type="submit" :class="['flex items-center gap-1.5', { 'primary': color === 'primary', 'secondary': color === 'secondary', 'outline': color === 'outline', 'w-full': size === 'full' }]">
+  <button type="submit" :class="['flex items-center gap-1.5', { 'primary': color === 'primary', 'secondary': color === 'secondary', 'outline': color === 'outline', 'w-full text-center': size === 'full' }]">
     <Loader v-if="isLoading" />
     <slot v-else />
   </button>
