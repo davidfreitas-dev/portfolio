@@ -36,7 +36,7 @@ const toggleSidebar = () => {
 
     <div class="menu space-y-4 -mx-4">
       <MenuItem
-        to="/"
+        to="/home"
         icon="home"
         text="Home"
         :is-expanded="isExpanded"
