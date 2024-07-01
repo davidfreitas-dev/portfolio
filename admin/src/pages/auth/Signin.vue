@@ -3,6 +3,7 @@ import { ref, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useVuelidate } from '@vuelidate/core';
 import { required, email } from '@vuelidate/validators';
+import { jwtDecode } from 'jwt-decode';
 import { useSessionStore } from '../../stores/session';
 import axios from '../../api/axios';
 import Wrapper from '../../components/Wrapper.vue';
@@ -25,6 +26,8 @@ const signIn = async () => {
 
   const response = await axios.post('/signin', formData);
 
+  const userData = jwtDecode(response.data);
+
   isLoading.value = false;
 
   if (response.status === 'error') {
@@ -32,14 +35,14 @@ const signIn = async () => {
     return;
   }
 
-  const isAdmin = response.data.inadmin === 1;
+  const isAdmin = userData.inadmin === 1;
 
   if (!isAdmin) {
-    toastRef.value?.showToast('error', 'Só são permitidos usuários com perfil de administrador');
+    toastRef.value?.showToast('error', 'Acesso não autorizado: usuário não possui perfil de administrador');
     return;  
   }
 
-  storeSession.setSession(response.data);
+  await storeSession.setSession({ token: response.data });
 
   router.push('/'); 
 };

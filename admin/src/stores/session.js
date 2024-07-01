@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 export const useSessionStore = defineStore('session', () => {
   const session = ref(undefined);
 
-  const setSession = (data) => {
+  const setSession = async (data) => {
     session.value = data;
   };
 
