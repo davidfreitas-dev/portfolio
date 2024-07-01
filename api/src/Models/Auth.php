@@ -197,6 +197,17 @@ class Auth {
   public static function validateForgotLink($code)
   {
 
+    if (!isset($code) || empty($code)) {
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        "error", 
+        "Falha ao validar token: token inexistente.",
+        null
+      );
+
+    }
+
     $idrecovery = AESCryptographer::decrypt($code);
 
     $sql = "SELECT * FROM tb_userspasswordsrecoveries a
