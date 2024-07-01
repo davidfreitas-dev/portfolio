@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { useSessionStore } from '../stores/session';
+
+const storeSession = useSessionStore();
 
 const BASE_URL = import.meta.env.VITE_FIREBASE_BASE_URL;
 
@@ -9,7 +12,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (request) => {
-    request.headers['X-Token'] = '';
+    request.headers['X-Token'] = storeSession.session && storeSession.session.token ? storeSession.session.token : '';
     return request;
   },
   (error) => {
@@ -24,7 +27,7 @@ instance.interceptors.response.use(
   },
   (error) => {
     console.error('Erro na resposta da API:', error);
-    return Promise.reject(error);
+    return Promise.reject(error.response);
   }
 );
 

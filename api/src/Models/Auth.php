@@ -200,7 +200,7 @@ class Auth {
     if (!isset($code) || empty($code)) {
 
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        HTTPStatus::UNAUTHORIZED, 
         "error", 
         "Falha ao validar token: token inexistente.",
         null

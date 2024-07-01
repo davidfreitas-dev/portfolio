@@ -12,8 +12,8 @@ import Checkbox from '../../components/Checkbox.vue';
 import Input from '../../components/Input.vue';
 import Toast from '../../components/Toast.vue';
 
-const router = useRouter();
 const storeSession = useSessionStore();
+const router = useRouter();
 const isLoading = ref(false);
 const remember = ref(false);
 const formData = reactive({
@@ -24,27 +24,22 @@ const formData = reactive({
 const signIn = async () => {
   isLoading.value = true;
 
-  const response = await axios.post('/signin', formData);
-
-  const userData = jwtDecode(response.data);
+  try {
+    const response = await axios.post('/signin', formData);
+    const userData = jwtDecode(response.data);
+    const isAdmin = userData.inadmin === 1;
+    
+    if (isAdmin) {
+      await storeSession.setSession({ token: response.data });
+      router.push('/'); 
+    } else {
+      toastRef.value?.showToast('error', 'Acesso não autorizado: usuário não possui perfil de administrador');
+    }
+  } catch (error) {
+    toastRef.value?.showToast(error.data.status, error.data.message);
+  }
 
   isLoading.value = false;
-
-  if (response.status === 'error') {
-    toastRef.value?.showToast(response.status, response.data);
-    return;
-  }
-
-  const isAdmin = userData.inadmin === 1;
-
-  if (!isAdmin) {
-    toastRef.value?.showToast('error', 'Acesso não autorizado: usuário não possui perfil de administrador');
-    return;  
-  }
-
-  await storeSession.setSession({ token: response.data });
-
-  router.push('/'); 
 };
 
 const rules = computed(() => {

@@ -10,22 +10,21 @@ import Input from '../../components/Input.vue';
 import Toast from '../../components/Toast.vue';
 
 const route = useRoute();
-const code = ref(route.query.code);
+const code = ref(route.query.code ?? '');
 const validToken = ref(false);
 const toastRef = ref(null);
 
 const decryptToken = async () => {
-  const response = await axios.post('/forgot/token', { code: code.value });
-    
-  if (response.status === 'error') {
+  try {
+    console.log({ code: code.value });
+    const response = await axios.post('/forgot/token', { code: code.value });
+    validToken.value = true;
+    formData.iduser = response.data.iduser;
+    formData.idrecovery = response.data.idrecovery;
+  } catch (error) {
     validToken.value = false;
-    toastRef.value?.showToast(response.status, response.data);
-    return;
+    toastRef.value?.showToast(error.data.status, error.data.message);
   }
-
-  validToken.value = true;
-  formData.iduser = response.data.iduser;
-  formData.idrecovery = response.data.idrecovery;
 };
 
 onMounted(() => {

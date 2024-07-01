@@ -17,16 +17,14 @@ const formData = reactive({
 const getPasswordResetLink = async () => {
   isLoading.value = true;
 
-  const response = await axios.post('/forgot', formData);
-
-  isLoading.value = false;
-
-  if (response.status === 'error') {
-    toastRef.value?.showToast(response.status, response.data);
-    return;
+  try {
+    const response = await axios.post('/forgot', formData);
+    toastRef.value?.showToast(response.status, response.message);
+  } catch (error) {
+    toastRef.value?.showToast(error.data.status, error.data.message);
   }
 
-  toastRef.value?.showToast(response.status, response.data);
+  isLoading.value = false;
 };
 
 const rules = computed(() => {
