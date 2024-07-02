@@ -74,6 +74,7 @@ const submitForm = async (event) => {
         <h1 class="text-gray-800 font-bold font-sans text-2xl mt-5">
           Bem-vindo!
         </h1>
+        
         <span class="font-sans text-sm text-secondary my-2">
           Faça login para usar nossa plataforma
         </span>
@@ -101,7 +102,11 @@ const submitForm = async (event) => {
           class="mb-7"
         />
 
-        <Button :is-loading="isLoading" class="mb-5">
+        <Button
+          :is-loading="isLoading"
+          :disabled="isLoading"
+          class="mb-5"
+        >
           Entrar na plataforma
         </Button>
 
