@@ -69,7 +69,11 @@ const submitForm = async (event) => {
           placeholder="johndoe@email.com"
         />
 
-        <Button :is-loading="isLoading" class="my-5">
+        <Button
+          class="my-5"
+          :disabled="isLoading"
+          :is-loading="isLoading"
+        >
           Enviar link de recuperação
         </Button>
 

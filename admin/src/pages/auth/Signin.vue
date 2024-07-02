@@ -103,9 +103,9 @@ const submitForm = async (event) => {
         />
 
         <Button
-          :is-loading="isLoading"
+          class="my-5"
           :disabled="isLoading"
-          class="mb-5"
+          :is-loading="isLoading"
         >
           Entrar na plataforma
         </Button>

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router'; 
+import { useRoute, useRouter } from 'vue-router'; 
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, helpers } from '@vuelidate/validators';
 import axios from '../../api/axios';
@@ -10,31 +10,33 @@ import Input from '../../components/Input.vue';
 import Toast from '../../components/Toast.vue';
 
 const route = useRoute();
-const code = ref(route.query.code ?? '');
-const validToken = ref(false);
-const toastRef = ref(null);
-
-const decryptToken = async () => {
-  try {
-    console.log({ code: code.value });
-    const response = await axios.post('/forgot/token', { code: code.value });
-    validToken.value = true;
-    formData.iduser = response.data.iduser;
-    formData.idrecovery = response.data.idrecovery;
-  } catch (error) {
-    validToken.value = false;
-    toastRef.value?.showToast(error.data.status, error.data.message);
-  }
-};
-
-onMounted(() => {
-  decryptToken();
-});
-
+const router = useRouter();
+const toastRef = ref(undefined);
 const formData = reactive({
   iduser: '',
   idrecovery: '',
   despassword: ''
+});
+
+const decryptToken = async (code) => {
+  try {
+    const response = await axios.post('/forgot/token', { code: code });
+    formData.iduser = response.data.iduser;
+    formData.idrecovery = response.data.idrecovery;
+  } catch (error) {
+    toastRef.value?.showToast(error.data.status, error.data.message);
+  }
+};
+
+onMounted(async () => {
+  const code = route.query.code;
+
+  if (!code) {
+    router.push('/signin');
+    return;
+  }
+
+  await decryptToken(code);
 });
 
 const isLoading = ref(false);
@@ -42,18 +44,15 @@ const isLoading = ref(false);
 const resetPassword = async () => {
   isLoading.value = true;
 
-  const response = await axios.post('/forgot/reset', formData);
-
-  isLoading.value = false;
-
-  if (response.status === 'error') {
+  try {
+    const response = await axios.post('/forgot/reset', formData);
     toastRef.value?.showToast(response.status, response.data);
-    return;
+    formData.despassword = '';
+  } catch (error) {
+    toastRef.value?.showToast(error.data.status, error.data.message);
   }
 
-  toastRef.value?.showToast(response.status, response.data);
-
-  formData.despassword = '';
+  isLoading.value = false;
 };
 
 const customPasswordValidator = helpers.regex('passwordValidator', /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/);
@@ -76,12 +75,7 @@ const submitForm = async (event) => {
   const isFormCorrect = await v$.value.$validate();
 
   if (!isFormCorrect) {
-    toastRef.value?.showToast('error', 'Sua senha deve conter pelo menos 6 caracteres, um numero, letra maiúscula e minúscula');
-    return;
-  } 
-
-  if (!validToken.value) {
-    toastRef.value?.showToast('error', 'Token de redefinição de senha inválido');
+    toastRef.value?.showToast('error', 'Sua senha deve conter pelo menos 6 caracteres, um número, letra maiúscula e minúscula');
     return;
   }
 
@@ -109,7 +103,11 @@ const submitForm = async (event) => {
           placeholder="**********"
         />
 
-        <Button :is-loading="isLoading" class="my-5">
+        <Button
+          class="my-5"
+          :disabled="isLoading"
+          :is-loading="isLoading"
+        >
           Redefinir senha
         </Button>
 
