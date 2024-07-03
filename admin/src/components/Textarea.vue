@@ -1,0 +1,48 @@
+<script setup>
+const emit = defineEmits(['update:modelValue', 'onKeyupEnter']);
+
+const props = defineProps({
+  disabled: {
+    type: Boolean
+  },
+  type: { 
+    type: String, 
+    default: '' 
+  },
+  label: { 
+    type: String, 
+    default: '' 
+  },
+  rows: { 
+    type: Number, 
+    default: 5 
+  },
+  placeholder: { 
+    type: String, 
+    default: '' 
+  },
+  modelValue: { 
+    type: [ String, Number ], 
+    default: null 
+  }
+});
+
+const updateValue = (event) => {
+  emit('update:modelValue', event.target.value);
+};
+</script>
+
+<template>
+  <label class="text-secondary">
+    {{ label }}
+  </label>
+  <textarea
+    :rows="rows"
+    :type="type"
+    :value="modelValue"
+    :placeholder="placeholder"
+    :disabled="disabled"
+    @input="updateValue"
+    :class="['text-font placeholder:text-secondary bg-white border text-base w-full resize-none rounded-lg p-4 focus:border-none focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed', { 'mt-2 mb-5': true }]"
+  />
+</template>
