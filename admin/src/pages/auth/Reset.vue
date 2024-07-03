@@ -11,7 +11,7 @@ import Toast from '../../components/Toast.vue';
 
 const route = useRoute();
 const router = useRouter();
-const toastRef = ref(undefined);
+const toastRef = ref(null);
 const formData = reactive({
   iduser: '',
   idrecovery: '',

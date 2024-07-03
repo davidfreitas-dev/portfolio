@@ -51,7 +51,7 @@ const rules = computed(() => {
 
 const v$ = useVuelidate(rules, formData);
 
-const toastRef = ref(undefined);
+const toastRef = ref(null);
 
 const submitForm = async (event) => {
   event.preventDefault();

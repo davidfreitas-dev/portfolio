@@ -9,7 +9,7 @@ import Pagination from '../components/Pagination.vue';
 import Loader from '../components/Loader.vue';
 import Toast from '../components/Toast.vue';
 
-const toastRef = ref(undefined);
+const toastRef = ref(null);
 const isLoading = ref(false);
 const techs = ref([]);
 const tableHead = reactive(['#', 'ID', 'Tecnologia']);
@@ -25,7 +25,7 @@ const loadData = async () => {
     }
   } catch (error) {
     console.log(error);
-    toastRef.value?.showToast('error', 'Falha ao carregar experiências.');
+    toastRef.value?.showToast('error', 'Falha ao carregar tecnologias.');
   }
 
   isLoading.value = false;

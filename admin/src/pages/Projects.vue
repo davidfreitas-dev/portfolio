@@ -9,7 +9,7 @@ import Pagination from '../components/Pagination.vue';
 import Loader from '../components/Loader.vue';
 import Toast from '../components/Toast.vue';
 
-const toastRef = ref(undefined);
+const toastRef = ref(null);
 const isLoading = ref(false);
 const projects = ref([]);
 const tableHead = reactive(['#', 'ID', 'Nome', 'Descrição', 'Data']);
@@ -53,7 +53,7 @@ onMounted(async () => {
     <Wrapper>
       <div class="text-center text-secondary my-10">
         <Loader v-if="isLoading" color="primary" />
-        <span v-else>Nenhuma tecnologia encontrada.</span>
+        <span v-else>Nenhum projeto encontrado.</span>
       </div>
 
       <div v-if="!isLoading && projects.length" class="data-table relative overflow-x-auto my-3">
