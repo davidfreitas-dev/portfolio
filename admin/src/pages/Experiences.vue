@@ -1,36 +1,39 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
+import axios from '../api/axios';
 import MainContainer from '../components/MainContainer.vue';
 import Breadcrumb from '../components/Breadcrumb.vue';
 import Wrapper from '../components/Wrapper.vue';
 import Button from '../components/Button.vue';
 import Pagination from '../components/Pagination.vue';
+import Loader from '../components/Loader.vue';
+import Toast from '../components/Toast.vue';
 
+const toastRef = ref(undefined);
+const isLoading = ref(false);
+const experiences = ref([]);
 const tableHead = reactive(['#', 'ID', 'Título', 'Descrição', 'Início', 'Fim']);
 
-const experiences = ref([
-  {
-    idexperience: 1,
-    destitle: 'Desenvolvedor Frontend',
-    desdescription: 'Trabalhei em projetos de desenvolvimento de interfaces.',
-    dtstart: '01/01/2020',
-    dtend: '31/12/2020'
-  },
-  {
-    idexperience: 2,
-    destitle: 'Engenheiro de Software',
-    desdescription: 'Desenvolvi sistemas backend escaláveis.',
-    dtstart: '01/01/2021',
-    dtend: '31/12/2021'
-  },
-  {
-    idexperience: 3,
-    destitle: 'Gerente de Projetos',
-    desdescription: 'Gerenciei equipes de desenvolvimento e entreguei projetos dentro do prazo.',
-    dtstart: '01/01/2022',
-    dtend: '31/12/2022'
+const loadData = async () => {
+  isLoading.value = true;
+
+  try {
+    const response = await axios.get('/experiences');
+    
+    if (response) {
+      experiences.value = response.data;
+    }
+  } catch (error) {
+    console.log(error);
+    toastRef.value?.showToast('error', 'Falha ao carregar experiências.');
   }
-]);
+
+  isLoading.value = false;
+};
+
+onMounted(async () => {
+  await loadData();
+});
 </script>
 
 <template>
@@ -48,7 +51,9 @@ const experiences = ref([
     </Breadcrumb>
 
     <Wrapper>
-      <div class="data-table relative overflow-x-auto my-3">
+      <Loader v-if="isLoading" />
+
+      <div v-if="!isLoading && experiences.length" class="data-table relative overflow-x-auto my-3">
         <table class="w-full text-left text-gray-500">
           <thead class="border-b text-gray-500">
             <tr>
@@ -99,11 +104,18 @@ const experiences = ref([
         </table>
       </div>
 
-      <Pagination
+      <Pagination 
+        v-if="!isLoading && experiences.length"
         ref="paginationRef"
         :total-pages="2"
         :total-items="10"
       />
+
+      <div v-if="!isLoading && !experiences.length" class="text-center text-secondary my-10">
+        Nenhuma experiência encontrada.
+      </div>
     </Wrapper>
+
+    <Toast ref="toastRef" />
   </MainContainer>
 </template>

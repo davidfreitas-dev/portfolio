@@ -1,36 +1,39 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
+import axios from '../api/axios';
 import MainContainer from '../components/MainContainer.vue';
 import Breadcrumb from '../components/Breadcrumb.vue';
 import Wrapper from '../components/Wrapper.vue';
 import Button from '../components/Button.vue';
 import Pagination from '../components/Pagination.vue';
+import Loader from '../components/Loader.vue';
+import Toast from '../components/Toast.vue';
 
+const toastRef = ref(undefined);
+const isLoading = ref(false);
+const projects = ref([]);
 const tableHead = reactive(['#', 'ID', 'Nome', 'Descrição', 'Data']);
 
-const projects = ref([
-  {
-    idproject: 1,
-    destitle: 'Blog',
-    desdescription: 'Desenvolvimento de interfaces para um blog.',
-    desimage: '',
-    dtcreation: '31/12/2020'
-  },
-  {
-    idproject: 2,
-    destitle: 'E-commerce',
-    desdescription: 'Desenvolvimento de sistemas backend escaláveis para uma plataforma de e-commerce.',
-    desimage: '',
-    dtcreation: '31/12/2021'
-  },
-  {
-    idproject: 3,
-    destitle: 'News App',
-    desdescription: 'Gerenciamento de equipes de desenvolvimento e entrega de um aplicativo de notícias dentro do prazo.',
-    desimage: '',
-    dtcreation: '31/12/2022'
+const loadData = async () => {
+  isLoading.value = true;
+
+  try {
+    const response = await axios.get('/projects');
+    
+    if (response) {
+      projects.value = response.data;
+    }
+  } catch (error) {
+    console.log(error);
+    toastRef.value?.showToast('error', 'Falha ao carregar projetos.');
   }
-]);
+
+  isLoading.value = false;
+};
+
+onMounted(async () => {
+  await loadData();
+});
 </script>
 
 <template>
@@ -48,7 +51,9 @@ const projects = ref([
     </Breadcrumb>
 
     <Wrapper>
-      <div class="data-table relative overflow-x-auto my-3">
+      <Loader v-if="isLoading" />
+
+      <div v-if="!isLoading && projects.length" class="data-table relative overflow-x-auto my-3">
         <table class="w-full text-left text-gray-500">
           <thead class="border-b text-gray-500">
             <tr>
@@ -102,10 +107,17 @@ const projects = ref([
       </div>
 
       <Pagination
+        v-if="!isLoading && projects.length"
         ref="paginationRef"
         :total-pages="2"
         :total-items="10"
       />
+
+      <div v-if="!isLoading && !projects.length" class="text-center text-secondary my-10">
+        Nenhum projeto encontrado.
+      </div>
     </Wrapper>
+
+    <Toast ref="toastRef" />
   </MainContainer>
 </template>

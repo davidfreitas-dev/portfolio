@@ -1,30 +1,39 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
+import axios from '../api/axios';
 import MainContainer from '../components/MainContainer.vue';
 import Breadcrumb from '../components/Breadcrumb.vue';
 import Wrapper from '../components/Wrapper.vue';
 import Button from '../components/Button.vue';
 import Pagination from '../components/Pagination.vue';
+import Loader from '../components/Loader.vue';
+import Toast from '../components/Toast.vue';
 
+const toastRef = ref(undefined);
+const isLoading = ref(false);
+const techs = ref([]);
 const tableHead = reactive(['#', 'ID', 'Tecnologia']);
 
-const techs = ref([
-  {
-    idtechnology: 1,
-    desname: 'HTML',
-    desimage: 'https://cdn-icons-png.flaticon.com/256/174/174854.png',
-  },
-  {
-    idtechnology: 2,
-    desname: 'CSS',
-    desimage: 'https://cdn-icons-png.flaticon.com/256/732/732190.png'
-  },
-  {
-    idtechnology: 3,
-    desname: 'JavaScript',
-    desimage: 'https://cdn-icons-png.flaticon.com/512/5968/5968292.png',
+const loadData = async () => {
+  isLoading.value = true;
+
+  try {
+    const response = await axios.get('/experiences');
+    
+    if (response) {
+      techs.value = response.data;
+    }
+  } catch (error) {
+    console.log(error);
+    toastRef.value?.showToast('error', 'Falha ao carregar experiências.');
   }
-]);
+
+  isLoading.value = false;
+};
+
+onMounted(async () => {
+  await loadData();
+});
 </script>
 
 <template>
@@ -42,7 +51,9 @@ const techs = ref([
     </Breadcrumb>
 
     <Wrapper>
-      <div class="data-table relative overflow-x-auto my-3">
+      <Loader v-if="isLoading" />
+
+      <div v-if="!isLoading && experiences.length" class="data-table relative overflow-x-auto my-3">
         <table class="w-full text-left text-gray-500">
           <thead class="border-b text-gray-500">
             <tr>
@@ -86,10 +97,17 @@ const techs = ref([
       </div>
 
       <Pagination
+        v-if="!isLoading && experiences.length"
         ref="paginationRef"
         :total-pages="2"
         :total-items="10"
       />
+
+      <div v-if="!isLoading && !experiences.length" class="text-center text-secondary my-10">
+        Nenhuma tecnologia encontrada.
+      </div>
     </Wrapper>
+
+    <Toast ref="toastRef" />
   </MainContainer>
 </template>
