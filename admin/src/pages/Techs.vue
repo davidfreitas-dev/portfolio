@@ -18,7 +18,7 @@ const loadData = async () => {
   isLoading.value = true;
 
   try {
-    const response = await axios.get('/experiences');
+    const response = await axios.get('/technologies');
     
     if (response) {
       techs.value = response.data;
@@ -51,9 +51,12 @@ onMounted(async () => {
     </Breadcrumb>
 
     <Wrapper>
-      <Loader v-if="isLoading" />
+      <div class="text-center text-secondary my-10">
+        <Loader v-if="isLoading" color="primary" />
+        <span v-else>Nenhuma tecnologia encontrada.</span>
+      </div>
 
-      <div v-if="!isLoading && experiences.length" class="data-table relative overflow-x-auto my-3">
+      <div v-if="!isLoading && techs.length" class="data-table relative overflow-x-auto my-3">
         <table class="w-full text-left text-gray-500">
           <thead class="border-b text-gray-500">
             <tr>
@@ -97,15 +100,11 @@ onMounted(async () => {
       </div>
 
       <Pagination
-        v-if="!isLoading && experiences.length"
+        v-if="!isLoading && techs.length"
         ref="paginationRef"
         :total-pages="2"
         :total-items="10"
       />
-
-      <div v-if="!isLoading && !experiences.length" class="text-center text-secondary my-10">
-        Nenhuma tecnologia encontrada.
-      </div>
     </Wrapper>
 
     <Toast ref="toastRef" />

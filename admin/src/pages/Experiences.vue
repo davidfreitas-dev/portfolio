@@ -51,7 +51,10 @@ onMounted(async () => {
     </Breadcrumb>
 
     <Wrapper>
-      <Loader v-if="isLoading" />
+      <div class="text-center text-secondary my-10">
+        <Loader v-if="isLoading" color="primary" />
+        <span v-else>Nenhuma tecnologia encontrada.</span>
+      </div>
 
       <div v-if="!isLoading && experiences.length" class="data-table relative overflow-x-auto my-3">
         <table class="w-full text-left text-gray-500">
@@ -110,10 +113,6 @@ onMounted(async () => {
         :total-pages="2"
         :total-items="10"
       />
-
-      <div v-if="!isLoading && !experiences.length" class="text-center text-secondary my-10">
-        Nenhuma experiência encontrada.
-      </div>
     </Wrapper>
 
     <Toast ref="toastRef" />
