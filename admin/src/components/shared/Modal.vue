@@ -98,7 +98,7 @@ defineExpose({
                       </button>
                     </div>
 
-                    <div class="modal-body my-5">
+                    <div class="modal-body overflow-y-auto my-5 px-0.5">
                       <slot />
                     </div>
                   </div>
@@ -111,3 +111,16 @@ defineExpose({
     </Dialog>
   </TransitionRoot>
 </template>
+
+<style scoped>
+.modal-body {
+  overflow-y: auto; /* Garante que o scroll vertical funcione */
+  -webkit-overflow-scrolling: touch; /* Melhora o desempenho de rolagem em dispositivos móveis */
+}
+
+/* Oculta a barra de rolagem */
+.modal-body::-webkit-scrollbar {
+  display: none;
+}
+
+</style>

@@ -1,13 +1,13 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import axios from '../api/axios';
-import MainContainer from '../components/MainContainer.vue';
-import Breadcrumb from '../components/Breadcrumb.vue';
-import Wrapper from '../components/Wrapper.vue';
-import Button from '../components/Button.vue';
-import Pagination from '../components/Pagination.vue';
-import Loader from '../components/Loader.vue';
-import Toast from '../components/Toast.vue';
+import MainContainer from '../components/shared/MainContainer.vue';
+import Breadcrumb from '../components/shared/Breadcrumb.vue';
+import Wrapper from '../components/shared/Wrapper.vue';
+import Button from '../components/shared/Button.vue';
+import Pagination from '../components/shared/Pagination.vue';
+import Loader from '../components/shared/Loader.vue';
+import Toast from '../components/shared/Toast.vue';
 
 const toastRef = ref(null);
 const isLoading = ref(false);

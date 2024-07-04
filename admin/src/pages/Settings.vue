@@ -3,12 +3,12 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { jwtDecode } from 'jwt-decode';
 import { useSessionStore } from '../stores/session';
-import MainContainer from '../components/MainContainer.vue';
-import Breadcrumb from '../components/Breadcrumb.vue';
-import Wrapper from '../components/Wrapper.vue';
-import Input from '../components/Input.vue';
-import Button from '../components/Button.vue';
-import Toast from '../components/Toast.vue';
+import MainContainer from '../components/shared/MainContainer.vue';
+import Breadcrumb from '../components/shared/Breadcrumb.vue';
+import Wrapper from '../components/shared/Wrapper.vue';
+import Input from '../components/shared/Input.vue';
+import Button from '../components/shared/Button.vue';
+import Toast from '../components/shared/Toast.vue';
 
 const router = useRouter();
 const storeSession = useSessionStore();

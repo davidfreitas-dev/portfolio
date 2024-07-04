@@ -6,11 +6,11 @@ import { required, email } from '@vuelidate/validators';
 import { jwtDecode } from 'jwt-decode';
 import { useSessionStore } from '../../stores/session';
 import axios from '../../api/axios';
-import Wrapper from '../../components/Wrapper.vue';
-import Button from '../../components/Button.vue';
-import Checkbox from '../../components/Checkbox.vue';
-import Input from '../../components/Input.vue';
-import Toast from '../../components/Toast.vue';
+import Wrapper from '../../components/shared/Wrapper.vue';
+import Button from '../../components/shared/Button.vue';
+import Checkbox from '../../components/shared/Checkbox.vue';
+import Input from '../../components/shared/Input.vue';
+import Toast from '../../components/shared/Toast.vue';
 
 const storeSession = useSessionStore();
 const router = useRouter();

@@ -1,13 +1,15 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import axios from '../api/axios';
-import MainContainer from '../components/MainContainer.vue';
-import Breadcrumb from '../components/Breadcrumb.vue';
-import Wrapper from '../components/Wrapper.vue';
-import Button from '../components/Button.vue';
-import Pagination from '../components/Pagination.vue';
-import Loader from '../components/Loader.vue';
-import Toast from '../components/Toast.vue';
+import MainContainer from '../components/shared/MainContainer.vue';
+import Breadcrumb from '../components/shared/Breadcrumb.vue';
+import Wrapper from '../components/shared/Wrapper.vue';
+import Pagination from '../components/shared/Pagination.vue';
+import Button from '../components/shared/Button.vue';
+import Loader from '../components/shared/Loader.vue';
+import Toast from '../components/shared/Toast.vue';
+import Modal from '../components/shared/Modal.vue';
+import ExperiencesForm from '../components/forms/ExperiencesForm.vue';
 
 const toastRef = ref(null);
 const isLoading = ref(false);
@@ -34,12 +36,18 @@ const loadData = async () => {
 onMounted(async () => {
   await loadData();
 });
+
+const modalRef = ref(null);
+
+const showModal = () => {
+  modalRef.value?.setOpen();
+};
 </script>
 
 <template>
   <MainContainer>
     <Breadcrumb title="Experiências" description="Adicione suas experiências profissionais ou colaborações em projetos.">
-      <Button>
+      <Button @click="showModal">
         <span class="material-icons">
           add
         </span>
@@ -114,6 +122,14 @@ onMounted(async () => {
         :total-items="10"
       />
     </Wrapper>
+
+    <Modal
+      ref="modalRef"
+      title="Experiências"
+      @on-modal-close="loadData"
+    >
+      <ExperiencesForm />
+    </Modal>
 
     <Toast ref="toastRef" />
   </MainContainer>

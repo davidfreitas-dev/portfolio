@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { RouterView } from 'vue-router';
 import { useSessionStore } from './stores/session';
-import Sidebar from './components/Sidebar.vue';
+import Sidebar from './components/shared/Sidebar.vue';
 
 const storeSession = useSessionStore();
 

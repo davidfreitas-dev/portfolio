@@ -3,10 +3,10 @@ import { ref, reactive, computed } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, email } from '@vuelidate/validators';
 import axios from '../../api/axios';
-import Wrapper from '../../components/Wrapper.vue';
-import Button from '../../components/Button.vue';
-import Input from '../../components/Input.vue';
-import Toast from '../../components/Toast.vue';
+import Wrapper from '../../components/shared/Wrapper.vue';
+import Button from '../../components/shared/Button.vue';
+import Input from '../../components/shared/Input.vue';
+import Toast from '../../components/shared/Toast.vue';
 
 const toastRef = ref(null);
 const isLoading = ref(false);
