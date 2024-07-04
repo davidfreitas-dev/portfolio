@@ -4,7 +4,7 @@ import axios from '../../api/axios';
 import Button from '../shared/Button.vue';
 import Input from '../shared/Input.vue';
 import Textarea from '../shared/Textarea.vue';
-import Select from '../shared/Select.vue';
+import InputDate from '../shared/InputDate.vue';
 
 const months = [
   'Janeiro', 
@@ -33,9 +33,9 @@ const months = [
     placeholder="Descrição da experiência" 
   />
 
-  <Select label="Início" :options="months" />
+  <InputDate label="Data de início" date-format="MM/YYYY" />
 
-  <Select label="Fim" :options="months" />
+  <InputDate label="Data do fim" date-format="MM/YYYY" />
 
   <div class="flex flex-row-reverse">
     <Button class="mt-5">
