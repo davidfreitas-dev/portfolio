@@ -33,7 +33,7 @@ const updateValue = (event) => {
 </script>
 
 <template>
-  <label class="text-secondary">
+  <label class="text-font font-semibold">
     {{ label }}
   </label>
   <textarea
@@ -43,6 +43,6 @@ const updateValue = (event) => {
     :placeholder="placeholder"
     :disabled="disabled"
     @input="updateValue"
-    :class="['text-font placeholder:text-secondary bg-white border text-base w-full resize-none rounded-lg p-4 focus:border-none focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed', { 'mt-2 mb-5': true }]"
+    :class="['text-font placeholder:text-gray-300 bg-white border text-base w-full resize-none rounded-lg p-4 focus:border-none focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed', { 'mt-2 mb-5': true }]"
   />
 </template>

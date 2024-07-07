@@ -59,7 +59,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div ref="selectboxRef" class="relative text-font">
-    <label class="text-secondary">
+    <label class="text-font font-semibold">
       {{ label }}
     </label>
 

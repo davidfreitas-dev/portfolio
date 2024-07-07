@@ -29,11 +29,11 @@ const updateValue = (event) => {
 </script>
 
 <template>
-  <label class="text-secondary">
+  <label class="text-font font-semibold">
     {{ label }}
   </label>
   <input
-    :class="['text-font placeholder:text-secondary bg-white border text-base w-full h-[52px] rounded-lg px-4 focus:border-none focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed', { 'mt-2 mb-5': label }]"
+    :class="['text-font placeholder:text-gray-300 bg-white border text-base w-full h-[52px] rounded-lg px-4 focus:border-none focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed', { 'mt-2 mb-5': label }]"
     :type="type"
     :value="modelValue"
     :placeholder="placeholder"
