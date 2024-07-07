@@ -1,7 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { jwtDecode } from 'jwt-decode';
+import { useVuelidate } from '@vuelidate/core';
+import { required, email, minLength } from '@vuelidate/validators';
 import { useSessionStore } from '../stores/session';
 import MainContainer from '../components/shared/MainContainer.vue';
 import Breadcrumb from '../components/shared/Breadcrumb.vue';
@@ -12,6 +14,7 @@ import Toast from '../components/shared/Toast.vue';
 
 const router = useRouter();
 const storeSession = useSessionStore();
+const isLoading = ref(false);
 const toastRef = ref(null);
 const userData = ref({});
 
@@ -33,6 +36,21 @@ const logout = () => {
   storeSession.clearSession();
   router.push('/signin'); 
 };
+
+const rules = computed(() => {
+  return {
+    deslogin: { required },
+    desperson: { required },
+    desemail: { required, email },
+    nrphone: { minLength: minLength(11) }
+  };
+});
+
+const v$ = useVuelidate(rules, userData);
+
+const isFormValid = computed(() => {
+  return v$.value.$pending || v$.value.$invalid;
+});
 </script>
 
 <template>
@@ -76,7 +94,7 @@ const logout = () => {
         />
 
         <div class="flex flex-row-reverse mt-4">
-          <Button>
+          <Button :is-loading="isLoading" :disabled="isLoading || isFormValid">
             Salvar Alterações
           </Button>
         </div>
