@@ -109,12 +109,6 @@ const submitForm = async (event) => {
           placeholder="johndoe@email.com"
         />
 
-        <Input
-          v-model="userData.nrphone"
-          label="Telefone"
-          placeholder="(11)99999-9999"
-        />
-
         <div class="flex flex-row-reverse mt-4">
           <Button :is-loading="isLoading" :disabled="isLoading || isFormValid">
             Salvar Alterações

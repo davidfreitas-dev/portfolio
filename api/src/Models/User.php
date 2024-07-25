@@ -168,7 +168,7 @@ class User {
 				":iduser"=>$iduser,
 				":desperson"=>$user['desperson'],
 				":deslogin"=>$user['deslogin'],
-				":despassword"=>User::getPasswordHash($user['despassword']),
+				":despassword"=>$user['despassword'],
 				":desemail"=>$user['desemail'],
 				":nrphone"=>$user['nrphone'],
 				":nrcpf"=>$user['nrcpf'],
