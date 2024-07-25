@@ -78,6 +78,8 @@ class Database {
 
       $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+      $stmt->closeCursor();
+
       $this->conn->commit();
 
       return $results;
