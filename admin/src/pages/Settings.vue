@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 import { useVuelidate } from '@vuelidate/core';
 import { required, email, minLength } from '@vuelidate/validators';
 import { useSessionStore } from '../stores/session';
+import axios from '../api/axios';
 import MainContainer from '../components/shared/MainContainer.vue';
 import Breadcrumb from '../components/shared/Breadcrumb.vue';
 import Wrapper from '../components/shared/Wrapper.vue';
@@ -51,6 +52,27 @@ const v$ = useVuelidate(rules, userData);
 const isFormValid = computed(() => {
   return v$.value.$pending || v$.value.$invalid;
 });
+
+const save = async () => {
+  const userId = userData.value.iduser;
+
+  try {
+    const response = await axios.put(`/users/update/${userId}`, userData.value);
+    toastRef.value?.showToast(response.status, response.message);
+  } catch (error) {
+    toastRef.value?.showToast(error.data.status, error.data.message);
+  }
+};
+
+const submitForm = async (event) => {
+  event.preventDefault();
+
+  isLoading.value = true;
+
+  await save();
+
+  isLoading.value = false;
+};
 </script>
 
 <template>
@@ -68,7 +90,7 @@ const isFormValid = computed(() => {
     </Breadcrumb>
     
     <Wrapper>
-      <form class="form flex flex-col px-4 my-10">
+      <form class="form flex flex-col px-4 my-10" @submit="submitForm">
         <Input
           v-model="userData.deslogin"
           label="Nome de usuário"

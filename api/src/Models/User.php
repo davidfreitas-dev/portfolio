@@ -149,7 +149,7 @@ class User {
 	public static function update($iduser, $user) 
 	{
 		
-		$sql = "CALL sp_usersupdate_save(
+		$sql = "CALL sp_users_update(
               :iduser, 
               :desperson, 
               :deslogin, 
