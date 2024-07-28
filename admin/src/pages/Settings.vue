@@ -58,6 +58,7 @@ const save = async () => {
 
   try {
     const response = await axios.put(`/users/update/${userId}`, userData.value);
+    await storeSession.setSession({ token: response.data });
     toastRef.value?.showToast(response.status, response.message);
   } catch (error) {
     toastRef.value?.showToast(error.data.status, error.data.message);

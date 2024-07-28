@@ -79,7 +79,7 @@ class Auth {
       $token = self::generateToken($results[0]);
 
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::NOT_FOUND,
+        HTTPStatus::OK,
         "error", 
         "Usuário autenticado com sucesso",
         $token
