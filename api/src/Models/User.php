@@ -180,7 +180,7 @@ class User {
 				":inadmin"=>$user['inadmin']
 			));
 
-      $token = self::generateToken($results);
+      $token = self::generateToken($results[0]);
 
 			return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 

@@ -65,7 +65,7 @@ class Auth {
         ":nrcpf"=>$credential
       ));
 
-      if (empty($results) || password_verify($password, $results[0]['despassword'])) {
+      if (empty($results) || !password_verify($password, $results[0]['despassword'])) {
 
         return ApiResponseFormatter::formatResponse(
           HTTPStatus::NOT_FOUND,
