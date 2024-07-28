@@ -26,12 +26,7 @@ trait TokenGenerator {
 
     $token = $header . '.' . $payload . '.' . $sign;
 
-    return ApiResponseFormatter::formatResponse(
-      HTTPStatus::OK, 
-      "success", 
-      "Autenticação efetuada com sucesso",
-      $token
-    );
+    return $token;
 
   }
   

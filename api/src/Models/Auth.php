@@ -29,16 +29,8 @@ class Auth {
         );
 
       }
-    
-      $response = User::create($data);
 
-      if ($response['status'] == 'error') {
-        
-        return $response;
-
-      }
-
-      return self::generateToken($response['data']);
+      return User::create($data);
 
     } catch (\PDOException $e) {
 
@@ -73,31 +65,25 @@ class Auth {
         ":nrcpf"=>$credential
       ));
 
-      if (empty($results)) {
+      if (empty($results) || password_verify($password, $results[0]['despassword'])) {
 
         return ApiResponseFormatter::formatResponse(
           HTTPStatus::NOT_FOUND,
           "error", 
-          "Usuário inexistente ou senha inválida.",
+          "Usuário inexistente ou senha inválida",
           null
         );
   
       }
 
-      $data = $results[0];
+      $token = self::generateToken($results[0]);
 
-      if (password_verify($password, $data['despassword'])) {
-
-        return Auth::generateToken($data);
-
-      } 
-      
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::NOT_FOUND,
         "error", 
-        "Usuário inexistente ou senha inválida.",
-        null
-      );
+        "Usuário autenticado com sucesso",
+        $token
+      );      
 
     } catch (\PDOException $e) {
       

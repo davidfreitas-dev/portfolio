@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\DB\Database;
-use App\Enums\HttpStatus as HTTPStatus;
+use App\Traits\TokenGenerator;
 use App\Utils\ApiResponseFormatter;
+use App\Enums\HttpStatus as HTTPStatus;
 
 class User {
+
+  use TokenGenerator;
 
 	public static function list() 
   { 
@@ -126,11 +129,13 @@ class User {
 				":inadmin"=>$data['inadmin']
 			));
 
+      $token = self::generateToken($results[0]);
+
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::CREATED, 
         "success", 
         "Usuário cadastrado com sucesso",
-        $results[0]
+        $token
       );
 
     } catch (\PDOException $e) {
@@ -175,11 +180,13 @@ class User {
 				":inadmin"=>$user['inadmin']
 			));
 
+      $token = self::generateToken($results);
+
 			return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 
         "success", 
         "Usuário atualizado com sucesso",
-        $results
+        $token
       );
 
 		} catch (\PDOException $e) {
