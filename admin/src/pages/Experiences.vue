@@ -11,20 +11,26 @@ import Toast from '../components/shared/Toast.vue';
 import Modal from '../components/shared/Modal.vue';
 import ExperiencesForm from '../components/forms/ExperiencesForm.vue';
 
-const toastRef = ref(null);
-const isLoading = ref(false);
-const experiences = ref([]);
 const tableHead = reactive(['#', 'ID', 'Título', 'Descrição', 'Início', 'Fim']);
+
+const page = ref(1);
+const toastRef = ref(null);
+const paginationRef = ref(null);
+const isLoading = ref(false);
+
+const changePage = (currentPage) => {
+  page.value = currentPage;
+  loadData();
+};
+
+const data = ref(null);
 
 const loadData = async () => {
   isLoading.value = true;
 
   try {
-    const response = await axios.get('/experiences');
-    
-    if (response) {
-      experiences.value = response.data;
-    }
+    const response = await axios.get(`/experiences/${page.value}`);
+    data.value = response.data ?? null;
   } catch (error) {
     console.log(error);
     toastRef.value?.showToast('error', 'Falha ao carregar experiências.');
@@ -65,10 +71,10 @@ const closeModal = () => {
     <Wrapper>
       <div class="text-center text-secondary my-10">
         <Loader v-if="isLoading" color="primary" />
-        <span v-if="!experiences.length">Nenhuma experiência encontrada.</span>
+        <span v-if="!data || !data.experiences.length">Nenhuma experiência encontrada.</span>
       </div>
 
-      <div v-if="!isLoading && experiences.length" class="data-table relative overflow-x-auto my-3">
+      <div v-if="!isLoading && data && data.experiences.length" class="data-table relative overflow-x-auto my-3">
         <table class="w-full text-left text-gray-500">
           <thead class="border-b text-gray-500">
             <tr>
@@ -85,7 +91,7 @@ const closeModal = () => {
 
           <tbody>
             <tr
-              v-for="(experience, i) in experiences"
+              v-for="(experience, i) in data.experiences"
               :key="i"
               class="border-b hover:bg-gray-50"
             >
@@ -119,11 +125,12 @@ const closeModal = () => {
         </table>
       </div>
 
-      <Pagination 
-        v-if="!isLoading && experiences.length"
+      <Pagination
+        v-if="data"
         ref="paginationRef"
-        :total-pages="2"
-        :total-items="10"
+        :total-pages="data.pages"
+        :total-items="data.total"
+        @on-page-change="changePage"
       />
     </Wrapper>
 

@@ -16,11 +16,11 @@ $app->get('/experiences', function (Request $request, Response $response) {
 
 });
 
-$app->get('/experiences/{page}', function (Request $request, Response $response, array $args) {
+$app->get('/experiences/{id}', function (Request $request, Response $response, array $args) {
 
-  $page = $args['page'];
+  $id = $args['id'];
 
-  $results = Experience::getPage($page);
+  $results = Experience::get($id);
 
   $response->getBody()->write(json_encode($results));
 
@@ -30,11 +30,11 @@ $app->get('/experiences/{page}', function (Request $request, Response $response,
 
 });
 
-$app->get('/experiences/{id}', function (Request $request, Response $response, array $args) {
+$app->get('/experiences/page/{page}', function (Request $request, Response $response, array $args) {
 
-  $id = $args['id'];
+  $page = $args['page'];
 
-  $results = Experience::get($id);
+  $results = Experience::getPage($page);
 
   $response->getBody()->write(json_encode($results));
 

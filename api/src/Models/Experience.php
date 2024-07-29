@@ -130,7 +130,7 @@ class Experience
         "success", 
         "Lista de experiências",
         [
-          "items" => $results,
+          "experiences" => $results,
           "total" => (int)$resultsTotal[0]["nrtotal"],
           "pages" => ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)
         ]
