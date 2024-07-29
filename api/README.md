@@ -46,16 +46,19 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 - [User Password Reset](#user-password-reset)
 - [Experiences List](#experiences-list)
 - [Experience Details](#experience-details)
-- [Experience Create](#experience-Create)
+- [Experiences Page](#experiences-page)
+- [Experience Create](#experience-create)
 - [Experience Update](#experience-update)
 - [Experience Delete](#experience-delete)
 - [Technologies List](#technologies-list)
 - [Technology Details](#technology-details)
+- [Technologies Page](#technologies-page)
 - [Technology Create](#technology-Create)
 - [Technology Update](#technology-update)
 - [Technology Delete](#technology-delete)
 - [Projects List](#projects-list)
 - [Project Details](#project-details)
+- [Projects Page](#projects-page)
 - [Project Create/Update](#project-Create/Update)
 - [Project Delete](#project-delete)
 
@@ -166,7 +169,7 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 #### Experiences Page
 
 ```http
-  GET /experiences/page/id
+  GET /experiences/page/page
 ```
 
 | Parameter      | Type      | Description                                          |
@@ -244,6 +247,18 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 
 **Response:** Technology details
 
+#### Technologies Page
+
+```http
+  GET /technologies/page/page
+```
+
+| Parameter      | Type      | Description                                          |
+| :------------- | :-------- | :--------------------------------------------------- |
+| `page`         | `integer` | **Required**. Page number                            |
+
+**Response:** All technologies 5 items per page
+
 #### Technology Create
 
 ```http
@@ -305,6 +320,18 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 | `idproject` | `integer` | **Required**. Project ID                                |
 
 **Response:** Project details
+
+#### Projects Page
+
+```http
+  GET /projects/page/page
+```
+
+| Parameter      | Type      | Description                                          |
+| :------------- | :-------- | :--------------------------------------------------- |
+| `page`         | `integer` | **Required**. Page number                            |
+
+**Response:** All projects 5 items per page
 
 #### Project Create/Update
 

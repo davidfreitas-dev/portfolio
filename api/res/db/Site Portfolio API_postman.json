@@ -2,7 +2,7 @@
     "clientName": "Thunder Client",
     "collectionName": "Site Portfolio API",
     "collectionId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
-    "dateExported": "2024-07-28T15:06:23.437Z",
+    "dateExported": "2024-07-29T19:53:45.682Z",
     "version": "1.2",
     "folders": [],
     "requests": [
@@ -75,6 +75,45 @@
             }
         },
         {
+            "_id": "9e83e4f8-f173-4c53-b5e4-0b3fd503933e",
+            "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
+            "containerId": "",
+            "name": "Experiences Page",
+            "url": "https://api.davidfreitas.dev.br/experiences/page/1",
+            "method": "GET",
+            "sortNum": 42500,
+            "created": "2024-07-29T18:14:26.603Z",
+            "modified": "2024-07-29T19:17:12.303Z",
+            "headers": [
+                {
+                    "name": "X-Token",
+                    "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSJ9.58xCH1CNUEDJ_9NzaSBiU-Y8AzjEph_IchWwj00NVLo"
+                }
+            ]
+        },
+        {
+            "_id": "d4380ab8-78ad-46a1-acf1-3b035ae154e0",
+            "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
+            "containerId": "",
+            "name": "Experiences Update",
+            "url": "https://api.davidfreitas.dev.br/experiences/update/1",
+            "method": "PUT",
+            "sortNum": 45000,
+            "created": "2024-05-16T17:53:56.254Z",
+            "modified": "2024-07-29T12:30:46.631Z",
+            "headers": [
+                {
+                    "name": "X-Token",
+                    "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSJ9.58xCH1CNUEDJ_9NzaSBiU-Y8AzjEph_IchWwj00NVLo"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"destitle\": \"HTD Tecnologia\", \n  \"desdescription\": \"Descrição da experiência na HTD Tecnologia\", \n  \"dtstart\": \"Dez 2021\", \n  \"dtend\": \"Nov 2022\"\n}",
+                "form": []
+            }
+        },
+        {
             "_id": "6fc9e0c9-fefb-4d88-90e2-ad562e975ada",
             "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
             "containerId": "",
@@ -121,6 +160,23 @@
             ]
         },
         {
+            "_id": "3e1c4727-ed1a-4a39-8525-cd9b9de1d162",
+            "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
+            "containerId": "",
+            "name": "Technologies Page",
+            "url": "https://api.davidfreitas.dev.br/technologies/page/1",
+            "method": "GET",
+            "sortNum": 75000,
+            "created": "2024-07-29T19:49:49.107Z",
+            "modified": "2024-07-29T19:51:57.905Z",
+            "headers": [
+                {
+                    "name": "X-Token",
+                    "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSJ9.58xCH1CNUEDJ_9NzaSBiU-Y8AzjEph_IchWwj00NVLo"
+                }
+            ]
+        },
+        {
             "_id": "47018de4-d3a5-4c57-bace-c085168ad9a1",
             "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
             "containerId": "",
@@ -147,10 +203,10 @@
             "containerId": "",
             "name": "Technologies Update",
             "url": "https://api.davidfreitas.dev.br/technologies/update/1",
-            "method": "POST",
+            "method": "PUT",
             "sortNum": 90000,
             "created": "2024-05-16T17:53:56.253Z",
-            "modified": "2024-05-16T17:53:56.253Z",
+            "modified": "2024-07-29T12:31:02.491Z",
             "headers": [
                 {
                     "name": "X-Token",
@@ -159,28 +215,8 @@
             ],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"desname\": \"Angular JS\"\n}"
-            }
-        },
-        {
-            "_id": "d4380ab8-78ad-46a1-acf1-3b035ae154e0",
-            "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
-            "containerId": "",
-            "name": "Experiences Update",
-            "url": "https://api.davidfreitas.dev.br/experiences/update/1",
-            "method": "POST",
-            "sortNum": 100000,
-            "created": "2024-05-16T17:53:56.254Z",
-            "modified": "2024-05-16T17:53:56.254Z",
-            "headers": [
-                {
-                    "name": "X-Token",
-                    "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSJ9.58xCH1CNUEDJ_9NzaSBiU-Y8AzjEph_IchWwj00NVLo"
-                }
-            ],
-            "body": {
-                "type": "json",
-                "raw": "{\n  \"destitle\": \"HTD Tecnologia\", \n  \"desdescription\": \"Descrição da experiência na HTD Tecnologia\", \n  \"dtstart\": \"Dez 2021\", \n  \"dtend\": \"Nov 2022\"\n}"
+                "raw": "{\n  \"desname\": \"Angular JS\"\n}",
+                "form": []
             }
         },
         {
@@ -190,9 +226,38 @@
             "name": "Technology Delete",
             "url": "https://api.davidfreitas.dev.br/technologies/delete/1",
             "method": "DELETE",
-            "sortNum": 110000,
+            "sortNum": 95000,
             "created": "2024-05-16T17:53:56.255Z",
             "modified": "2024-05-16T17:53:56.255Z",
+            "headers": [
+                {
+                    "name": "X-Token",
+                    "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSJ9.58xCH1CNUEDJ_9NzaSBiU-Y8AzjEph_IchWwj00NVLo"
+                }
+            ]
+        },
+        {
+            "_id": "7fcda375-5041-4897-b978-b9dd6eddc8a2",
+            "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
+            "containerId": "",
+            "name": "Projects",
+            "url": "https://api.davidfreitas.dev.br/projects",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2024-05-16T17:53:56.258Z",
+            "modified": "2024-05-16T17:53:56.258Z",
+            "headers": []
+        },
+        {
+            "_id": "2a18bae4-c257-4783-8a36-11469e67d9c5",
+            "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
+            "containerId": "",
+            "name": "Project",
+            "url": "https://api.davidfreitas.dev.br/projects/1",
+            "method": "GET",
+            "sortNum": 101875,
+            "created": "2024-05-16T17:53:56.259Z",
+            "modified": "2024-05-16T17:53:56.259Z",
             "headers": [
                 {
                     "name": "X-Token",
@@ -207,9 +272,9 @@
             "name": "Projects Save",
             "url": "https://api.davidfreitas.dev.br/projects/create",
             "method": "POST",
-            "sortNum": 120000,
+            "sortNum": 115000,
             "created": "2024-05-16T17:53:56.256Z",
-            "modified": "2024-05-16T17:53:56.256Z",
+            "modified": "2024-07-29T12:36:19.377Z",
             "headers": [
                 {
                     "name": "X-Token",
@@ -217,6 +282,8 @@
                 }
             ],
             "body": {
+                "type": "formdata",
+                "raw": "",
                 "form": [
                     {
                         "name": "idproject",
@@ -234,9 +301,63 @@
                         "name": "technologies",
                         "value": "1, 2"
                     }
-                ],
-                "files": [],
-                "type": "formdata"
+                ]
+            }
+        },
+        {
+            "_id": "f850d956-3a34-4efa-bcb1-393b4c792d2d",
+            "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
+            "containerId": "",
+            "name": "Projects Page",
+            "url": "https://api.davidfreitas.dev.br/projects/page/1",
+            "method": "GET",
+            "sortNum": 118437.5,
+            "created": "2024-07-29T19:51:31.256Z",
+            "modified": "2024-07-29T19:51:31.256Z",
+            "headers": [
+                {
+                    "name": "X-Token",
+                    "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSJ9.58xCH1CNUEDJ_9NzaSBiU-Y8AzjEph_IchWwj00NVLo"
+                }
+            ]
+        },
+        {
+            "_id": "1d56505c-f31b-447f-a175-2b4e740d9143",
+            "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
+            "containerId": "",
+            "name": "Projects Update",
+            "url": "https://api.davidfreitas.dev.br/projects/update/1",
+            "method": "PUT",
+            "sortNum": 125000,
+            "created": "2024-07-29T12:32:24.705Z",
+            "modified": "2024-07-29T12:36:29.321Z",
+            "headers": [
+                {
+                    "name": "X-Token",
+                    "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSJ9.58xCH1CNUEDJ_9NzaSBiU-Y8AzjEph_IchWwj00NVLo"
+                }
+            ],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "idproject",
+                        "value": "0"
+                    },
+                    {
+                        "name": "destitle",
+                        "value": "Habits"
+                    },
+                    {
+                        "name": "desdescription",
+                        "value": "Descricao projeto Habits"
+                    },
+                    {
+                        "name": "technologies",
+                        "value": "1, 2"
+                    }
+                ]
             }
         },
         {
@@ -249,35 +370,6 @@
             "sortNum": 130000,
             "created": "2024-05-16T17:53:56.257Z",
             "modified": "2024-05-16T17:53:56.257Z",
-            "headers": [
-                {
-                    "name": "X-Token",
-                    "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSJ9.58xCH1CNUEDJ_9NzaSBiU-Y8AzjEph_IchWwj00NVLo"
-                }
-            ]
-        },
-        {
-            "_id": "7fcda375-5041-4897-b978-b9dd6eddc8a2",
-            "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
-            "containerId": "",
-            "name": "Projects",
-            "url": "https://api.davidfreitas.dev.br/projects",
-            "method": "GET",
-            "sortNum": 140000,
-            "created": "2024-05-16T17:53:56.258Z",
-            "modified": "2024-05-16T17:53:56.258Z",
-            "headers": []
-        },
-        {
-            "_id": "2a18bae4-c257-4783-8a36-11469e67d9c5",
-            "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
-            "containerId": "",
-            "name": "Project",
-            "url": "https://api.davidfreitas.dev.br/projects/1",
-            "method": "GET",
-            "sortNum": 150000,
-            "created": "2024-05-16T17:53:56.259Z",
-            "modified": "2024-05-16T17:53:56.259Z",
             "headers": [
                 {
                     "name": "X-Token",
@@ -376,5 +468,5 @@
             ]
         }
     ],
-    "ref": "6oGJglh4QjAoLT0zc3O8U4WXuKA651pJxNvZv4p7LDet69QDs0H0XNCgAE9yKISeXoq5Hw3zacgoAKQQFwK65g"
+    "ref": "6oGJglh4QjAoLT0zc3O8UwY4N71Zjg9tthsoYKPaVk0-k7lB0xLHki3uX93JptsrzPNEo20jzG24aQZ5TubRPg"
 }
