@@ -65,7 +65,7 @@ const closeModal = () => {
     <Wrapper>
       <div class="text-center text-secondary my-10">
         <Loader v-if="isLoading" color="primary" />
-        <span v-else>Nenhuma experiência encontrada.</span>
+        <span v-if="!experiences.length">Nenhuma experiência encontrada.</span>
       </div>
 
       <div v-if="!isLoading && experiences.length" class="data-table relative overflow-x-auto my-3">

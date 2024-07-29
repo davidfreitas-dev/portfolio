@@ -16,6 +16,20 @@ $app->get('/experiences', function (Request $request, Response $response) {
 
 });
 
+$app->get('/experiences/{page}', function (Request $request, Response $response, array $args) {
+
+  $page = $args['page'];
+
+  $results = Experience::getPage($page);
+
+  $response->getBody()->write(json_encode($results));
+
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
+
+});
+
 $app->get('/experiences/{id}', function (Request $request, Response $response, array $args) {
 
   $id = $args['id'];

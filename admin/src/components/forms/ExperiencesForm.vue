@@ -45,6 +45,8 @@ const formatDate = async (dateStr) => {
 const toastRef = ref(null);
 
 const save = async (experience) => {
+  isLoading.value = true;
+
   try {
     const response = await axios.post('/experiences/create', experience);
     toastRef.value?.showToast(response.status, response.message);
@@ -52,6 +54,8 @@ const save = async (experience) => {
   } catch (error) {
     toastRef.value?.showToast(error.data.status, error.data.message);
   }
+  
+  isLoading.value = false;
 };
 
 const submitForm = async (event) => {
