@@ -205,7 +205,7 @@
             "colId": "34531dcd-7a4b-46da-8e8d-d75ae907fad0",
             "containerId": "",
             "name": "Projects Save",
-            "url": "https://api.davidfreitas.dev.br/projects/save",
+            "url": "https://api.davidfreitas.dev.br/projects/create",
             "method": "POST",
             "sortNum": 120000,
             "created": "2024-05-16T17:53:56.256Z",

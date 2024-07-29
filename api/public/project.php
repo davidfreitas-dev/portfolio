@@ -30,7 +30,7 @@ $app->get('/projects/{id}', function (Request $request, Response $response, arra
 
 });
 
-$app->post('/projects/save', function (Request $request, Response $response) {
+$app->post('/projects/create', function (Request $request, Response $response) {
 
   $payload = $request->getParsedBody();
 

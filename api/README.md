@@ -297,7 +297,7 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 #### Project Create/Update
 
 ```http
-  POST /projects/save
+  POST /projects/create
 ```
 
 | Parameter        | Type      | Description                                        |

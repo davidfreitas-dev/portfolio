@@ -80,7 +80,7 @@ class Auth {
 
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK,
-        "error", 
+        "success", 
         "Usuário autenticado com sucesso",
         $token
       );      
@@ -125,11 +125,11 @@ class Auth {
 
       } 
       
-      $data = $results[0];
+      $user = $results[0];
 
       $query = $db->select(
         "CALL sp_userspasswordsrecoveries_create(:iduser, :desip)", array(
-          ":iduser"=>$data['iduser'],
+          ":iduser"=>$user['iduser'],
           ":desip"=>$_SERVER['REMOTE_ADDR']
         )
       ); 
@@ -145,18 +145,18 @@ class Auth {
 
       }
 
-      $recoveryData = $query[0];
+      $recovery = $query[0];
 
-      $code = AESCryptographer::encrypt($recoveryData);
+      $code = AESCryptographer::encrypt($recovery['idrecovery']);
 
-      $link = "http://application/forgot/reset?code=$code";
+      $link = $_ENV['BASE_URL']."/forgot/reset?code=$code";
 
       $mailer = new Mailer(
-        $data['desemail'], 
-        $data['desperson'], 
+        $user['desemail'], 
+        $user['desperson'], 
         "Redefinição de senha", 
         array(
-          "name"=>$data['desperson'],
+          "name"=>$user['desperson'],
           "link"=>$link
         )
       );				
