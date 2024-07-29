@@ -59,7 +59,7 @@ onMounted(async () => {
     <Wrapper>
       <div class="text-center text-secondary my-10">
         <Loader v-if="isLoading" color="primary" />
-        <span v-if="!isLoading && !data || !data.projects.length">
+        <span v-if="!isLoading && (!data || !data.projects.length)">
           Nenhum projeto encontrado.
         </span>
       </div>
@@ -81,7 +81,7 @@ onMounted(async () => {
 
           <tbody>
             <tr
-              v-for="(project, i) in projects"
+              v-for="(project, i) in data.projects"
               :key="i"
               class="border-b hover:bg-gray-50"
             >

@@ -9,20 +9,26 @@ import Pagination from '../components/shared/Pagination.vue';
 import Loader from '../components/shared/Loader.vue';
 import Toast from '../components/shared/Toast.vue';
 
-const toastRef = ref(null);
-const isLoading = ref(false);
-const techs = ref([]);
 const tableHead = reactive(['#', 'ID', 'Tecnologia']);
+
+const page = ref(1);
+const toastRef = ref(null);
+const paginationRef = ref(null);
+const isLoading = ref(false);
+
+const changePage = (currentPage) => {
+  page.value = currentPage;
+  loadData();
+};
+
+const data = ref(null);
 
 const loadData = async () => {
   isLoading.value = true;
 
   try {
-    const response = await axios.get('/technologies');
-    
-    if (response) {
-      techs.value = response.data;
-    }
+    const response = await axios.get(`/technologies/page/${page.value}`);
+    data.value = response.data ?? null;
   } catch (error) {
     console.log(error);
     toastRef.value?.showToast('error', 'Falha ao carregar tecnologias.');
@@ -53,10 +59,12 @@ onMounted(async () => {
     <Wrapper>
       <div class="text-center text-secondary my-10">
         <Loader v-if="isLoading" color="primary" />
-        <span v-else>Nenhuma tecnologia encontrada.</span>
+        <span v-if="!isLoading && (!data || !data.technologies.length)">
+          Nenhuma tecnologia encontrada.
+        </span>
       </div>
 
-      <div v-if="!isLoading && techs.length" class="data-table relative overflow-x-auto my-3">
+      <div v-if="!isLoading && data && data.technologies.length" class="data-table relative overflow-x-auto my-3">
         <table class="w-full text-left text-gray-500">
           <thead class="border-b text-gray-500">
             <tr>
@@ -73,7 +81,7 @@ onMounted(async () => {
 
           <tbody>
             <tr
-              v-for="(tech, i) in techs"
+              v-for="(tech, i) in data.technologies"
               :key="i"
               class="border-b hover:bg-gray-50"
             >
@@ -100,10 +108,11 @@ onMounted(async () => {
       </div>
 
       <Pagination
-        v-if="!isLoading && techs.length"
+        v-if="!isLoading && data"
         ref="paginationRef"
-        :total-pages="2"
-        :total-items="10"
+        :total-pages="data.pages"
+        :total-items="data.total"
+        @on-page-change="changePage"
       />
     </Wrapper>
 
