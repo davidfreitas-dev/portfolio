@@ -68,7 +68,7 @@ defineExpose({
 <template>
   <div class="flex flex-col md:flex-row items-center justify-between h-16 my-5 md:m-0">
     <span class="text-sm text-gray-400">
-      Exibindo 1 a 3 de {{ totalItems }} itens
+      Exibindo 1 a 5 de {{ totalItems }} itens
     </span>
 
     <nav>

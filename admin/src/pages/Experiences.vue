@@ -29,7 +29,7 @@ const loadData = async () => {
   isLoading.value = true;
 
   try {
-    const response = await axios.get(`/experiences/${page.value}`);
+    const response = await axios.get(`/experiences/page/${page.value}`);
     data.value = response.data ?? null;
   } catch (error) {
     console.log(error);
@@ -71,7 +71,9 @@ const closeModal = () => {
     <Wrapper>
       <div class="text-center text-secondary my-10">
         <Loader v-if="isLoading" color="primary" />
-        <span v-if="!data || !data.experiences.length">Nenhuma experiência encontrada.</span>
+        <span v-if="!isLoading && !data || !data.experiences.length">
+          Nenhuma experiência encontrada.
+        </span>
       </div>
 
       <div v-if="!isLoading && data && data.experiences.length" class="data-table relative overflow-x-auto my-3">
@@ -126,7 +128,7 @@ const closeModal = () => {
       </div>
 
       <Pagination
-        v-if="data"
+        v-if="!isLoading && data"
         ref="paginationRef"
         :total-pages="data.pages"
         :total-items="data.total"

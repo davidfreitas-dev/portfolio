@@ -30,7 +30,7 @@ $app->get('/technologies/{id}', function (Request $request, Response $response, 
 
 });
 
-$app->get('/experiences/page/{page}', function (Request $request, Response $response, array $args) {
+$app->get('/technologies/page/{page}', function (Request $request, Response $response, array $args) {
 
   $page = $args['page'];
 
