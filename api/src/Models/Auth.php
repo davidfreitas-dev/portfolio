@@ -149,7 +149,7 @@ class Auth {
 
       $code = AESCryptographer::encrypt($recovery['idrecovery']);
 
-      $link = $_ENV['BASE_URL']."/forgot/reset?code=$code";
+      $link = $_ENV['SITE_URL']."/forgot/reset?code=$code";
 
       $mailer = new Mailer(
         $user['desemail'], 

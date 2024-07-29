@@ -191,7 +191,7 @@ class Project
   private static function setPhoto($idproject) 
 	{
 
-    $imageUrl = $_ENV['BASE_URL']."/images/projects/".$idproject.".jpg";
+    $imageUrl = $_ENV['API_URL']."/images/projects/".$idproject.".jpg";
 
     $sql = "UPDATE tb_projects
             SET desimage = :desimage

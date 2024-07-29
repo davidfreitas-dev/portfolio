@@ -11,6 +11,7 @@ import Toast from '../../components/shared/Toast.vue';
 
 const route = useRoute();
 const router = useRouter();
+const isDisabled = ref(false);
 const toastRef = ref(null);
 const formData = reactive({
   iduser: '',
@@ -21,9 +22,11 @@ const formData = reactive({
 const decryptToken = async (code) => {
   try {
     const response = await axios.post('/forgot/token', { code: code });
+    formData.code = code;
     formData.iduser = response.data.iduser;
     formData.idrecovery = response.data.idrecovery;
   } catch (error) {
+    isDisabled.value = true;
     toastRef.value?.showToast(error.data.status, error.data.message);
   }
 };
@@ -46,7 +49,7 @@ const resetPassword = async () => {
 
   try {
     const response = await axios.post('/forgot/reset', formData);
-    toastRef.value?.showToast(response.status, response.data);
+    toastRef.value?.showToast(response.status, response.message);
     formData.despassword = '';
   } catch (error) {
     toastRef.value?.showToast(error.data.status, error.data.message);
@@ -55,14 +58,18 @@ const resetPassword = async () => {
   isLoading.value = false;
 };
 
-const customPasswordValidator = helpers.regex('passwordValidator', /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/);
+const hasUpperAndLowerCase = (value) => {
+  const hasUppercase = /[A-Z]/.test(value);
+  const hasLowercase = /[a-z]/.test(value);
+  return hasUppercase && hasLowercase || 'A senha deve conter pelo menos uma letra maiúscula e uma letra minúscula';
+};
 
 const rules = computed(() => {
   return {
     despassword: { 
       required, 
       minLength: minLength(6),
-      customPasswordValidator
+      hasUpperAndLowerCase
     }
   };
 });
@@ -105,7 +112,7 @@ const submitForm = async (event) => {
 
         <Button
           class="my-5"
-          :disabled="isLoading"
+          :disabled="isLoading || isDisabled"
           :is-loading="isLoading"
         >
           Redefinir senha
