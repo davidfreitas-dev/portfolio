@@ -27,7 +27,8 @@ const closeModal = () => {
 };
 
 defineExpose({
-  setOpen
+  setOpen,
+  closeModal
 });
 </script>
 

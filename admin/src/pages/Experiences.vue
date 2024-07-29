@@ -42,6 +42,10 @@ const modalRef = ref(null);
 const showModal = () => {
   modalRef.value?.setOpen();
 };
+
+const closeModal = () => {
+  modalRef.value?.closeModal();
+};
 </script>
 
 <template>
@@ -128,7 +132,7 @@ const showModal = () => {
       title="Experiências"
       @on-modal-close="loadData"
     >
-      <ExperiencesForm />
+      <ExperiencesForm @on-close-modal="closeModal" />
     </Modal>
 
     <Toast ref="toastRef" />

@@ -2,10 +2,16 @@
 import { ref, computed } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength } from '@vuelidate/validators';
+import axios from '../../api/axios';
 import Button from '../shared/Button.vue';
 import Input from '../shared/Input.vue';
 import Textarea from '../shared/Textarea.vue';
 import InputDate from '../shared/InputDate.vue';
+import Toast from '../shared/Toast.vue';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
+
+const emit = defineEmits(['onCloseModal']);
 
 const isLoading = ref(false);
 const experience = ref({
@@ -30,11 +36,34 @@ const isFormValid = computed(() => {
   return v$.value.$pending || v$.value.$invalid;
 });
 
+const formatDate = async (dateStr) => {
+  const month = dateStr.slice(0, 2);
+  const year = dateStr.slice(2, 6);
+  return dayjs(`${year}-${month}-01`).locale('pt-br').format('MMM YYYY').toUpperCase();
+};
+
+const toastRef = ref(null);
+
+const save = async (experience) => {
+  try {
+    const response = await axios.post('/experiences/create', experience);
+    toastRef.value?.showToast(response.status, response.message);
+    emit('onCloseModal');
+  } catch (error) {
+    toastRef.value?.showToast(error.data.status, error.data.message);
+  }
+};
+
 const submitForm = async (event) => {
   event.preventDefault();
-
-  // Enviar os dados
-  // ...
+  
+  const experienceFormatted = {
+    ...experience.value,
+    dtstart: await formatDate(experience.value.dtstart),
+    dtend: await formatDate(experience.value.dtend),
+  };
+  
+  save(experienceFormatted);
 };
 </script>
 
@@ -74,4 +103,6 @@ const submitForm = async (event) => {
       </Button>
     </div>
   </form>
+
+  <Toast ref="toastRef" />
 </template>
