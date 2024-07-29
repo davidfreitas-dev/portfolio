@@ -163,6 +163,18 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 
 **Response:** Experience details
 
+#### Experiences Page
+
+```http
+  GET /experiences/page/id
+```
+
+| Parameter      | Type      | Description                                          |
+| :------------- | :-------- | :--------------------------------------------------- |
+| `page`         | `integer` | **Required**. Page number                            |
+
+**Response:** All experiences 5 items per page
+
 #### Experience Create
 
 ```http
@@ -297,7 +309,7 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 #### Project Create/Update
 
 ```http
-  POST /projects/create
+  POST /projects/save
 ```
 
 | Parameter        | Type      | Description                                        |

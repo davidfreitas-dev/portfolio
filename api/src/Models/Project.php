@@ -97,6 +97,59 @@ class Project
 
   }
 
+  public static function getPage($page = 1, $itemsPerPage = 5)
+	{
+
+    $start = ($page - 1) * $itemsPerPage;
+		
+		$sql = "SELECT SQL_CALC_FOUND_ROWS * 
+            FROM tb_projects 
+            ORDER BY dtcreation 
+            LIMIT $start, $itemsPerPage";		
+		
+		try {
+
+			$db = new Database();
+
+			$results = $db->select($sql);
+
+      $resultsTotal = $db->select("SELECT FOUND_ROWS() AS nrtotal");
+			
+			if (empty($results)) {
+
+        return ApiResponseFormatter::formatResponse(
+          HTTPStatus::NO_CONTENT,
+          "success", 
+          "Nenhum projeto encontrado",
+          null
+        );
+        
+      } 
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Lista de projetos",
+        [
+          "projects" => $results,
+          "total" => (int)$resultsTotal[0]["nrtotal"],
+          "pages" => ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)
+        ]
+      );
+
+		} catch (\PDOException $e) {
+
+			return ApiResponseFormatter::formatResponse(
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        "error", 
+        "Falha ao obter projetos: " . $e->getMessage(),
+        null
+      );
+			
+		}		
+
+	}
+
   public static function save($project)
   {
 

@@ -30,7 +30,21 @@ $app->get('/projects/{id}', function (Request $request, Response $response, arra
 
 });
 
-$app->post('/projects/create', function (Request $request, Response $response) {
+$app->get('/projects/page/{page}', function (Request $request, Response $response, array $args) {
+
+  $page = $args['page'];
+
+  $results = Project::getPage($page);
+
+  $response->getBody()->write(json_encode($results));
+
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
+
+});
+
+$app->post('/projects/save', function (Request $request, Response $response) {
 
   $payload = $request->getParsedBody();
 

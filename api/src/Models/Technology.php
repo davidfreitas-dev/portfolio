@@ -96,6 +96,59 @@ class Technology
 
   }
 
+  public static function getPage($page = 1, $itemsPerPage = 5)
+	{
+
+    $start = ($page - 1) * $itemsPerPage;
+		
+		$sql = "SELECT SQL_CALC_FOUND_ROWS * 
+            FROM tb_technologies 
+            ORDER BY desname 
+            LIMIT $start, $itemsPerPage";		
+		
+		try {
+
+			$db = new Database();
+
+			$results = $db->select($sql);
+
+      $resultsTotal = $db->select("SELECT FOUND_ROWS() AS nrtotal");
+			
+			if (empty($results)) {
+
+        return ApiResponseFormatter::formatResponse(
+          HTTPStatus::NO_CONTENT,
+          "success", 
+          "Nenhuma tecnologia encontrada",
+          null
+        );
+        
+      } 
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Lista de tecnologias",
+        [
+          "technologies" => $results,
+          "total" => (int)$resultsTotal[0]["nrtotal"],
+          "pages" => ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)
+        ]
+      );
+
+		} catch (\PDOException $e) {
+
+			return ApiResponseFormatter::formatResponse(
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        "error", 
+        "Falha ao obter projetos: " . $e->getMessage(),
+        null
+      );
+			
+		}		
+
+	}
+
   public static function create($technology)
   {
 

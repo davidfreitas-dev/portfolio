@@ -30,6 +30,20 @@ $app->get('/technologies/{id}', function (Request $request, Response $response, 
 
 });
 
+$app->get('/experiences/page/{page}', function (Request $request, Response $response, array $args) {
+
+  $page = $args['page'];
+
+  $results = Technology::getPage($page);
+
+  $response->getBody()->write(json_encode($results));
+
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
+
+});
+
 $app->post('/technologies/create', function (Request $request, Response $response) {
 
   $payload = $request->getParsedBody();
