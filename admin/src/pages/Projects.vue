@@ -8,6 +8,8 @@ import Button from '../components/shared/Button.vue';
 import Pagination from '../components/shared/Pagination.vue';
 import Loader from '../components/shared/Loader.vue';
 import Toast from '../components/shared/Toast.vue';
+import Modal from '../components/shared/Modal.vue';
+import ProjectsForm from '../components/forms/ProjectsForm.vue';
 
 const tableHead = reactive(['#', 'ID', 'Nome', 'Descrição', 'Data']);
 
@@ -40,12 +42,29 @@ const loadData = async () => {
 onMounted(async () => {
   await loadData();
 });
+
+const modalRef = ref(null);
+
+const showModal = () => {
+  modalRef.value?.setOpen();
+};
+
+const closeModal = () => {
+  modalRef.value?.closeModal();
+};
+
+const selectedProject = ref(null);
+
+const handleProject = (project) => {
+  selectedProject.value = project;
+  showModal();
+};
 </script>
 
 <template>
   <MainContainer>
     <Breadcrumb title="Projetos" description="Adicione os projetos do seu portfolio.">
-      <Button>
+      <Button @click="handleProject">
         <span class="material-icons">
           add
         </span>
@@ -97,7 +116,7 @@ onMounted(async () => {
                 <div class="flex items-center gap-5 min-w-[150px]">
                   <img :src="project.desimage" class="h-12 w-12 rounded-md">
 
-                  <div class="hover:text-primary hover:underline cursor-pointer line-clamp-2">
+                  <div class="hover:text-primary hover:underline cursor-pointer line-clamp-2" @click="handleProject(project)">
                     {{ project.destitle }}
                   </div>
                 </div>
@@ -125,6 +144,14 @@ onMounted(async () => {
         @on-page-change="changePage"
       />
     </Wrapper>
+
+    <Modal
+      ref="modalRef"
+      title="Projetos"
+      @on-modal-close="loadData"
+    >
+      <ProjectsForm :project="selectedProject" @on-close-modal="closeModal" />
+    </Modal>
 
     <Toast ref="toastRef" />
   </MainContainer>
