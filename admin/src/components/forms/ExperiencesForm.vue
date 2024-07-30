@@ -66,6 +66,21 @@ const submitForm = async (event) => {
   event.preventDefault();  
   save(experience.value);
 };
+
+const deleteExperience = async (experienceId) => {
+  isLoading.value = true;
+
+  try {
+    const response = await axios.delete(`/experiences/delete/${experienceId}`);
+    toastRef.value?.showToast(response.status, response.message);
+    emit('onCloseModal');
+  } catch (error) {
+    console.log(error);
+    toastRef.value?.showToast(error.response?.status, 'Falha ao adicionar/editar experiência');
+  }
+  
+  isLoading.value = false;
+};
 </script>
 
 <template>
@@ -101,6 +116,18 @@ const submitForm = async (event) => {
         :disabled="isLoading || isFormValid"
       >
         Salvar Dados
+      </Button>
+
+      <Button
+        v-if="experience.idexperience"
+        type="button"
+        color="outline"
+        class="mt-5 mr-3"
+        :is-loading="isLoading"
+        :disabled="isLoading"
+        @click="deleteExperience(experience.idexperience)"
+      >
+        Excluir Dados
       </Button>
     </div>
   </form>

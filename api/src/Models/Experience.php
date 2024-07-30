@@ -103,7 +103,7 @@ class Experience
 		
 		$sql = "SELECT SQL_CALC_FOUND_ROWS * 
             FROM tb_experiences 
-            ORDER BY dtstart 
+            ORDER BY idexperience 
             LIMIT $start, $itemsPerPage";		
 		
 		try {
