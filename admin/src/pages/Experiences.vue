@@ -71,7 +71,7 @@ const closeModal = () => {
     <Wrapper>
       <div class="text-center text-secondary my-10">
         <Loader v-if="isLoading" color="primary" />
-        <span v-if="!isLoading && !data || !data.experiences.length">
+        <span v-if="!isLoading && (!data || !data.experiences.length)">
           Nenhuma experiência encontrada.
         </span>
       </div>
@@ -110,17 +110,17 @@ const closeModal = () => {
               </td>
 
               <td class="px-6 py-4">
-                <div class="flex items-center gap-3 min-w-[300px]">
+                <div class="flex items-center gap-3 min-w-[275px]">
                   {{ experience.desdescription }}
                 </div>
               </td>
 
               <td class="px-6 py-4">
-                {{ experience.dtstart }}
+                {{ $filters.formatDate(experience.dtstart) }}
               </td>
 
               <td class="px-6 py-4">
-                {{ experience.dtend }}
+                {{ $filters.formatDate(experience.dtend) }}
               </td>
             </tr>
           </tbody>

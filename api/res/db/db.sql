@@ -183,8 +183,8 @@ CREATE TABLE `tb_experiences` (
   `idexperience` int(11) NOT NULL,
   `destitle` varchar(128) NOT NULL,
   `desdescription` text NOT NULL,
-  `dtstart` varchar(8) NOT NULL,
-  `dtend` varchar(8) DEFAULT NULL
+  `dtstart` varchar(7) NOT NULL,
+  `dtend` varchar(7) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

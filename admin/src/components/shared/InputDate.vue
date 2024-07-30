@@ -34,7 +34,7 @@ const updateFormattedValue = () => {
 watch(() => props.modelValue, (newValue) => {
   rawValue.value = String(newValue).replace(/[^\d]/g, '').slice(0, MAX_DIGITS);
   updateFormattedValue();
-  emit('update:modelValue', rawValue.value);
+  emit('update:modelValue', formattedValue.value);  // Emit formatted value
 });
 
 const rawValue = ref('');
@@ -42,7 +42,7 @@ const rawValue = ref('');
 onMounted(() => {
   rawValue.value = String(props.modelValue).replace(/[^\d]/g, '').slice(0, MAX_DIGITS);
   updateFormattedValue();
-  emit('update:modelValue', rawValue.value);
+  emit('update:modelValue', formattedValue.value);  // Emit formatted value
 });
 
 const formatDate = (value) => {
@@ -69,7 +69,7 @@ const handleInput = (event) => {
   formattedValue.value = formatDate(numericValue);
   rawValue.value = numericValue;
 
-  emit('update:modelValue', rawValue.value);
+  emit('update:modelValue', formattedValue.value);  // Emit formatted value
 };
 </script>
 

@@ -8,8 +8,6 @@ import Input from '../shared/Input.vue';
 import Textarea from '../shared/Textarea.vue';
 import InputDate from '../shared/InputDate.vue';
 import Toast from '../shared/Toast.vue';
-import dayjs from 'dayjs';
-import 'dayjs/locale/pt-br';
 
 const emit = defineEmits(['onCloseModal']);
 
@@ -26,7 +24,7 @@ const rules = computed(() => {
     destitle: { required },
     desdescription: { required },
     dtstart: { required, minLength: minLength(6) },
-    dtend: { required, minLength: minLength(6) }
+    dtend: { minLength: minLength(6) }
   };
 });
 
@@ -35,12 +33,6 @@ const v$ = useVuelidate(rules, experience);
 const isFormValid = computed(() => {
   return v$.value.$pending || v$.value.$invalid;
 });
-
-const formatDate = async (dateStr) => {
-  const month = dateStr.slice(0, 2);
-  const year = dateStr.slice(2, 6);
-  return dayjs(`${year}-${month}-01`).locale('pt-br').format('MMM YYYY').toUpperCase();
-};
 
 const toastRef = ref(null);
 
@@ -59,15 +51,8 @@ const save = async (experience) => {
 };
 
 const submitForm = async (event) => {
-  event.preventDefault();
-  
-  const experienceFormatted = {
-    ...experience.value,
-    dtstart: await formatDate(experience.value.dtstart),
-    dtend: await formatDate(experience.value.dtend),
-  };
-  
-  save(experienceFormatted);
+  event.preventDefault();  
+  save(experience.value);
 };
 </script>
 
