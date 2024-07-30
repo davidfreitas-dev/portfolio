@@ -52,12 +52,19 @@ const showModal = () => {
 const closeModal = () => {
   modalRef.value?.closeModal();
 };
+
+const selectedExperience = ref(null);
+
+const handleEexperience = (experience) => {
+  selectedExperience.value = experience;
+  showModal();
+};
 </script>
 
 <template>
   <MainContainer>
     <Breadcrumb title="Experiências" description="Adicione suas experiências profissionais ou colaborações em projetos.">
-      <Button @click="showModal">
+      <Button @click="handleEexperience">
         <span class="material-icons">
           add
         </span>
@@ -105,7 +112,7 @@ const closeModal = () => {
                 #{{ experience.idexperience }}
               </td>
 
-              <td class="px-6 py-4">
+              <td class="px-6 py-4 hover:text-primary hover:underline cursor-pointer" @click="handleEexperience(experience)">
                 {{ experience.destitle }}
               </td>
 
@@ -141,7 +148,7 @@ const closeModal = () => {
       title="Experiências"
       @on-modal-close="loadData"
     >
-      <ExperiencesForm @on-close-modal="closeModal" />
+      <ExperiencesForm :experience="selectedExperience" @on-close-modal="closeModal" />
     </Modal>
 
     <Toast ref="toastRef" />

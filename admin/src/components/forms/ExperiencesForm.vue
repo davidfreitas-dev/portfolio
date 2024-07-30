@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength } from '@vuelidate/validators';
 import axios from '../../api/axios';
@@ -9,42 +9,54 @@ import Textarea from '../shared/Textarea.vue';
 import InputDate from '../shared/InputDate.vue';
 import Toast from '../shared/Toast.vue';
 
+const props = defineProps({
+  experience: {
+    type: Object,
+    default: () => ({
+      destitle: '',
+      desdescription: '',
+      dtstart: '',
+      dtend: ''
+    })
+  }
+});
+
 const emit = defineEmits(['onCloseModal']);
 
-const isLoading = ref(false);
-const experience = ref({
-  destitle: '',
-  desdescription: '',
-  dtstart: '',
-  dtend: ''
-});
+const experience = ref({ ...props.experience });
 
-const rules = computed(() => {
-  return {
-    destitle: { required },
-    desdescription: { required },
-    dtstart: { required, minLength: minLength(6) },
-    dtend: { minLength: minLength(6) }
-  };
-});
+watch(() => props.experience, (newValue) => {
+  experience.value = { ...newValue };
+}, { deep: true });
+
+const rules = computed(() => ({
+  destitle: { required },
+  desdescription: { required },
+  dtstart: { required, minLength: minLength(6) },
+  dtend: { minLength: minLength(6) }
+}));
 
 const v$ = useVuelidate(rules, experience);
 
-const isFormValid = computed(() => {
-  return v$.value.$pending || v$.value.$invalid;
-});
+const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
 
 const toastRef = ref(null);
+
+const isLoading = ref(false);
 
 const save = async (experience) => {
   isLoading.value = true;
 
   try {
-    const response = await axios.post('/experiences/create', experience);
+    const response = !experience.idexperience 
+      ? await axios.post('/experiences/create', experience)
+      : await axios.put(`/experiences/update/${experience.idexperience}`, experience) ;
+
     toastRef.value?.showToast(response.status, response.message);
     emit('onCloseModal');
   } catch (error) {
-    toastRef.value?.showToast(error.data.status, error.data.message);
+    console.log(error);
+    toastRef.value?.showToast(error.response?.status, 'Falha ao adicionar/editar experiência');
   }
   
   isLoading.value = false;

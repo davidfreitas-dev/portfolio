@@ -12,7 +12,7 @@ class Experience
   public static function list() 
   {    
     $sql = "SELECT * FROM tb_experiences
-            ORDER BY dtstart DESC";
+            ORDER BY idexperience DESC";
 		
 		try {
 
