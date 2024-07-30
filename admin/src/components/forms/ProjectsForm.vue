@@ -5,6 +5,7 @@ import { required } from '@vuelidate/validators';
 import axios from '../../api/axios';
 import Button from '../shared/Button.vue';
 import Input from '../shared/Input.vue';
+import InputFile from '../shared/InputFile.vue';
 import Textarea from '../shared/Textarea.vue';
 import Toast from '../shared/Toast.vue';
 
@@ -81,6 +82,12 @@ const deleteProject = async (projectId) => {
 
 <template>
   <form @submit="submitForm">
+    <InputFile v-model="project.photo" />
+      
+    <p class="my-3 text-sm text-gray-500 dark:text-gray-300">
+      SVG, PNG, JPG or GIF (MAX. 800x800px).
+    </p>
+        
     <Input
       v-model="project.destitle"
       label="Título"
