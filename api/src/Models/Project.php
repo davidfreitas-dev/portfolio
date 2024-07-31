@@ -160,12 +160,14 @@ class Project
       :technologies
     )";
 
+    $idproject = isset($project['idproject']) ? $project['idproject'] : 0;
+
     try {
       
       $db = new Database();
 
 			$results = $db->select($sql, array(
-				":idproject"=>$project['idproject'],
+				":idproject"=>$idproject,
 				":destitle"=>$project['destitle'],
 				":desdescription"=>$project['desdescription'],
 				":technologies"=>$project['technologies']
@@ -182,17 +184,17 @@ class Project
 
       }
 
-      Project::uploadPhoto($results[0]['idproject'], $project['image']);
+      Project::uploadPhoto($results[0]['idproject'], $project['desimage']);
 
-      $status  = $project['idproject'] ? 200 : 201;
+      $code  = $idproject ? 200 : 201;
 
-      $message = $project['idproject'] ? "Projeto atualizado com sucesso" : "Projeto criado com sucesso";
+      $message = $idproject ? "Projeto atualizado com sucesso" : "Projeto criado com sucesso";
 
       return ApiResponseFormatter::formatResponse(
-        $status, 
+        $code, 
         "success", 
         $message,
-        null
+        $results[0]
       );
 
     } catch (\PDOException $e) {
@@ -200,7 +202,7 @@ class Project
 			return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 
         "error", 
-        "Falha ao criar projeto: " . $e->getMessage(),
+        "Falha ao criar/atualizar projeto: " . $e->getMessage(),
         null
       );
 			
