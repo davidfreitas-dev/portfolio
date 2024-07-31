@@ -8,6 +8,8 @@ import Button from '../components/shared/Button.vue';
 import Pagination from '../components/shared/Pagination.vue';
 import Loader from '../components/shared/Loader.vue';
 import Toast from '../components/shared/Toast.vue';
+import Modal from '../components/shared/Modal.vue';
+import TechnologiesForm from '../components/forms/TechnologiesForm.vue';
 
 const tableHead = reactive(['#', 'ID', 'Tecnologia']);
 
@@ -40,12 +42,29 @@ const loadData = async () => {
 onMounted(async () => {
   await loadData();
 });
+
+const modalRef = ref(null);
+
+const showModal = () => {
+  modalRef.value?.setOpen();
+};
+
+const closeModal = () => {
+  modalRef.value?.closeModal();
+};
+
+const selectedTechnology = ref(null);
+
+const handleTechnology = (technology) => {
+  selectedTechnology.value = technology;
+  showModal();
+};
 </script>
 
 <template>
   <MainContainer>
     <Breadcrumb title="Tecnologias" description="Adicione as tecnologias usadas em seus projetos.">
-      <Button>
+      <Button @click="handleTechnology()">
         <span class="material-icons">
           add
         </span>
@@ -97,7 +116,7 @@ onMounted(async () => {
                 <div class="flex items-center gap-5 min-w-[150px]">
                   <img :src="tech.desimage" class="h-12 w-12 rounded-md">
 
-                  <div class="hover:text-primary hover:underline cursor-pointer line-clamp-2">
+                  <div class="hover:text-primary hover:underline cursor-pointer line-clamp-2" @click="handleTechnology(tech)">
                     {{ tech.desname }}
                   </div>
                 </div>
@@ -115,6 +134,14 @@ onMounted(async () => {
         @on-page-change="changePage"
       />
     </Wrapper>
+
+    <Modal
+      ref="modalRef"
+      title="Tecnologias"
+      @on-modal-close="loadData"
+    >
+      <TechnologiesForm :technology="selectedTechnology" @on-close-modal="closeModal" />
+    </Modal>
 
     <Toast ref="toastRef" />
   </MainContainer>

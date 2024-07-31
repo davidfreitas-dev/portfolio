@@ -109,14 +109,14 @@ const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
         
     <Input
       v-model="project.destitle"
-      label="Título"
-      placeholder="Título da experiência"
+      label="Nome"
+      placeholder="Nome do projeto"
     />
 
     <Textarea 
       v-model="project.desdescription"
       label="Descrição" 
-      placeholder="Descrição da experiência" 
+      placeholder="Descrição do projeto" 
     />
 
     <div class="flex flex-row-reverse">
