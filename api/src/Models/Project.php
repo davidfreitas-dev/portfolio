@@ -104,7 +104,7 @@ class Project
 		
 		$sql = "SELECT SQL_CALC_FOUND_ROWS * 
             FROM tb_projects 
-            ORDER BY dtcreation 
+            ORDER BY dtregister 
             LIMIT $start, $itemsPerPage";		
 		
 		try {

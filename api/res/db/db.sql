@@ -221,7 +221,7 @@ CREATE TABLE `tb_projects` (
   `destitle` varchar(128) NOT NULL,
   `desdescription` text NOT NULL,
   `desimage` varchar(255) DEFAULT NULL,
-  `dtcreation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `dtregister` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

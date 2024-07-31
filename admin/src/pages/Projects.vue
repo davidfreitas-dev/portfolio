@@ -129,7 +129,7 @@ const handleProject = (project) => {
               </td>
 
               <td class="px-6 py-4">
-                {{ project.dtcreation }}
+                {{ project.dtregister }}
               </td>
             </tr>
           </tbody>
