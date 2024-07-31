@@ -56,7 +56,7 @@ const save = async (experience) => {
     emit('onCloseModal');
   } catch (error) {
     console.log(error);
-    toastRef.value?.showToast(error.response?.status, 'Falha ao adicionar/editar experiência');
+    toastRef.value?.showToast(error.data?.status, 'Falha ao adicionar/editar experiência');
   }
   
   isLoading.value = false;
@@ -76,7 +76,7 @@ const deleteExperience = async (experienceId) => {
     emit('onCloseModal');
   } catch (error) {
     console.log(error);
-    toastRef.value?.showToast(error.response?.status, 'Falha ao adicionar/editar experiência');
+    toastRef.value?.showToast(error.data?.status, 'Falha ao adicionar/editar experiência');
   }
   
   isLoading.value = false;

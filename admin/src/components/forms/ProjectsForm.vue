@@ -45,7 +45,7 @@ const emit = defineEmits(['onCloseModal']);
 
 const save = async (project) => {
   isLoading.value = true;
-
+  
   try {
     await axios.post('/projects/save', project, {
       headers: {
@@ -56,14 +56,14 @@ const save = async (project) => {
     emit('onCloseModal');
   } catch (error) {
     console.log(error);
-    toastRef.value?.showToast(error.response?.status, 'Falha ao adicionar/editar projeto');
+    toastRef.value?.showToast(error.data?.status, 'Falha ao adicionar/editar projeto');
   }
   
   isLoading.value = false;
 };
 
 const submitForm = async (event) => {
-  event.preventDefault();  
+  event.preventDefault(); 
   save(project.value);
 };
 
@@ -73,7 +73,7 @@ const deleteProject = async (projectId) => {
     emit('onCloseModal');
   } catch (error) {
     console.log(error);
-    toastRef.value?.showToast(error.response?.status, 'Falha ao adicionar/editar experiência');
+    toastRef.value?.showToast(error.data?.status, 'Falha ao adicionar/editar experiência');
   }
 };
 
