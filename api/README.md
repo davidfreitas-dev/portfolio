@@ -341,7 +341,7 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 
 | Parameter        | Type      | Description                                        |
 | :--------------- | :-------- | :------------------------------------------------- |
-| `idproject`      | `integer` | **Required**. Project ID                           |
+| `idproject`      | `integer` | Project ID                                         |
 | `destitle`       | `string`  | **Required**. Project title                        |
 | `desdescription` | `string`  | **Required**. Project image name                   |
 | `technologies`   | `string`  | **Required**. String with techs ID's (Ex.: "1, 2") |

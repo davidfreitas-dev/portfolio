@@ -71,7 +71,7 @@ onBeforeUnmount(() => {
         <template v-if="selectedOptions.length">
           <template v-for="(selectedOption) in selectedOptions" :key="selectedOption">
             <span class="flex items-center gap-2 bg-primary-accent py-1.5 px-4 rounded-full mr-2">
-              {{ selectedOption }}
+              {{ selectedOption.name }}
               <span class="material-icons text-base" @click="(event) => { event.stopPropagation(); selectOption(selectedOption); }">
                 close
               </span>
@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
         <span class="material-icons text-primary">
           {{ selectedOptions.includes(option) ? 'check_box' : 'check_box_outline_blank' }}
         </span>
-        {{ option }}
+        {{ option.name }}
       </li>
     </ul>
   </div>

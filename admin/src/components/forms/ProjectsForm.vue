@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import axios from '../../api/axios';
@@ -7,6 +7,7 @@ import Button from '../shared/Button.vue';
 import Input from '../shared/Input.vue';
 import InputFile from '../shared/InputFile.vue';
 import Textarea from '../shared/Textarea.vue';
+import MultiSelect from '../shared/MultiSelect.vue';
 import Toast from '../shared/Toast.vue';
 
 const props = defineProps({
@@ -62,11 +63,6 @@ const save = async (project) => {
   isLoading.value = false;
 };
 
-const submitForm = async (event) => {
-  event.preventDefault(); 
-  save(project.value);
-};
-
 const deleteProject = async (projectId) => {
   try {
     await axios.delete(`/projects/delete/${projectId}`);
@@ -75,6 +71,45 @@ const deleteProject = async (projectId) => {
     console.log(error);
     toastRef.value?.showToast(error.data?.status, 'Falha ao deletar projeto');
   }
+};
+
+const techs = ref([]);
+
+const formatTechFields = async (data) => {
+  return data.map(tech => ({
+    id: tech.idtechnology,
+    name: tech.desname
+  }));
+};
+
+const getTechs = async () => {
+  try {
+    const response = await axios.get('/technologies');
+    techs.value = await formatTechFields(response.data) ?? [];
+  } catch (error) {
+    console.log(error);
+    toastRef.value?.showToast('error', 'Falha ao texnologias');
+  }
+};
+
+onMounted(async () => {
+  await getTechs();
+});
+
+const selectedTechs = ref([]);
+
+const handleSelectChange = (newselectedTechs) => {
+  selectedTechs.value = newselectedTechs;
+};
+
+const submitForm = async (event) => {
+  event.preventDefault(); 
+
+  project.value.technologies = selectedTechs.value
+    .map(tech => tech.id)
+    .join(', ');
+
+  save(project.value);
 };
 
 const rules = computed(() => ({
@@ -117,6 +152,13 @@ const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
       v-model="project.desdescription"
       label="Descrição" 
       placeholder="Descrição do projeto" 
+    />
+
+    <MultiSelect
+      label="Tecnologias"
+      :options="techs"
+      :selected="selectedTechs"
+      @handle-select-change="handleSelectChange"
     />
 
     <div class="flex flex-row-reverse">
