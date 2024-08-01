@@ -16,7 +16,8 @@ const props = defineProps({
     default: () => ({
       destitle: '',
       desdescription: '',
-      desimage: ''
+      desimage: '',
+      technologies: ''
     })
   }
 });
@@ -75,17 +76,14 @@ const deleteProject = async (projectId) => {
 
 const techs = ref([]);
 
-const formatTechFields = async (data) => {
-  return data.map(tech => ({
-    id: tech.idtechnology,
-    name: tech.desname
-  }));
-};
-
 const getTechs = async () => {
   try {
     const response = await axios.get('/technologies');
-    techs.value = await formatTechFields(response.data) ?? [];
+
+    techs.value = response.data.map(tech => ({
+      id: tech.idtechnology,
+      name: tech.desname
+    }));
   } catch (error) {
     console.log(error);
     toastRef.value?.showToast('error', 'Falha ao texnologias');
@@ -96,25 +94,26 @@ onMounted(async () => {
   await getTechs();
 });
 
-const selectedTechs = ref([]);
+const selectedTechs = computed(() => {
+  if (!project.value.technologies) return [];
+  const techIds = project.value.technologies.split(',').map(Number);
+  const selectedTechs = techs.value.filter(tech => techIds.includes(tech.id));
+  return selectedTechs;
+});
 
-const handleSelectChange = (newselectedTechs) => {
-  selectedTechs.value = newselectedTechs;
+const handleSelectChange = (newSelectedTechs) => {
+  project.value.technologies = newSelectedTechs.map(tech => tech.id).join(', ');
 };
 
 const submitForm = async (event) => {
-  event.preventDefault(); 
-
-  project.value.technologies = selectedTechs.value
-    .map(tech => tech.id)
-    .join(', ');
-
-  console.log(project.value);
+  event.preventDefault();
+  save(project.value);
 };
 
 const rules = computed(() => ({
   destitle: { required },
-  desdescription: { required }
+  desdescription: { required },
+  technologies: { required }
 }));
 
 const v$ = useVuelidate(rules, project);
