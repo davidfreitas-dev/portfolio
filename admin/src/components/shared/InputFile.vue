@@ -26,7 +26,7 @@ const handleFileChange = (event) => {
   
   <input
     type="file"
-    ref="photoInput"
+    ref="imageInput"
     @change="handleFileChange"
   >
 </template>

@@ -102,10 +102,14 @@ class Project
 
     $start = ($page - 1) * $itemsPerPage;
 		
-		$sql = "SELECT SQL_CALC_FOUND_ROWS * 
-            FROM tb_projects 
-            ORDER BY dtregister 
-            LIMIT $start, $itemsPerPage";		
+		$sql = "SELECT 
+                p.*, 
+                GROUP_CONCAT(pt.idtechnology) as technologies
+            FROM tb_projects p
+            LEFT JOIN tb_projectstechnologies pt ON p.idproject = pt.idproject
+            GROUP BY p.idproject
+            ORDER BY p.dtregister 
+            LIMIT $start, $itemsPerPage";
 		
 		try {
 

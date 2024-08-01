@@ -28,15 +28,15 @@ const imagePreview = ref(undefined);
 
 watch(
   () => project.value.desimage,
-  (newPhoto) => {
-    if (newPhoto) {
+  (newImage) => {
+    if (newImage && newImage instanceof File) {
       const reader = new FileReader();
 
       reader.onload = (e) => {
         imagePreview.value = e.target.result;
       };
       
-      reader.readAsDataURL(newPhoto);
+      reader.readAsDataURL(newImage);
     }
   }
 );
@@ -45,11 +45,23 @@ const toastRef = ref(null);
 const isLoading = ref(false);
 const emit = defineEmits(['onCloseModal']);
 
+const buildFormData = (project) => {
+  const formData = new FormData();
+  if (project.idproject) formData.append('idproject', project.idproject);
+  formData.append('destitle', project.destitle);
+  formData.append('desdescription', project.desdescription);
+  formData.append('technologies', project.technologies);
+  if (project.desimage instanceof File) formData.append('image', project.desimage);
+  return formData;
+};
+
 const save = async (project) => {
   isLoading.value = true;
   
   try {
-    await axios.post('/projects/save', project, {
+    const formData = buildFormData(project);
+    
+    await axios.post('/projects/save', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -107,7 +119,7 @@ const handleSelectChange = (newSelectedTechs) => {
 
 const submitForm = async (event) => {
   event.preventDefault();
-  save(project.value);
+  await save(project.value);
 };
 
 const rules = computed(() => ({
