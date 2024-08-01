@@ -308,6 +308,12 @@ class Project
               "projects" . DIRECTORY_SEPARATOR . 
               $idproject . ".jpg";
 
+        if (!is_dir($dist)) {
+
+            mkdir($dist, 0777, true);
+
+        }
+
         imagejpeg($image, $dist);
 
         imagedestroy($image);

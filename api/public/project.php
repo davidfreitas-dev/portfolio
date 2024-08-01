@@ -48,7 +48,7 @@ $app->post('/projects/save', function (Request $request, Response $response) {
 
   $payload = $request->getParsedBody();
 
-  $payload['image'] = isset($_FILES['photo']) ? $_FILES['photo'] : null;
+  $payload['desimage'] = isset($_FILES['photo']) ? $_FILES['photo'] : null;
 
   $results = Project::save($payload);
 
