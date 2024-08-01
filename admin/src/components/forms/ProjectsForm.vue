@@ -130,8 +130,8 @@ const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
       </label>
 
       <img
-        v-if="imagePreview"
-        :src="imagePreview"
+        v-if="imagePreview || project.desimage"
+        :src="imagePreview || project.desimage"
         class="h-44 w-44 rounded-lg"
       >
 

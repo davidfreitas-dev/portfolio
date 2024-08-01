@@ -305,14 +305,15 @@ class Project
         $dist = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 
               "res" . DIRECTORY_SEPARATOR . 
               "img" . DIRECTORY_SEPARATOR . 
-              "projects" . DIRECTORY_SEPARATOR . 
-              $idproject . ".jpg";
+              "projects";
 
         if (!is_dir($dist)) {
 
             mkdir($dist, 0777, true);
 
         }
+
+        $dist = $dist . DIRECTORY_SEPARATOR . $idproject . ".jpg";
 
         imagejpeg($image, $dist);
 
