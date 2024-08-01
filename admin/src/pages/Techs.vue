@@ -114,7 +114,11 @@ const handleTechnology = (technology) => {
 
               <td class="px-6 py-4">
                 <div class="flex items-center gap-5 min-w-[150px]">
-                  <img :src="tech.desimage" class="h-12 w-12 rounded-md">
+                  <img
+                    v-if="tech.desimage"
+                    :src="tech.desimage"
+                    class="h-12 w-12 rounded-md"
+                  >
 
                   <div class="hover:text-primary hover:underline cursor-pointer line-clamp-2" @click="handleTechnology(tech)">
                     {{ tech.desname }}

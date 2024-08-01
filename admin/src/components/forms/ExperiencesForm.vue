@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength } from '@vuelidate/validators';
 import axios from '../../api/axios';
@@ -21,37 +21,26 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['onCloseModal']);
-
+const toastRef = ref(null);
+const isLoading = ref(false);
 const experience = ref({ ...props.experience });
 
-watch(() => props.experience, (newValue) => {
-  experience.value = { ...newValue };
-}, { deep: true });
+const createExperience = (experience) => {
+  return axios.post('/experiences/create', experience);
+};
 
-const rules = computed(() => ({
-  destitle: { required },
-  desdescription: { required },
-  dtstart: { required, minLength: minLength(6) },
-  dtend: { minLength: minLength(6) }
-}));
+const updateExperience = (experience) => {
+  return axios.put(`/experiences/update/${experience.idexperience}`, experience);
+};
 
-const v$ = useVuelidate(rules, experience);
-
-const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
-
-const toastRef = ref(null);
-
-const isLoading = ref(false);
+const emit = defineEmits(['onCloseModal']);
 
 const save = async (experience) => {
   isLoading.value = true;
 
   try {
-    const response = !experience.idexperience 
-      ? await axios.post('/experiences/create', experience)
-      : await axios.put(`/experiences/update/${experience.idexperience}`, experience) ;
-
+    const { idexperience } = experience;
+    const response = idexperience ? await updateExperience(experience) : await createExperience(experience);
     toastRef.value?.showToast(response.status, response.message);
     emit('onCloseModal');
   } catch (error) {
@@ -81,6 +70,17 @@ const deleteExperience = async (experienceId) => {
   
   isLoading.value = false;
 };
+
+const rules = computed(() => ({
+  destitle: { required },
+  desdescription: { required },
+  dtstart: { required, minLength: minLength(6) },
+  dtend: { minLength: minLength(6) }
+}));
+
+const v$ = useVuelidate(rules, experience);
+
+const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
 </script>
 
 <template>

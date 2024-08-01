@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import axios from '../../api/axios';
@@ -16,13 +16,50 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['onCloseModal']);
-
+const toastRef = ref(null);
+const isLoading = ref(false);
 const technology = ref({ ...props.technology });
 
-watch(() => props.technology, (newValue) => {
-  technology.value = { ...newValue };
-}, { deep: true });
+const createTechnology = (technology) => {
+  return axios.post('/technologies/create', technology);
+};
+
+const updateTechnology = (technology) => {
+  return axios.put(`/technologies/update/${technology.idtechnology}`, technology);
+};
+
+const emit = defineEmits(['onCloseModal']);
+
+const save = async (technology) => {
+  isLoading.value = true;
+
+  try {
+    const { idtechnology } = technology;
+    const response = idtechnology ? await updateTechnology(technology) : await createTechnology(technology);
+    toastRef.value?.showToast(response.status, response.message);
+    emit('onCloseModal');
+  } catch (error) {
+    console.log(error);
+    toastRef.value?.showToast(error.data?.status, 'Falha ao adicionar/editar experiência');
+  }
+  
+  isLoading.value = false;
+};
+
+const deleteTechnology = async (technologyId) => {
+  try {
+    await axios.delete(`/technologies/delete/${technologyId}`);
+    emit('onCloseModal');
+  } catch (error) {
+    console.log(error);
+    toastRef.value?.showToast(error.data?.status, 'Falha ao deletar tecnologia');
+  }
+};
+
+const submitForm = async (event) => {
+  event.preventDefault();  
+  save(technology.value);
+};
 
 const rules = computed(() => ({
   desname: { required }
@@ -31,48 +68,6 @@ const rules = computed(() => ({
 const v$ = useVuelidate(rules, technology);
 
 const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
-
-const toastRef = ref(null);
-
-const isLoading = ref(false);
-
-const save = async (technology) => {
-  isLoading.value = true;
-
-  try {
-    const response = !technology.idtechnology 
-      ? await axios.post('/technologies/create', technology)
-      : await axios.put(`/technologies/update/${technology.idtechnology}`, technology) ;
-
-    toastRef.value?.showToast(response.status, response.message);
-    emit('onCloseModal');
-  } catch (error) {
-    console.log(error);
-    toastRef.value?.showToast(error.data?.status, 'Falha ao adicionar/editar experiência');
-  }
-  
-  isLoading.value = false;
-};
-
-const submitForm = async (event) => {
-  event.preventDefault();  
-  save(technology.value);
-};
-
-const deleteTechnology = async (technologyId) => {
-  isLoading.value = true;
-
-  try {
-    const response = await axios.delete(`/technologies/delete/${technologyId}`);
-    toastRef.value?.showToast(response.status, response.message);
-    emit('onCloseModal');
-  } catch (error) {
-    console.log(error);
-    toastRef.value?.showToast(error.data?.status, 'Falha ao adicionar/editar experiência');
-  }
-  
-  isLoading.value = false;
-};
 </script>
 
 <template>

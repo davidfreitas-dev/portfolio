@@ -73,7 +73,7 @@ const deleteProject = async (projectId) => {
     emit('onCloseModal');
   } catch (error) {
     console.log(error);
-    toastRef.value?.showToast(error.data?.status, 'Falha ao adicionar/editar experiência');
+    toastRef.value?.showToast(error.data?.status, 'Falha ao deletar projeto');
   }
 };
 
