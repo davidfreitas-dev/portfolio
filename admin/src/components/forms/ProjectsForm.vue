@@ -109,7 +109,7 @@ const submitForm = async (event) => {
     .map(tech => tech.id)
     .join(', ');
 
-  save(project.value);
+  console.log(project.value);
 };
 
 const rules = computed(() => ({

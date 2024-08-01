@@ -184,7 +184,11 @@ class Project
 
       }
 
-      Project::uploadPhoto($results[0]['idproject'], $project['desimage']);
+      if (!is_string($project['desimage'])) {
+
+        Project::uploadPhoto($results[0]['idproject'], $project['desimage']);
+  
+      }
 
       $code  = $idproject ? 200 : 201;
 

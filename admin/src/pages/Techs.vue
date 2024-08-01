@@ -131,10 +131,9 @@ const handleTechnology = (technology) => {
       </div>
 
       <Pagination
-        v-if="!isLoading && data"
         ref="paginationRef"
-        :total-pages="data.pages"
-        :total-items="data.total"
+        :total-pages="data?.pages"
+        :total-items="data?.total"
         @on-page-change="changePage"
       />
     </Wrapper>

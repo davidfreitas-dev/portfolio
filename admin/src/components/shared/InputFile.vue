@@ -4,9 +4,9 @@ const props = defineProps({
     type: String, 
     default: '' 
   },
-  modelValue: { 
-    type: Object, 
-    default: () => {} 
+  modelValue: {
+    type: [Object, String],
+    default: () => ({}),
   },
 });
 
