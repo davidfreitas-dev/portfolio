@@ -123,11 +123,11 @@ const handleEexperience = (experience) => {
               </td>
 
               <td class="px-6 py-4">
-                {{ $filters.formatDate(experience.dtstart) }}
+                {{ $filters.formatDateMonthYear(experience.dtstart) }}
               </td>
 
               <td class="px-6 py-4">
-                {{ $filters.formatDate(experience.dtend) }}
+                {{ $filters.formatDateMonthYear(experience.dtend) }}
               </td>
             </tr>
           </tbody>

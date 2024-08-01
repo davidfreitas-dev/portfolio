@@ -231,6 +231,18 @@ class Project
 				':idproject'=>$idproject
 			));
 
+      $imagePath = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 
+                    "res" . DIRECTORY_SEPARATOR . 
+                    "img" . DIRECTORY_SEPARATOR . 
+                    "projects" . DIRECTORY_SEPARATOR . 
+                    $idproject . ".jpg";
+
+      if (file_exists($imagePath)) {
+
+        unlink($imagePath);
+
+      }
+
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 
         "success", 

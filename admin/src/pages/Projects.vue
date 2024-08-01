@@ -123,13 +123,13 @@ const handleProject = (project) => {
               </td>
 
               <td class="px-6 py-4">
-                <div class="flex items-center gap-3 min-w-[300px]">
+                <div class="flex items-center gap-3 min-w-[250px]">
                   {{ project.desdescription }}
                 </div>
               </td>
 
               <td class="px-6 py-4">
-                {{ project.dtregister }}
+                {{ $filters.formatDate(project.dtregister) }}
               </td>
             </tr>
           </tbody>

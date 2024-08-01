@@ -13,6 +13,9 @@ const app = createApp(App);
 
 app.config.globalProperties.$filters = {
   formatDate(date) { 
+    return dayjs(date, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY HH:mm:ss');   
+  },
+  formatDateMonthYear(date) { 
     const [month, year] = date.split('/');
     return dayjs(`${year}-${month}-01`).locale('pt-br').format('MMMM YYYY').toUpperCase();   
   }
