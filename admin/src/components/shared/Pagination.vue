@@ -38,6 +38,14 @@ const visiblePages = computed(() => {
   return pages;
 });
 
+const itemRange = computed(() => {
+  const itemsPerPage = 5; // número de itens por página
+  const startItem = (state.currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(state.currentPage * itemsPerPage, props.totalItems);
+
+  return `${startItem} a ${endItem}`;
+});
+
 const previousPage = () => {
   if (state.currentPage > 1) {
     state.currentPage--;
@@ -68,7 +76,7 @@ defineExpose({
 <template>
   <div class="flex flex-col md:flex-row items-center justify-between h-16 my-5 md:m-0">
     <span class="text-sm text-gray-400">
-      Exibindo 1 a 5 de {{ totalItems }} itens
+      Exibindo {{ itemRange }} de {{ totalItems }} itens
     </span>
 
     <nav>
