@@ -10,6 +10,8 @@ import Textarea from '../shared/Textarea.vue';
 import MultiSelect from '../shared/MultiSelect.vue';
 import Toast from '../shared/Toast.vue';
 
+const emit = defineEmits(['onCloseModal']);
+
 const props = defineProps({
   project: {
     type: Object,
@@ -17,33 +19,30 @@ const props = defineProps({
       destitle: '',
       desdescription: '',
       desimage: '',
-      technologies: ''
+      technologies: []
     })
   }
 });
 
 const project = ref({ ...props.project });
 
-const imagePreview = ref(undefined);
-
 watch(
-  () => project.value.desimage,
-  (newImage) => {
-    if (newImage && newImage instanceof File) {
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        imagePreview.value = e.target.result;
-      };
-      
-      reader.readAsDataURL(newImage);
+  () => props.project, 
+  (newProject) => {
+    if (newProject.technologies && newProject.technologies.length) {
+      project.value.technologies = newProject.technologies
+        .map(tech => ({
+          id: tech.idtechnology,
+          name: tech.desname
+        }));
     }
-  }
+  }, 
+  { immediate: true }
 );
 
 const toastRef = ref(null);
+
 const isLoading = ref(false);
-const emit = defineEmits(['onCloseModal']);
 
 const buildFormData = (project) => {
   const formData = new FormData();
@@ -106,21 +105,37 @@ onMounted(async () => {
   await getTechs();
 });
 
-const selectedTechs = computed(() => {
-  if (!project.value.technologies) return [];
-  const techIds = project.value.technologies.split(',').map(Number);
-  const selectedTechs = techs.value.filter(tech => techIds.includes(tech.id));
-  return selectedTechs;
-});
-
 const handleSelectChange = (newSelectedTechs) => {
-  project.value.technologies = newSelectedTechs.map(tech => tech.id).join(', ');
+  project.value.technologies = newSelectedTechs;
 };
 
 const submitForm = async (event) => {
   event.preventDefault();
-  await save(project.value);
+
+  const formattedProject = {
+    ...project.value,
+    technologies: project.value.technologies.map(tech => tech.id).join(', ')
+  };
+  
+  save(formattedProject);
 };
+
+const imagePreview = ref(undefined);
+
+watch(
+  () => project.value.desimage,
+  (newImage) => {
+    if (newImage && newImage instanceof File) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        imagePreview.value = e.target.result;
+      };
+      
+      reader.readAsDataURL(newImage);
+    }
+  }
+);
 
 const rules = computed(() => ({
   destitle: { required },
@@ -168,7 +183,7 @@ const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
     <MultiSelect
       label="Tecnologias"
       :options="techs"
-      :selected="selectedTechs"
+      :selected="project.technologies"
       @handle-select-change="handleSelectChange"
     />
 

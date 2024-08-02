@@ -98,61 +98,71 @@ class Project
   }
 
   public static function getPage($page = 1, $itemsPerPage = 5)
-	{
+  {
 
     $start = ($page - 1) * $itemsPerPage;
-		
-		$sql = "SELECT 
+
+    $sql = "SELECT 
                 p.*, 
-                GROUP_CONCAT(pt.idtechnology) as technologies
+                GROUP_CONCAT(
+                    DISTINCT CONCAT(
+                        '{\"idtechnology\":', t.idtechnology, ',\"desname\":\"', t.desname, '\"}'
+                    ) SEPARATOR ','
+                ) AS technologies
             FROM tb_projects p
             LEFT JOIN tb_projectstechnologies pt ON p.idproject = pt.idproject
+            LEFT JOIN tb_technologies t ON pt.idtechnology = t.idtechnology
             GROUP BY p.idproject
-            ORDER BY p.dtregister 
+            ORDER BY p.dtregister
             LIMIT $start, $itemsPerPage";
-		
-		try {
 
-			$db = new Database();
+    try {
 
-			$results = $db->select($sql);
+        $db = new Database();
 
-      $resultsTotal = $db->select("SELECT FOUND_ROWS() AS nrtotal");
-			
-			if (empty($results)) {
+        $results = $db->select($sql);
+        
+        $resultsTotal = $db->select("SELECT FOUND_ROWS() AS nrtotal");
+
+        if (empty($results)) {
+
+            return ApiResponseFormatter::formatResponse(
+                HTTPStatus::NO_CONTENT,
+                "success",
+                "Nenhum projeto encontrado",
+                null
+            );
+
+        }
+        
+        foreach ($results as &$result) {
+            $result['technologies'] = $result['technologies']
+                ? json_decode('[' . $result['technologies'] . ']', true)
+                : [];
+        }
 
         return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NO_CONTENT,
-          "success", 
-          "Nenhum projeto encontrado",
-          null
+            HTTPStatus::OK,
+            "success",
+            "Lista de projetos",
+            [
+                "projects" => $results,
+                "total" => (int)$resultsTotal[0]["nrtotal"],
+                "pages" => ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)
+            ]
+        );
+
+    } catch (\PDOException $e) {
+
+        return ApiResponseFormatter::formatResponse(
+            HTTPStatus::INTERNAL_SERVER_ERROR,
+            "error",
+            "Falha ao obter projetos: " . $e->getMessage(),
+            null
         );
         
-      } 
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Lista de projetos",
-        [
-          "projects" => $results,
-          "total" => (int)$resultsTotal[0]["nrtotal"],
-          "pages" => ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)
-        ]
-      );
-
-		} catch (\PDOException $e) {
-
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao obter projetos: " . $e->getMessage(),
-        null
-      );
-			
-		}		
-
-	}
+    }
+  }
 
   public static function save($project)
   {

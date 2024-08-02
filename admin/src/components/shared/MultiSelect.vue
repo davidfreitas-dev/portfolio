@@ -26,14 +26,21 @@ const toggleDropdown = () => {
   isFocused.value = isDropdownOpen.value;
 };
 
+const isOptionSelected = (option) => {
+  return selectedOptions.value.some((opt) => opt.id === option.id);
+};
+
 const emit = defineEmits(['handleSelectChange']);
 
 const selectOption = (option) => {
-  if (selectedOptions.value.includes(option)) {
-    selectedOptions.value = selectedOptions.value.filter(opt => opt !== option);
+  const optionIndex = selectedOptions.value.findIndex(opt => opt.id === option.id);
+  
+  if (optionIndex > -1) {
+    selectedOptions.value.splice(optionIndex, 1);
   } else {
     selectedOptions.value.push(option);
   }
+
   emit('handleSelectChange', selectedOptions.value);
 };
 
@@ -104,7 +111,7 @@ onBeforeUnmount(() => {
         @click="selectOption(option)"
       >
         <span class="material-icons text-primary">
-          {{ selectedOptions.includes(option) ? 'check_box' : 'check_box_outline_blank' }}
+          {{ isOptionSelected(option) ? 'check_box' : 'check_box_outline_blank' }}
         </span>
         {{ option.name }}
       </li>
