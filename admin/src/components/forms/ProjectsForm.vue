@@ -208,9 +208,8 @@ const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
       <Button
         v-if="project.idproject"
         type="button"
-        color="outline"
+        color="secondary"
         class="mt-5 mr-3"
-        :is-loading="isLoading"
         :disabled="isLoading"
         @click="deleteProject(project.idproject)"
       >

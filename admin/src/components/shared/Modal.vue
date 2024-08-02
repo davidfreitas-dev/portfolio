@@ -99,7 +99,7 @@ defineExpose({
                       </button>
                     </div>
 
-                    <div class="modal-body overflow-y-auto my-5 px-0.5">
+                    <div class="modal-body overflow-y-auto my-5 p-0.5">
                       <slot />
                     </div>
                   </div>

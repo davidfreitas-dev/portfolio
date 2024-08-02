@@ -59,7 +59,7 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 - [Projects List](#projects-list)
 - [Project Details](#project-details)
 - [Projects Page](#projects-page)
-- [Project Create/Update](#project-Create/Update)
+- [Project Create/Update](#project-create/update)
 - [Project Delete](#project-delete)
 
 #### User Registration
@@ -343,8 +343,9 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 | :--------------- | :-------- | :------------------------------------------------- |
 | `idproject`      | `integer` | Project ID                                         |
 | `destitle`       | `string`  | **Required**. Project title                        |
-| `desdescription` | `string`  | **Required**. Project image name                   |
-| `deslink`        | `string`  | **Required**. Project link                         |
+| `desdescription` | `string`  | **Required**. Project description                  |
+| `deslink`        | `string`  | Project link                                       |
+| `image`          | `string`  | Project image file                                 |
 | `technologies`   | `string`  | **Required**. String with techs ID's (Ex.: "1, 2") |
 
 **Note:** When the Project ID is greater than zero, an update will be made based on the Project ID, otherwise an insertion will be made.

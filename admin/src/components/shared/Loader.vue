@@ -26,6 +26,7 @@ const bgColor = computed(() => {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 6.5rem;
   height: 1.5rem;
 }
 .dots > span {

@@ -23,12 +23,12 @@ const props = defineProps({
 
 <style scoped>
 .primary {
-  @apply flex items-center justify-center gap-1.5 py-3.5 px-4 bg-primary font-semibold text-white text-base rounded-md transition-colors hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-green-600 focus:bg-primary active:bg-primary-pressed disabled:bg-gray-300
+  @apply flex items-center justify-center gap-1.5 py-3.5 px-4 bg-primary font-semibold text-white text-base rounded-md cursor-pointer transition-colors hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-green-600 focus:bg-primary active:bg-primary-pressed disabled:bg-gray-300
 }
 .secondary {
-  @apply flex items-center justify-center gap-1.5 py-3.5 px-4 bg-white font-semibold text-gray-700 text-base rounded-md border-2 border-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-hover
+  @apply flex items-center justify-center gap-1.5 py-3.5 px-4 bg-white font-semibold text-gray-700 text-base rounded-md cursor-pointer border-2 border-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:bg-gray-300 disabled:text-white disabled:cursor-not-allowed
 }
 .outline {
-  @apply flex items-center justify-center gap-1.5 py-3.5 px-4 bg-transparent hover:bg-primary font-semibold text-base text-primary rounded-md outline-none border-2 border-primary hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-green-600 focus:bg-primary focus:text-white active:bg-primary-pressed
+  @apply flex items-center justify-center gap-1.5 py-3.5 px-4 bg-transparent font-semibold text-base text-primary rounded-md cursor-pointer border-2 border-primary hover:bg-primary outline-none hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-green-600 focus:bg-primary focus:text-white active:bg-primary-pressed
 }
 </style>
