@@ -171,7 +171,8 @@ class Project
       :idproject, 
       :destitle, 
       :desdescription, 
-      :technologies
+      :technologies,
+      :deslink
     )";
 
     $idproject = isset($project['idproject']) ? $project['idproject'] : 0;
@@ -184,7 +185,8 @@ class Project
 				":idproject"=>$idproject,
 				":destitle"=>$project['destitle'],
 				":desdescription"=>$project['desdescription'],
-				":technologies"=>$project['technologies']
+				":technologies"=>$project['technologies'],
+        ":deslink"=> $project['deslink']
 			));
 
       if (empty($results)) {

@@ -19,6 +19,7 @@ const props = defineProps({
       destitle: '',
       desdescription: '',
       desimage: '',
+      deslink: '',
       technologies: []
     })
   }
@@ -49,6 +50,7 @@ const buildFormData = (project) => {
   if (project.idproject) formData.append('idproject', project.idproject);
   formData.append('destitle', project.destitle);
   formData.append('desdescription', project.desdescription);
+  formData.append('deslink', project.deslink);
   formData.append('technologies', project.technologies);
   if (project.desimage instanceof File) formData.append('image', project.desimage);
   return formData;
@@ -90,14 +92,15 @@ const techs = ref([]);
 const getTechs = async () => {
   try {
     const response = await axios.get('/technologies');
-
-    techs.value = response.data.map(tech => ({
-      id: tech.idtechnology,
-      name: tech.desname
-    }));
+    
+    techs.value = response.data ? response.data
+      .map(tech => ({
+        id: tech.idtechnology,
+        name: tech.desname
+      })) : [];
   } catch (error) {
     console.log(error);
-    toastRef.value?.showToast('error', 'Falha ao texnologias');
+    toastRef.value?.showToast('error', 'Falha ao carregar tecnologias');
   }
 };
 
@@ -178,6 +181,12 @@ const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
       v-model="project.desdescription"
       label="Descrição" 
       placeholder="Descrição do projeto" 
+    />
+
+    <Input
+      v-model="project.deslink"
+      label="Link"
+      placeholder="Link do projeto"
     />
 
     <MultiSelect

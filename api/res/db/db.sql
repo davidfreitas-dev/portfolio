@@ -33,7 +33,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_projects_create`(
   `pidproject` INT, 
   `pdestitle` VARCHAR(128), 
   `pdesdescription` TEXT, 
-  `ptechnologies` VARCHAR(255)
+  `ptechnologies` VARCHAR(255),
+  `pdeslink` VARCHAR(255) -- Novo parâmetro para o link
 )
 BEGIN
   DECLARE vidproject INT;
@@ -44,7 +45,8 @@ BEGIN
     UPDATE tb_projects
     SET 
       destitle = pdestitle,
-      desdescription = pdesdescription
+      desdescription = pdesdescription,
+      deslink = pdeslink
     WHERE idproject = pidproject;
       
     SET vidproject = pidproject;
@@ -52,8 +54,8 @@ BEGIN
     DELETE FROM tb_projectstechnologies 
     WHERE idproject = pidproject;
   ELSE
-    INSERT INTO tb_projects (destitle, desdescription) 
-    VALUES (pdestitle, pdesdescription);
+    INSERT INTO tb_projects (destitle, desdescription, deslink) 
+    VALUES (pdestitle, pdesdescription, pdeslink);
     
     SET vidproject = LAST_INSERT_ID();
   END IF;
@@ -221,6 +223,7 @@ CREATE TABLE `tb_projects` (
   `destitle` varchar(128) NOT NULL,
   `desdescription` text NOT NULL,
   `desimage` varchar(255) DEFAULT NULL,
+  `deslink` varchar(255) DEFAULT NULL,
   `dtregister` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
