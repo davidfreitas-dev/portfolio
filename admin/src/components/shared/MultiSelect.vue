@@ -71,13 +71,13 @@ onBeforeUnmount(() => {
     </label>
 
     <div
-      :class="['flex items-center justify-between bg-white border text-base w-full h-[52px] rounded-lg px-4 cursor-pointer disabled:cursor-not-allowed', { 'border-2 border-primary': isFocused, 'mt-2 mb-5': label }]"
+      :class="['flex flex-wrap items-center justify-between bg-white border text-base w-full rounded-lg px-4 py-1.5 cursor-pointer disabled:cursor-not-allowed', { 'border-2 border-primary': isFocused, 'mt-2 mb-5': label }]"
       @click="toggleDropdown"
     >
-      <div class="flex items-start justify-center">
+      <div class="flex flex-wrap gap-2 items-center flex-grow">
         <template v-if="selectedOptions.length">
-          <template v-for="(selectedOption) in selectedOptions" :key="selectedOption">
-            <span class="flex items-center gap-2 bg-primary-accent py-1.5 px-4 rounded-full mr-2">
+          <template v-for="(selectedOption) in selectedOptions" :key="selectedOption.id">
+            <span class="flex items-center gap-2 bg-primary-accent py-1.5 px-4 rounded-full">
               {{ selectedOption.name }}
               <span class="material-icons text-base" @click="(event) => { event.stopPropagation(); selectOption(selectedOption); }">
                 close
@@ -105,7 +105,7 @@ onBeforeUnmount(() => {
     >
       <li
         v-for="(option, index) in options"
-        :key="option"
+        :key="option.id"
         :class="{ 'border-b border-gray-300': index !== options.length - 1, 'bg-gray-50': selectedOptions.includes(option) }"
         class="flex items-center gap-2 p-4 text-secondary"
         @click="selectOption(option)"

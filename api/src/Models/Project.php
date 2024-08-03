@@ -185,7 +185,7 @@ class Project
 				":idproject"=>$idproject,
 				":destitle"=>$project['destitle'],
 				":desdescription"=>$project['desdescription'],
-        ":deslink"=> $project['deslink'] ?? null,
+        ":deslink"=> $project['deslink'],
 				":technologies"=>$project['technologies']
 			));
 
