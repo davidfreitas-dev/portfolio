@@ -19,7 +19,7 @@ const props = defineProps({
   dateFormat: {
     type: String,
     default: 'dd/MM/YYYY',
-    validator: (value) => ['dd/MM/YYYY', 'MM/YYYY'].includes(value)  // Ensure it's one of the allowed formats
+    validator: (value) => ['dd/MM/YYYY', 'MM/YYYY'].includes(value)
   }
 });
 
@@ -65,11 +65,12 @@ const formatDate = (value) => {
 const handleInput = (event) => {
   const inputValue = event.target.value;
   const numericValue = inputValue.replace(/[^\d]/g, '').slice(0, MAX_DIGITS);
-
+  
+  event.target.value = numericValue;
   formattedValue.value = formatDate(numericValue);
   rawValue.value = numericValue;
 
-  emit('update:modelValue', formattedValue.value);  // Emit formatted value
+  emit('update:modelValue', formattedValue.value);
 };
 </script>
 
