@@ -8,7 +8,7 @@ import MainContainer from '../components/shared/MainContainer.vue';
       Home
     </h1>
     <p class="text-secondary">
-      Página inicial
+      Bem-vindo à página inicial
     </p>
   </MainContainer>
 </template>
