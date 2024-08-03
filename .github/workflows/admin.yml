@@ -47,7 +47,6 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-        working-directory: ./admin  # Adicionando working-directory aqui pode não funcionar diretamente com setup-node
 
       - name: Cache Node modules
         uses: actions/cache@v3
