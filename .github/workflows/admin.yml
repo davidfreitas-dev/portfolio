@@ -28,9 +28,6 @@ env:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
-    defaults:
-      run:
-        working-directory: ./admin
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -39,20 +36,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: List files
+        run: |
+          ls -R
+          echo "Current directory: $(pwd)"
+        
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
-      - name: List files for debugging
-        run: ls -la ./admin
-      
       - name: Install dependencies
         run: npm ci
+        working-directory: ./admin  # Define o diretório de trabalho para admin
 
       - name: Build
         run: npm run build
+        working-directory: ./admin  # Define o diretório de trabalho para admin
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -60,7 +61,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'  # Upload da pasta dist dentro de admin
+          path: './admin/dist'  # Upload da pasta dist dentro de admin
 
       - name: Deploy to GitHub Pages
         id: deployment
