@@ -17,11 +17,13 @@ $app->get('/images/{folder}/{image}', function (Request $request, Response $resp
 
   $imageDirectoryPath = '/../res/img/';
 
+  $defaultImage = 'no-image.png';
+
   $imagePath = __DIR__ . $imageDirectoryPath . $args['folder'] . '/' . $args['image'];
 
   if (!file_exists($imagePath)) {
 
-    $imagePath = __DIR__ . $imageDirectoryPath . '/no-image.png';
+    $imagePath = __DIR__ . $imageDirectoryPath . $defaultImage;
 
   }
 

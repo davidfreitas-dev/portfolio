@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DB\Database;
+use App\Utils\uploadHandler;
 use App\Enums\HttpStatus as HTTPStatus;
 use App\Utils\ApiResponseFormatter;
 
@@ -202,11 +203,19 @@ class Project
 
       if (!is_string($project['desimage'])) {
 
-        Project::uploadPhoto($results[0]['idproject'], $project['desimage']);
+        $photoUploaded = uploadHandler::uploadPhoto($results[0]['idproject'], $project['image'], "projects");
   
+        if ($photoUploaded) {
+          
+          $imageUrl = self::setPhoto($results[0]['idproject']);
+
+          $results[0]['image'] = $imageUrl;
+
+        }
+
       }
 
-      $code  = $idproject ? 200 : 201;
+      $code = $project['idcategory'] ? HTTPStatus::OK : HTTPStatus::CREATED;
 
       $message = $idproject ? "Projeto atualizado com sucesso" : "Projeto criado com sucesso";
 
@@ -293,79 +302,14 @@ class Project
 				':desimage'=>$imageUrl
 			));
 
+      return $imageUrl;
+
 		} catch (\PDOException $e) {
 
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao definir imagem do projeto: " . $e->getMessage(),
-        null
-      );
+			return null;
 			
 		}
 
   }
-
-  private static function uploadPhoto($idproject, $file)
-	{
-
-		try {
-
-      if (isset($file['name'])) {
-
-        $extension = explode('.', $file['name']);
-  
-        $extension = end($extension);
-
-        switch ($extension) {
-
-          case "jpg":
-          case "jpeg":
-          $image = imagecreatefromjpeg($file["tmp_name"]);
-          break;
-    
-          case "gif":
-          $image = imagecreatefromgif($file["tmp_name"]);
-          break;
-    
-          case "png":
-          $image = imagecreatefrompng($file["tmp_name"]);
-          break;
-    
-        }
-
-        $dist = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 
-              "res" . DIRECTORY_SEPARATOR . 
-              "img" . DIRECTORY_SEPARATOR . 
-              "projects";
-
-        if (!is_dir($dist)) {
-
-            mkdir($dist, 0777, true);
-
-        }
-
-        $dist = $dist . DIRECTORY_SEPARATOR . $idproject . ".jpg";
-
-        imagejpeg($image, $dist);
-
-        imagedestroy($image);
-
-        Project::setPhoto($idproject);
-
-      }
-
-    } catch (\Throwable $e) {
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Erro: " . $e->getMessage(),
-        null
-      );
-      
-    }	
-
-	}
 
 }
