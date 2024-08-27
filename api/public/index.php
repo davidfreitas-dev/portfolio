@@ -49,11 +49,21 @@ $app->add(new Tuupola\Middleware\JwtAuthentication([
   }
 ]));
 
-require_once('base.php');
-require_once('auth.php');
-require_once('user.php');
-require_once('project.php');
-require_once('technology.php');
-require_once('experience.php');
+$app->get('/', function (Request $request, Response $response) {
+
+  $response->getBody()->write(json_encode([
+    'message' => 'Welcome to the Personal Portfolio Site API!'
+  ]));
+
+  return $response->withHeader('content-type', 'application/json');
+
+});
+
+require_once __DIR__ . '/../src/Routes/auth.php';
+require_once __DIR__ . '/../src/Routes/experience.php';
+require_once __DIR__ . '/../src/Routes/image.php';
+require_once __DIR__ . '/../src/Routes/project.php';
+require_once __DIR__ . '/../src/Routes/technology.php';
+require_once __DIR__ . '/../src/Routes/user.php';
 
 $app->run();

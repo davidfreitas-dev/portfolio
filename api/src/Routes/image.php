@@ -3,21 +3,11 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-$app->get('/', function (Request $request, Response $response) {
-
-  $response->getBody()->write(json_encode([
-    'message' => 'Welcome to the Personal Portfolio Site API!'
-  ]));
-
-  return $response->withHeader('content-type', 'application/json');
-
-});
-
 $app->get('/images/{folder}/{image}', function (Request $request, Response $response, array $args) {
 
-  $imageDirectoryPath = '/../res/img/';
+  $imageDirectoryPath = '/../../storage/';
 
-  $defaultImage = 'no-image.png';
+  $defaultImage = 'no-image.jpg';
 
   $imagePath = __DIR__ . $imageDirectoryPath . $args['folder'] . '/' . $args['image'];
 
