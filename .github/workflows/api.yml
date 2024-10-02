@@ -16,6 +16,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v1
+
+      - name: Debug Current Directory
+        run: ls -la
       
       - name: Install Dependencies
         run: composer install
