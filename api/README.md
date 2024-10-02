@@ -1,4 +1,4 @@
-# Personal Portfolio Site API
+# Personal Portfolio API
 
 This template should help get you started developing with this API in Docker.
 
