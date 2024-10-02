@@ -7,6 +7,8 @@ on:
     paths:
       - "api/**"
 
+  workflow_dispatch:
+
 jobs:
   build:
     name: Build and Deploy API
