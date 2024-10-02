@@ -7,10 +7,6 @@
 -- Versão do servidor: 5.6.51
 -- Versão do PHP: 8.2.16
 
-create database site_db;
-
-use site_db;
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";

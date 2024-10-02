@@ -1,4 +1,4 @@
-name: Personal Portfolio Site API CI
+name: Personal Portfolio API CI
 
 on:
   push:
@@ -14,9 +14,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v1
-
-      - name: Debug Current Directory
-        run: ls -la
       
       - name: Install Dependencies
         run: composer install
@@ -25,11 +22,11 @@ jobs:
       - name: Deploy API to Server
         uses: easingthemes/ssh-deploy@main
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.API_SERVER_SSH_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
           ARGS: "-rlgoDzvc -i"
           SOURCE: "./api/"
           TARGET: ${{ secrets.API_REMOTE_TARGET }}
-          REMOTE_HOST: ${{ secrets.API_REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.API_REMOTE_USER }}
-          REMOTE_PORT: ${{ secrets.API_REMOTE_PORT }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
           EXCLUDE: "/.git/, .gitignore, .env.example, .dockerignore, docker-compose.yml, Dockerfile, README.md"

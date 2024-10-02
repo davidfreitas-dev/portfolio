@@ -24,19 +24,19 @@ $app->addErrorMiddleware(true, true, true);
 $app->add(new Tuupola\Middleware\JwtAuthentication([
   "header" => "X-Token",
   "regexp" => "/(.*)/",
-  "path" => "/",
+  "path" => "/api",
   "secure" => "false",
   "ignore" => [
-    "/signin", 
-    "/signup", 
-    "/forgot", 
-    "/forgot/token", 
-    "/forgot/reset", 
-    "/images", 
-    "/experiences($|/)",
-    "/technologies($|/)",
-    "/projects($|/)",
-    "/($|/)"
+    "/api/signin", 
+    "/api/signup", 
+    "/api/forgot", 
+    "/api/forgot/token", 
+    "/api/forgot/reset", 
+    "/api/images", 
+    "/api/experiences($|/)",
+    "/api/technologies($|/)",
+    "/api/projects($|/)",
+    "/api/($|/)"
   ],
   "secret" => $_ENV['JWT_SECRET_KEY'],
   "algorithm" => "HS256",
@@ -49,21 +49,20 @@ $app->add(new Tuupola\Middleware\JwtAuthentication([
   }
 ]));
 
-$app->get('/', function (Request $request, Response $response) {
+$app->group('/api', function () use ($app) {
+  $app->get('/', function (Request $request, Response $response) {
+    $response->getBody()->write(json_encode([
+      'message' => 'Welcome to the Personal Portfolio Site API!'
+    ]));    
+    return $response->withHeader('content-type', 'application/json');
+  });
 
-  $response->getBody()->write(json_encode([
-    'message' => 'Welcome to the Personal Portfolio Site API!'
-  ]));
-
-  return $response->withHeader('content-type', 'application/json');
-
+  require_once __DIR__ . '/../src/Routes/auth.php';
+  require_once __DIR__ . '/../src/Routes/experience.php';
+  require_once __DIR__ . '/../src/Routes/image.php';
+  require_once __DIR__ . '/../src/Routes/project.php';
+  require_once __DIR__ . '/../src/Routes/technology.php';
+  require_once __DIR__ . '/../src/Routes/user.php';
 });
-
-require_once __DIR__ . '/../src/Routes/auth.php';
-require_once __DIR__ . '/../src/Routes/experience.php';
-require_once __DIR__ . '/../src/Routes/image.php';
-require_once __DIR__ . '/../src/Routes/project.php';
-require_once __DIR__ . '/../src/Routes/technology.php';
-require_once __DIR__ . '/../src/Routes/user.php';
 
 $app->run();
