@@ -125,7 +125,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_users_update` (
   `piduser` INT, 
   `pdesperson` VARCHAR(64), 
   `pdeslogin` VARCHAR(64), 
-  `pdespassword` VARCHAR(256), 
   `pdesemail` VARCHAR(128), 
   `pnrphone` VARCHAR(15), 
   `pnrcpf` VARCHAR(15), 
@@ -147,7 +146,6 @@ BEGIN
     
   UPDATE tb_users
   SET deslogin = pdeslogin,
-      despassword = pdespassword,
       inadmin = pinadmin
   WHERE iduser = piduser;
     

@@ -52,7 +52,7 @@ class User extends Model {
 
       if (empty($results)) {
         
-        throw new \Exception("Não foi possível persistir os dados do cadastro", HTTPStatus::BAD_REQUEST);
+        throw new \Exception("Não foi possível efetuar o cadastro.", HTTPStatus::BAD_REQUEST);
 
       }
 
@@ -73,7 +73,6 @@ class User extends Model {
               :iduser, 
               :desperson, 
               :deslogin, 
-              :despassword, 
               :desemail, 
               :nrphone, 
               :nrcpf, 
@@ -82,11 +81,13 @@ class User extends Model {
 		
 		try {
 
-      $this->checkUserExists(
-        $this->getdeslogin(), 
-        $this->getdesemail(),
-        $this->getnrcpf() 
-      );
+      if (!filter_var(strtolower($this->getdesemail()), FILTER_VALIDATE_EMAIL)) {
+
+        throw new \Exception("O e-mail informado não é válido.", HTTPStatus::BAD_REQUEST);
+        
+      }
+
+      $this->checkUserExists($this->getdeslogin(), strtolower($this->getdesemail()), $this->getnrcpf(), $this->getiduser());
 
 			$db = new Database();
 			
@@ -94,16 +95,15 @@ class User extends Model {
         ":iduser"      => $this->getiduser(),	
         ":desperson"   => $this->getdesperson(),
 				":deslogin"    => $this->getdeslogin(),
-				":despassword" => PasswordHelper::hashPassword($this->getdespassword()),
-				":desemail"    => $this->getdesemail(),
-				":nrphone"     => $this->getnrphone(),
-				":nrcpf"       => $this->getnrcpf(),
+				":desemail"    => strtolower($this->getdesemail()),
+				":nrphone"     => $this->getnrphone() ? preg_replace('/[^0-9]/is', '', $this->getnrphone()) : NULL,
+				":nrcpf"       => $this->getnrcpf() ? preg_replace('/[^0-9]/is', '', $this->getnrcpf()) : NULL,
 				":inadmin"     => $this->getinadmin()
 			));
 
       if (empty($results)) {
         
-        throw new \Exception("Não foi possível persistir os dados do cadastro");
+        throw new \Exception("Não foi possível efetuar a atualização.");
 
       }
 
@@ -256,16 +256,18 @@ class User extends Model {
   private function checkUserExists($login, $email, $cpf, $iduser = null) 
   {
 
+    $cpf = preg_replace('/[^0-9]/is', '', $cpf);
+
     $sql = "SELECT * FROM tb_users a 
             INNER JOIN tb_persons b 
             ON a.idperson = b.idperson 
-            WHERE a.deslogin = :deslogin 
+            WHERE (a.deslogin = :deslogin 
             OR b.desemail = :desemail	
-            OR b.nrcpf = :nrcpf";
+            OR b.nrcpf = :nrcpf)";
 
     if ($iduser) {
 
-      $sql .= " AND iduser != :iduser";
+      $sql .= " AND a.iduser != :iduser";
 
     }
 
