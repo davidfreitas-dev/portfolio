@@ -37,7 +37,7 @@ class Auth {
     } catch (\Exception $e) {
 
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao cadastrar usuário: " . $e->getMessage(),
         null
@@ -78,14 +78,14 @@ class Auth {
   
       }
 
-      $token = self::generateToken($results[0]);
+      $jwt = self::generateToken($results[0]);
 
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK,
         "success", 
         "Usuário autenticado com sucesso",
-        $token
-      );      
+        $jwt
+      );   
 
     } catch (\PDOException $e) {
       
@@ -115,41 +115,23 @@ class Auth {
       $results = $db->select($sql, array(
         ":email"=>$email
       ));
-
+      
       if (empty($results)) {
-
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NOT_FOUND,
-          "error", 
-          "O e-mail informado não consta no banco de dados",
-          null
-        );
-
-      } 
+            
+        throw new \Exception("O e-mail informado não consta no banco de dados", HTTPStatus::NOT_FOUND);
+        
+      }
       
       $user = $results[0];
 
-      $query = $db->select(
-        "CALL sp_userspasswordsrecoveries_create(:iduser, :desip)", array(
+      $idrecovery = $db->insert(
+        "INSERT INTO tb_userspasswordsrecoveries (iduser, desip) VALUES (:iduser, :desip)", array(
           ":iduser"=>$user['iduser'],
           ":desip"=>$_SERVER['REMOTE_ADDR']
         )
       ); 
 
-      if (empty($query))	{
-
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::BAD_REQUEST,
-          "error", 
-          "Não foi possível recuperar a senha",
-          null
-        );
-
-      }
-
-      $recovery = $query[0];
-
-      $code = AESCryptographer::encrypt($recovery['idrecovery']);
+      $code = AESCryptographer::encrypt($idrecovery);
 
       $link = $_ENV['DASHBOARD_URL']."/forgot/reset?code=$code";
 
@@ -175,9 +157,9 @@ class Auth {
     } catch (\PDOException $e) {
       
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
-        "Falha ao recuperar senha: " . $e->getMessage(),
+        "Falha ao enviar link de recuperação de senha: " . $e->getMessage(),
         null
       );
 
@@ -190,12 +172,7 @@ class Auth {
 
     if (!isset($code) || empty($code)) {
 
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::UNAUTHORIZED, 
-        "error", 
-        "Falha ao validar token: token inexistente.",
-        null
-      );
+      throw new \Exception("Falha ao validar token: token inexistente.", HTTPStatus::UNAUTHORIZED);
 
     }
 
@@ -218,12 +195,7 @@ class Auth {
 
       if (empty($results)) {
 
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::UNAUTHORIZED,
-          "error", 
-          "O link de redefinição utilizado expirou",
-          null
-        );
+        throw new \Exception("O link de redefinição utilizado expirou", HTTPStatus::UNAUTHORIZED);
 
       } 
       
@@ -237,7 +209,7 @@ class Auth {
     } catch (\PDOException $e) {
       
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao validar token: " . $e->getMessage(),
         null
@@ -307,36 +279,6 @@ class Auth {
         null
       );
 
-    }
-
-  }
-
-  private static function checkUserExists($data) 
-  {
-
-    $sql = "SELECT * FROM tb_users a 
-            INNER JOIN tb_persons b 
-            ON a.idperson = b.idperson 
-            WHERE a.deslogin = :deslogin 
-            OR b.desemail = :desemail	
-            OR b.nrcpf = :nrcpf";
-
-    try {
-
-      $db = new Database();
-        
-      $results = $db->select($sql, array(
-        ":deslogin" => $data['deslogin'],
-        ":desemail" => $data['desemail'],
-        ":nrcpf" => $data['nrcpf']
-      ));
-
-      return !empty($results);
-
-    } catch (\PDOException $e) {
-
-      return false;
-      
     }
 
   }

@@ -27,27 +27,31 @@ class User extends Model {
 
     try {
 
-      $this->checkUserExists(
-        $this->getdeslogin(), 
-        $this->getdesemail(),
-        $this->getnrcpf() 
-      );
+      if (!filter_var(strtolower($this->getdesemail()), FILTER_VALIDATE_EMAIL)) {
+
+        throw new \Exception("O e-mail informado não é válido.", HTTPStatus::BAD_REQUEST);
+        
+      }
+
+      $this->checkPasswordSecurity($this->getdespassword());
+
+      $this->checkUserExists($this->getdeslogin(), strtolower($this->getdesemail()), $this->getnrcpf());
       
       $db = new Database();
 
 			$results = $db->select($sql, array(
 				":desperson"   => $this->getdesperson(),
 				":deslogin"    => $this->getdeslogin(),
+				":desemail"    => strtolower($this->getdesemail()),
 				":despassword" => $this->getPasswordHash($this->getdespassword()),
-				":desemail"    => $this->getdesemail(),
-				":nrphone"     => $this->getnrphone(),
-				":nrcpf"       => $this->getnrcpf(),
+				":nrphone"     => $this->getnrphone() ? preg_replace('/[^0-9]/is', '', $this->getnrphone()) : NULL,
+				":nrcpf"       => $this->getnrcpf() ? preg_replace('/[^0-9]/is', '', $this->getnrcpf()) : NULL,
 				":inadmin"     => $this->getinadmin()
 			));
 
       if (empty($results)) {
         
-        throw new \Exception("Não foi possível persistir os dados do cadastro");
+        throw new \Exception("Não foi possível persistir os dados do cadastro", HTTPStatus::BAD_REQUEST);
 
       }
 
@@ -55,7 +59,7 @@ class User extends Model {
 
     } catch (\Exception $e) {
 			
-			throw new \Exception($e->getMessage());
+			throw new \Exception($e->getMessage(), $e->getCode());
 			
 		}
 
@@ -257,6 +261,35 @@ class User extends Model {
 
 	}
 
+  private function checkPasswordSecurity($password) 
+  {
+
+    if (strlen($password) < 8) {
+
+      throw new \Exception("A senha deve conter pelo menos 8 caracteres.", HTTPStatus::BAD_REQUEST);
+
+    }
+
+    if (!preg_match('/[a-z]/', $password) || !preg_match('/[A-Z]/', $password)) {
+
+      throw new \Exception("A senha deve conter letras maiúsculas e minúsculas.", HTTPStatus::BAD_REQUEST);
+
+    }
+
+    if (!preg_match('/[0-9]/', $password)) {
+
+      throw new \Exception("A senha deve conter pelo menos um número.", HTTPStatus::BAD_REQUEST);
+
+    }
+
+    if (!preg_match('/[\W_]/', $password)) {
+
+      throw new \Exception("A senha deve conter pelo menos um caractere especial.", HTTPStatus::BAD_REQUEST);
+
+    }
+
+  }
+
   private function checkUserExists($login, $email, $cpf, $iduser = null) 
   {
 
@@ -295,19 +328,19 @@ class User extends Model {
         
         if ($results[0]['deslogin'] === $login) {
             
-          throw new \Exception("O nome de usuário informado já está em uso");
+          throw new \Exception("O nome de usuário informado já está em uso", HTTPStatus::BAD_REQUEST);
           
         }
 
         if ($results[0]['desemail'] === $email) {
           
-          throw new \Exception("O email informado já está cadastrado");
+          throw new \Exception("O email informado já está cadastrado", HTTPStatus::BAD_REQUEST);
           
         }
 
         if ($results[0]['nrcpf'] === $cpf) {
           
-          throw new \Exception("O CPF/CNPJ informado já está cadastrado");
+          throw new \Exception("O CPF informado já está cadastrado", HTTPStatus::BAD_REQUEST);
           
         }
 
@@ -315,7 +348,7 @@ class User extends Model {
 
     } catch (\Exception $e) {
 
-      throw new \Exception($e->getMessage());
+      throw new \Exception($e->getMessage(), $e->getCode());
       
     }
 

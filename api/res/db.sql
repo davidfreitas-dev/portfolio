@@ -78,18 +78,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_projects_delete` (`pidproject` I
   DELETE FROM tb_projects WHERE idproject = pidproject;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_userspasswordsrecoveries_create` (
-  `piduser` INT, 
-  `pdesip` VARCHAR(45)
-)   
-BEGIN  
-  INSERT INTO tb_userspasswordsrecoveries (iduser, desip)
-  VALUES(piduser, pdesip);
-  
-  SELECT * FROM tb_userspasswordsrecoveries
-  WHERE idrecovery = LAST_INSERT_ID();    
-END$$
-
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_users_create` (
   `pdesperson` VARCHAR(64), 
   `pdeslogin` VARCHAR(64), 
