@@ -19,20 +19,22 @@ class Auth {
 
 		try {
 
-      if (self::checkUserExists($data)) {
-        
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::CONFLICT,
-          "error", 
-          "Usuário já cadastrado no banco de dados",
-          null
-        );
+      $user = new User();
 
-      }
+      $user->setAttributes($data);
 
-      return User::create($data);
+      $data = $user->create();
 
-    } catch (\PDOException $e) {
+      $jwt = self::generateToken($data);
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::CREATED, 
+        "success", 
+        "Usuário cadastrado com sucesso",
+        $jwt
+      );
+
+    } catch (\Exception $e) {
 
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::INTERNAL_SERVER_ERROR, 

@@ -2,8 +2,6 @@
 
 namespace App\DB;
 
-use \PDO;
-
 class Database {
 
 	private $conn;
@@ -38,10 +36,9 @@ class Database {
 
 	}
 
-	public function query($rawQuery, $params = array())
-	{
-
-		try {
+  public function insert($rawQuery, $params = array()):int
+  {
+    try {
       
       $this->conn->beginTransaction();
 
@@ -51,17 +48,19 @@ class Database {
 
       $stmt->execute();
 
+      $lastInsertId = $this->conn->lastInsertId();
+
       $this->conn->commit();
 
+      return $lastInsertId;
+
     } catch (\PDOException $e) {
-      
+        
       $this->conn->rollBack();
       
       throw $e;
-
     }
-
-	}
+  }
 
 	public function select($rawQuery, $params = array()):array
 	{
@@ -83,6 +82,33 @@ class Database {
       $this->conn->commit();
 
       return $results;
+
+    } catch (\PDOException $e) {
+      
+      $this->conn->rollBack();
+      
+      throw $e;
+
+    }
+
+	}
+
+	public function query($rawQuery, $params = array())
+	{
+
+		try {
+      
+      $this->conn->beginTransaction();
+
+      $stmt = $this->conn->prepare($rawQuery);
+
+      $this->setParams($stmt, $params);
+
+      $stmt->execute();
+
+      $this->conn->commit();
+
+      return $stmt->rowCount();
 
     } catch (\PDOException $e) {
       

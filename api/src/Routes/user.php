@@ -32,11 +32,15 @@ $app->get('/users/{id}', function (Request $request, Response $response, array $
 
 $app->put('/users/update/{id}', function (Request $request, Response $response, array $args) {
 
-  $id = $args['id'];
-
   $data = $request->getParsedBody();
 
-  $results = User::update($id, $data);
+  $data['iduser'] = (int)$args['id'];
+
+  $user = new User();
+
+  $user->setAttributes($data);
+
+  $results = $user->update();
 
   $response->getBody()->write(json_encode($results));
 

@@ -3,13 +3,126 @@
 namespace App\Models;
 
 use App\DB\Database;
+use App\Models\Model;
 use App\Traits\TokenGenerator;
 use App\Utils\ApiResponseFormatter;
 use App\Enums\HttpStatus as HTTPStatus;
 
-class User {
+class User extends Model {
 
   use TokenGenerator;
+  
+  public function create()
+  {
+
+    $sql = "CALL sp_users_create(
+      :desperson, 
+      :deslogin, 
+      :despassword, 
+      :desemail, 
+      :nrphone, 
+      :nrcpf, 
+      :inadmin
+    )";
+
+    try {
+
+      $this->checkUserExists(
+        $this->getdeslogin(), 
+        $this->getdesemail(),
+        $this->getnrcpf() 
+      );
+      
+      $db = new Database();
+
+			$results = $db->select($sql, array(
+				":desperson"   => $this->getdesperson(),
+				":deslogin"    => $this->getdeslogin(),
+				":despassword" => $this->getPasswordHash($this->getdespassword()),
+				":desemail"    => $this->getdesemail(),
+				":nrphone"     => $this->getnrphone(),
+				":nrcpf"       => $this->getnrcpf(),
+				":inadmin"     => $this->getinadmin()
+			));
+
+      if (empty($results)) {
+        
+        throw new \Exception("Não foi possível persistir os dados do cadastro");
+
+      }
+
+      return $results[0];
+
+    } catch (\Exception $e) {
+			
+			throw new \Exception($e->getMessage());
+			
+		}
+
+  }
+
+	public function update() 
+	{
+		
+		$sql = "CALL sp_users_update(
+              :iduser, 
+              :desperson, 
+              :deslogin, 
+              :despassword, 
+              :desemail, 
+              :nrphone, 
+              :nrcpf, 
+              :inadmin
+            )";
+		
+		try {
+
+      $this->checkUserExists(
+        $this->getdeslogin(), 
+        $this->getdesemail(),
+        $this->getnrcpf() 
+      );
+
+			$db = new Database();
+			
+			$results = $db->select($sql, array(
+        ":iduser"      => $this->getiduser(),	
+        ":desperson"   => $this->getdesperson(),
+				":deslogin"    => $this->getdeslogin(),
+				":despassword" => $this->getPasswordHash($this->getdespassword()),
+				":desemail"    => $this->getdesemail(),
+				":nrphone"     => $this->getnrphone(),
+				":nrcpf"       => $this->getnrcpf(),
+				":inadmin"     => $this->getinadmin()
+			));
+
+      if (empty($results)) {
+        
+        throw new \Exception("Não foi possível persistir os dados do cadastro");
+
+      }
+
+      $jwt = self::generateToken($results[0]);
+
+			return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Usuário atualizado com sucesso",
+        $jwt
+      );
+
+		} catch (\Exception $e) {
+
+			return ApiResponseFormatter::formatResponse(
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        "error", 
+        "Falha ao atualizar dados do usuário: " . $e->getMessage(),
+        null
+      );
+			
+		}
+
+	}
 
 	public static function list() 
   { 
@@ -101,106 +214,6 @@ class User {
 		}
 
 	}
-  
-  public static function create($data)
-  {
-
-    $sql = "CALL sp_users_create(
-      :desperson, 
-      :deslogin, 
-      :despassword, 
-      :desemail, 
-      :nrphone, 
-      :nrcpf, 
-      :inadmin
-    )";
-
-    try {
-      
-      $db = new Database();
-
-			$results = $db->select($sql, array(
-				":desperson"=>$data['desperson'],
-				":deslogin"=>$data['deslogin'],
-				":despassword"=>User::getPasswordHash($data['despassword']),
-				":desemail"=>$data['desemail'],
-				":nrphone"=>$data['nrphone'],
-				":nrcpf"=>$data['nrcpf'],
-				":inadmin"=>$data['inadmin']
-			));
-
-      $token = self::generateToken($results[0]);
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::CREATED, 
-        "success", 
-        "Usuário cadastrado com sucesso",
-        $token
-      );
-
-    } catch (\PDOException $e) {
-			
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao cadastrar usuário: " . $e->getMessage(),
-        null
-      );
-			
-		}		
-
-  }
-
-	public static function update($iduser, $user) 
-	{
-		
-		$sql = "CALL sp_users_update(
-              :iduser, 
-              :desperson, 
-              :deslogin, 
-              :despassword, 
-              :desemail, 
-              :nrphone, 
-              :nrcpf, 
-              :inadmin
-            )";
-		
-		try {
-
-			$db = new Database();
-			
-			$results = $db->select($sql, array(
-				":iduser"=>$iduser,
-				":desperson"=>$user['desperson'],
-				":deslogin"=>$user['deslogin'],
-				":despassword"=>$user['despassword'],
-				":desemail"=>$user['desemail'],
-				":nrphone"=>$user['nrphone'],
-				":nrcpf"=>$user['nrcpf'],
-				":inadmin"=>$user['inadmin']
-			));
-
-      $token = self::generateToken($results[0]);
-
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Usuário atualizado com sucesso",
-        $token
-      );
-
-		} catch (\PDOException $e) {
-
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao atualizar dados do usuário: " . $e->getMessage(),
-        null
-      );
-			
-		}		
-
-	}
 
 	public static function delete($iduser) 
 	{
@@ -235,7 +248,7 @@ class User {
 
 	}
 
-  private static function getPasswordHash($password)
+  private function getPasswordHash($password)
 	{
 
 		return password_hash($password, PASSWORD_BCRYPT, [
@@ -243,6 +256,70 @@ class User {
 		]);
 
 	}
+
+  private function checkUserExists($login, $email, $cpf, $iduser = null) 
+  {
+
+    $sql = "SELECT * FROM tb_users a 
+            INNER JOIN tb_persons b 
+            ON a.idperson = b.idperson 
+            WHERE a.deslogin = :deslogin 
+            OR b.desemail = :desemail	
+            OR b.nrcpf = :nrcpf";
+
+    if ($iduser) {
+
+      $sql .= " AND iduser != :iduser";
+
+    }
+
+    try {
+
+      $db = new Database();
+
+      $params = [
+        ":deslogin" => $login,
+        ":desemail" => $email,
+        ":nrcpf"    => $cpf,
+      ];
+
+      if ($iduser) {
+
+        $params[":iduser"] = $iduser;
+  
+      }
+        
+      $results = $db->select($sql, $params);
+
+      if (count($results) > 0) {
+        
+        if ($results[0]['deslogin'] === $login) {
+            
+          throw new \Exception("O nome de usuário informado já está em uso");
+          
+        }
+
+        if ($results[0]['desemail'] === $email) {
+          
+          throw new \Exception("O email informado já está cadastrado");
+          
+        }
+
+        if ($results[0]['nrcpf'] === $cpf) {
+          
+          throw new \Exception("O CPF/CNPJ informado já está cadastrado");
+          
+        }
+
+      }
+
+    } catch (\Exception $e) {
+
+      throw new \Exception($e->getMessage());
+      
+    }
+
+  }
 
 }
 
