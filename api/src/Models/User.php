@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\DB\Database;
 use App\Models\Model;
+use App\Utils\PasswordHelper;
 use App\Traits\TokenGenerator;
 use App\Utils\ApiResponseFormatter;
 use App\Enums\HttpStatus as HTTPStatus;
@@ -33,7 +34,7 @@ class User extends Model {
         
       }
 
-      $this->checkPasswordSecurity($this->getdespassword());
+      PasswordHelper::checkPasswordStrength($this->getdespassword());
 
       $this->checkUserExists($this->getdeslogin(), strtolower($this->getdesemail()), $this->getnrcpf());
       
@@ -43,7 +44,7 @@ class User extends Model {
 				":desperson"   => $this->getdesperson(),
 				":deslogin"    => $this->getdeslogin(),
 				":desemail"    => strtolower($this->getdesemail()),
-				":despassword" => $this->getPasswordHash($this->getdespassword()),
+				":despassword" => PasswordHelper::hashPassword($this->getdespassword()),
 				":nrphone"     => $this->getnrphone() ? preg_replace('/[^0-9]/is', '', $this->getnrphone()) : NULL,
 				":nrcpf"       => $this->getnrcpf() ? preg_replace('/[^0-9]/is', '', $this->getnrcpf()) : NULL,
 				":inadmin"     => $this->getinadmin()
@@ -93,7 +94,7 @@ class User extends Model {
         ":iduser"      => $this->getiduser(),	
         ":desperson"   => $this->getdesperson(),
 				":deslogin"    => $this->getdeslogin(),
-				":despassword" => $this->getPasswordHash($this->getdespassword()),
+				":despassword" => PasswordHelper::hashPassword($this->getdespassword()),
 				":desemail"    => $this->getdesemail(),
 				":nrphone"     => $this->getnrphone(),
 				":nrcpf"       => $this->getnrcpf(),
@@ -251,44 +252,6 @@ class User extends Model {
 		}		
 
 	}
-
-  private function getPasswordHash($password)
-	{
-
-		return password_hash($password, PASSWORD_BCRYPT, [
-			'cost' => 12
-		]);
-
-	}
-
-  private function checkPasswordSecurity($password) 
-  {
-
-    if (strlen($password) < 8) {
-
-      throw new \Exception("A senha deve conter pelo menos 8 caracteres.", HTTPStatus::BAD_REQUEST);
-
-    }
-
-    if (!preg_match('/[a-z]/', $password) || !preg_match('/[A-Z]/', $password)) {
-
-      throw new \Exception("A senha deve conter letras maiúsculas e minúsculas.", HTTPStatus::BAD_REQUEST);
-
-    }
-
-    if (!preg_match('/[0-9]/', $password)) {
-
-      throw new \Exception("A senha deve conter pelo menos um número.", HTTPStatus::BAD_REQUEST);
-
-    }
-
-    if (!preg_match('/[\W_]/', $password)) {
-
-      throw new \Exception("A senha deve conter pelo menos um caractere especial.", HTTPStatus::BAD_REQUEST);
-
-    }
-
-  }
 
   private function checkUserExists($login, $email, $cpf, $iduser = null) 
   {

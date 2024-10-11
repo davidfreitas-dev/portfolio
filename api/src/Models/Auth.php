@@ -5,6 +5,7 @@ namespace App\Models;
 use App\DB\Database;
 use App\Mail\Mailer;
 use App\Models\User;
+use App\Utils\PasswordHelper;
 use App\Traits\TokenGenerator;
 use App\Utils\AESCryptographer;
 use App\Utils\ApiResponseFormatter;
@@ -62,9 +63,9 @@ class Auth {
       $db = new Database();
 
       $results = $db->select($sql, array(
-        ":deslogin"=>$credential,
-        ":desemail"=>$credential,
-        ":nrcpf"=>$credential
+        ":deslogin" => $credential,
+        ":desemail" => $credential,
+        ":nrcpf"    => $credential
       ));
 
       if (empty($results) || !password_verify($password, $results[0]['despassword'])) {
@@ -113,7 +114,7 @@ class Auth {
       $db = new Database();
 
       $results = $db->select($sql, array(
-        ":email"=>$email
+        ":email" => $email
       ));
       
       if (empty($results)) {
@@ -126,8 +127,8 @@ class Auth {
 
       $idrecovery = $db->insert(
         "INSERT INTO tb_userspasswordsrecoveries (iduser, desip) VALUES (:iduser, :desip)", array(
-          ":iduser"=>$user['iduser'],
-          ":desip"=>$_SERVER['REMOTE_ADDR']
+          ":iduser" => $user['iduser'],
+          ":desip"  => $_SERVER['REMOTE_ADDR']
         )
       ); 
 
@@ -140,8 +141,8 @@ class Auth {
         $user['desperson'], 
         "Redefinição de senha", 
         array(
-          "name"=>$user['desperson'],
-          "link"=>$link
+          "name" => $user['desperson'],
+          "link" => $link
         )
       );				
 
@@ -154,7 +155,7 @@ class Auth {
         null
       );
 
-    } catch (\PDOException $e) {
+    } catch (\Exception $e) {
       
       return ApiResponseFormatter::formatResponse(
         $e->getCode(), 
@@ -190,7 +191,7 @@ class Auth {
       $db = new Database();
 
       $results = $db->select($sql, array(
-        ":idrecovery"=>$idrecovery
+        ":idrecovery" => $idrecovery
       ));
 
       if (empty($results)) {
@@ -206,7 +207,7 @@ class Auth {
         $results[0]
       );
 
-    } catch (\PDOException $e) {
+    } catch (\Exception $e) {
       
       return ApiResponseFormatter::formatResponse(
         $e->getCode(), 
@@ -228,11 +229,13 @@ class Auth {
 
     try {
 
+      PasswordHelper::checkPasswordStrength($password);
+
       $db = new Database();
 
       $db->query($sql, array(
-        ":despassword"=>Auth::getPasswordHash($password),
-        ":iduser"=>$iduser
+        ":iduser"      => $iduser,
+        ":despassword" => PasswordHelper::hashPassword($password)
       ));
 
       return ApiResponseFormatter::formatResponse(
@@ -242,10 +245,10 @@ class Auth {
         null
       );
 
-    } catch (\PDOException $e) {
+    } catch (\Exception $e) {
 
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao gravar nova senha: " . $e->getMessage(),
         null
@@ -282,14 +285,5 @@ class Auth {
     }
 
   }
-
-  private static function getPasswordHash($password)
-	{
-
-		return password_hash($password, PASSWORD_BCRYPT, [
-			'cost' => 12
-		]);
-
-	}
 
 }
