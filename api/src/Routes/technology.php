@@ -46,9 +46,15 @@ $app->get('/technologies/page/{page}', function (Request $request, Response $res
 
 $app->post('/technologies/create', function (Request $request, Response $response) {
 
-  $payload = $request->getParsedBody();
+  $data = $request->getParsedBody();
 
-  $results = Technology::create($payload);
+  $data['image'] = isset($_FILES['image']) ? $_FILES['image'] : NULL;
+
+  $technology = new Technology();
+
+  $technology->setAttributes($data);
+
+  $results = $technology->create();
 
   $response->getBody()->write(json_encode($results));
 
@@ -58,13 +64,19 @@ $app->post('/technologies/create', function (Request $request, Response $respons
 
 });
 
-$app->put('/technologies/update/{id}', function (Request $request, Response $response, array $args) {
+$app->post('/technologies/update/{id}', function (Request $request, Response $response) {
 
-  $id = $args['id'];
+  $data = $request->getParsedBody();
 
-  $payload = $request->getParsedBody();
+  $data['idtechnology'] = (int)$request->getAttribute('id');
 
-  $results = Technology::update($id, $payload);
+  $data['image'] = isset($_FILES['image']) ? $_FILES['image'] : NULL;
+
+  $technology = new Technology();
+
+  $technology->setAttributes($data);
+
+  $results = $technology->update();
 
   $response->getBody()->write(json_encode($results));
 

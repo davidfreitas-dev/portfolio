@@ -1,4 +1,5 @@
 storage/projects
+storage/technologies
 vendor/
 .idea/
 .git/

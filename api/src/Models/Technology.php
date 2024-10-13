@@ -3,16 +3,18 @@
 namespace App\Models;
 
 use App\DB\Database;
+use App\Models\Model;
+use App\Utils\UploadHandler;
 use App\Enums\HttpStatus as HTTPStatus;
 use App\Utils\ApiResponseFormatter;
 
-class Technology
+class Technology extends Model
 {
 
   public static function list() 
   {    
-    $sql = "SELECT * FROM tb_technologies
-            ORDER BY idtechnology DESC";
+    
+    $sql = "SELECT * FROM tb_technologies ORDER BY idtechnology DESC";
 		
 		try {
 
@@ -20,28 +22,23 @@ class Technology
 
 			$results = $db->select($sql);
 			
-			if (count($results)) {
+			if (empty($results)) {
 
-				return ApiResponseFormatter::formatResponse(
-          HTTPStatus::OK, 
-          "success", 
-          "Lista de tecnologias",
-          $results
-        );
-
-			}
+        throw new \Exception("Nenhuma tecnologia encontrada.", HTTPStatus::NO_CONTENT);
+        
+      }
       
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::NO_CONTENT,
+        HTTPStatus::OK, 
         "success", 
-        "Nenhuma tecnologia encontrada",
-        null
+        "Lista de tecnologias",
+        $results
       );
 
-		} catch (\PDOException $e) {
+		} catch (\Exception $e) {
 
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao obter tecnologias: " . $e->getMessage(),
         null
@@ -54,8 +51,7 @@ class Technology
   public static function get($idtechnology)
 	{
 
-    $sql = "SELECT * FROM tb_technologies
-            WHERE idtechnology = :idtechnology";
+    $sql = "SELECT * FROM tb_technologies WHERE idtechnology = :idtechnology";
 
 		try {
 
@@ -65,28 +61,23 @@ class Technology
 				":idtechnology"=>$idtechnology
 			));
 
-      if (count($results)) {
+      if (empty($results)) {
 			
-			  return ApiResponseFormatter::formatResponse(
-          HTTPStatus::OK, 
-          "success", 
-          "Detalhes da tecnologia",
-          $results[0]
-        );
+        throw new \Exception("Tecnologia não encontrada.", HTTPStatus::NOT_FOUND);
         
       }
-
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::NOT_FOUND,
-        "error", 
-        "Tecnologia não encontrada",
-        null
+      
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Detalhes da tecnologia",
+        $results[0]
       );
 
-		} catch (\PDOException $e) {
+		} catch (\Exception $e) {
 			
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao obter tecnologia: " . $e->getMessage(),
         null
@@ -116,12 +107,7 @@ class Technology
 			
 			if (empty($results)) {
 
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NO_CONTENT,
-          "success", 
-          "Nenhuma tecnologia encontrada",
-          null
-        );
+        throw new \Exception("Nenhuma tecnologia encontrada.", HTTPStatus::NO_CONTENT);
         
       } 
 
@@ -136,10 +122,10 @@ class Technology
         ]
       );
 
-		} catch (\PDOException $e) {
+		} catch (\Exception $e) {
 
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao obter projetos: " . $e->getMessage(),
         null
@@ -149,31 +135,46 @@ class Technology
 
 	}
 
-  public static function create($technology)
+  public function create()
   {
 
-    $sql = "INSERT INTO tb_technologies (desname)
-            VALUES (:desname)";
+    $sql = "INSERT INTO tb_technologies (desname) VALUES (:desname)";
 
     try {
+
+      $this->checkTechnologyExists($this->getdesname());
       
       $db = new Database();
 
-			$db->query($sql, array(
-				":desname"=>$technology['desname']
+			$idtechnology = $db->insert($sql, array(
+				":desname" => $this->getdesname()
 			));
+
+      $this->setidtechnology($idtechnology);
+
+      if (NULL !== $this->getimage() && !is_string($this->getimage())) {
+
+        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getimage());
+        
+        if ($imageUrl) {
+
+          $this->setimage($imageUrl);
+
+        }
+
+      }
 
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::CREATED, 
         "success", 
         "Tecnologia criada com sucesso",
-        null
+        $this->getAttributes()
       );
 
-    } catch (\PDOException $e) {
+    } catch (\Exception $e) {
 			
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao criar tecnologia: " . $e->getMessage(),
         null
@@ -183,7 +184,7 @@ class Technology
 
   }
 
-  public static function update($idtechnology, $technology) 
+  public function update() 
 	{
 
     $sql = "UPDATE tb_technologies
@@ -192,24 +193,38 @@ class Technology
 
     try {
 
+      $this->checkTechnologyExists($this->getdesname(), $this->getidtechnology());
+
       $db = new Database();
       
       $db->query($sql, array(
-				":idtechnology"=>$idtechnology,
-        ":desname"=>$technology['desname']
+        ":desname"      => $this->getdesname(),
+        ":idtechnology" => $this->getidtechnology()
       ));
+
+      if (NULL !== $this->getimage() && !is_string($this->getimage())) {
+
+        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getimage());
+        
+        if ($imageUrl) {
+
+          $this->setimage($imageUrl);
+
+        }
+
+      }
 
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 
         "success", 
         "Tecnologia atualizada com sucesso",
-        null
+        $this->getAttributes()
       );
 
-    } catch (\PDOException $e) {
+    } catch (\Exception $e) {
 
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao atualizar tecnologia: " . $e->getMessage(),
         null
@@ -250,6 +265,80 @@ class Technology
       );
 			
 		}
+
+  }
+
+  private function checkTechnologyExists($name, $idtechnology = null) 
+  {
+
+    $sql = "SELECT * FROM tb_technologies WHERE desname = :desname";
+
+    		
+    if ($idtechnology) {
+
+      $sql .= " AND idtechnology != :idtechnology";
+
+    }
+    
+    try {
+
+      $db = new Database();
+      
+      $params = [":desname" => $name];
+      
+      if ($idtechnology) {
+
+        $params[":idtechnology"] = $idtechnology;
+
+      }
+      
+      $results = $db->select($sql, $params);
+      
+      if (count($results) > 0) {
+
+        throw new \Exception("Uma tecnologia com este nome já foi cadastrada.", HTTPStatus::CONFLICT);
+
+      }
+
+    } catch (\Exception $e) {
+
+      throw new \Exception($e->getMessage(), $e->getCode());
+
+    }
+
+  }
+
+  private function setPhoto($idtechnology, $image)
+  {
+    
+    $photoUploaded = UploadHandler::uploadPhoto($idtechnology, $image, "technologies");
+
+    if (!$photoUploaded) {
+      
+      return null;      
+
+    }
+
+    $imageUrl = $_ENV['API_URL']."/images/technologies/".$idtechnology.".jpg";
+      
+    $sql = "UPDATE tb_technologies SET desimage = :desimage WHERE idtechnology = :idtechnology";
+    
+    try {
+
+      $db = new Database();
+
+      $db->query($sql, array(
+        ':desimage'     => $imageUrl,
+        ':idtechnology' => $idtechnology
+      ));
+
+      return $imageUrl;
+
+    } catch (\PDOException $e) {
+
+      return null;
+
+    }
 
   }
 

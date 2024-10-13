@@ -4,4 +4,4 @@ RewriteRule (.*) public/$1 [L]
 
 Header set Access-Control-Allow-Origin "*"
 Header set Access-Control-Allow-Headers "origin, X-Token, content-type"
-Header set Access-Control-Allow-Methods "PUT, GET, POST, DELETE, OPTIONS"
+Header set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"

@@ -2,7 +2,7 @@
 
 namespace App\Utils;
 
-class uploadHandler
+class UploadHandler
 {
 
   public static function uploadPhoto($id, $file, $directory)

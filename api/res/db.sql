@@ -228,7 +228,8 @@ CREATE TABLE `tb_projectstechnologies` (
 
 CREATE TABLE `tb_technologies` (
   `idtechnology` int(11) NOT NULL,
-  `desname` varchar(64) NOT NULL
+  `desname` varchar(64) NOT NULL,
+  `desimage` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

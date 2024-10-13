@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\DB\Database;
-use App\Utils\uploadHandler;
+use App\Utils\UploadHandler;
 use App\Enums\HttpStatus as HTTPStatus;
 use App\Utils\ApiResponseFormatter;
 
@@ -203,7 +203,7 @@ class Project
 
       if (!is_string($project['desimage'])) {
 
-        $photoUploaded = uploadHandler::uploadPhoto($results[0]['idproject'], $project['image'], "projects");
+        $photoUploaded = UploadHandler::uploadPhoto($results[0]['idproject'], $project['image'], "projects");
   
         if ($photoUploaded) {
           

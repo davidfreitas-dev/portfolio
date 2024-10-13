@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 .env
+.env.development
+.env.production
 *.local
 
 # Editor directories and files

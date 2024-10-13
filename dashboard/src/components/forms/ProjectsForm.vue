@@ -10,8 +10,6 @@ import Textarea from '../shared/Textarea.vue';
 import MultiSelect from '../shared/MultiSelect.vue';
 import Toast from '../shared/Toast.vue';
 
-const emit = defineEmits(['onCloseModal']);
-
 const props = defineProps({
   project: {
     type: Object,
@@ -55,6 +53,8 @@ const buildFormData = (project) => {
   if (project.desimage instanceof File) formData.append('image', project.desimage);
   return formData;
 };
+
+const emit = defineEmits(['onCloseModal']);
 
 const save = async (project) => {
   isLoading.value = true;
