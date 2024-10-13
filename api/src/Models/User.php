@@ -103,7 +103,7 @@ class User extends Model {
 
       if (empty($results)) {
         
-        throw new \Exception("Não foi possível efetuar a atualização.");
+        throw new \Exception("Não foi possível efetuar a atualização.", HTTPStatus::BAD_REQUEST);
 
       }
 
@@ -119,7 +119,7 @@ class User extends Model {
 		} catch (\Exception $e) {
 
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao atualizar dados do usuário: " . $e->getMessage(),
         null
@@ -144,12 +144,7 @@ class User extends Model {
 			
 			if (empty($results)) {
 
-				return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NO_CONTENT,  
-          "success", 
-          "Nenhum usuário encontrado",
-          null
-        );
+				throw new \Exception("Nenhum usuário encontrado", HTTPStatus::NO_CONTENT);
 
 			}
 
@@ -160,10 +155,10 @@ class User extends Model {
         $results
       );
 
-		} catch (\PDOException $e) {
+		} catch (\Exception $e) {
 
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao obter usuários: " . $e->getMessage(),
         null
@@ -191,12 +186,7 @@ class User extends Model {
 
       if (empty($results)) {
 
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NOT_FOUND, 
-          "error", 
-          "Usuário não encontrado",
-          null
-        );
+        ;throw new \Exception("Usuário não encontrado.", HTTPStatus::NO_CONTENT);
         
       }
 			
@@ -207,10 +197,10 @@ class User extends Model {
         $results[0]
       );
 
-		} catch (\PDOException $e) {
+		} catch (\Exception $e) {
 			
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao obter usuário: " . $e->getMessage(),
         null

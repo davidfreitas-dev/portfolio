@@ -70,12 +70,7 @@ class Auth {
 
       if (empty($results) || !password_verify($password, $results[0]['despassword'])) {
 
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NOT_FOUND,
-          "error", 
-          "Usuário inexistente ou senha inválida",
-          null
-        );
+        throw new \Exception("Usuário inexistente ou senha inválida.", HTTPStatus::UNAUTHORIZED);
   
       }
 
@@ -88,10 +83,10 @@ class Auth {
         $jwt
       );   
 
-    } catch (\PDOException $e) {
+    } catch (\Exception $e) {
       
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha na autenticação do usuário: " . $e->getMessage(),
         null
