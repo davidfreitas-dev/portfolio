@@ -11,6 +11,105 @@ use App\Utils\ApiResponseFormatter;
 class Technology extends Model
 {
 
+  public function create()
+  {
+
+    $sql = "INSERT INTO tb_technologies (desname) VALUES (:desname)";
+
+    try {
+
+      $this->checkTechnologyExists($this->getdesname());
+      
+      $db = new Database();
+
+			$idtechnology = $db->insert($sql, array(
+				":desname" => $this->getdesname()
+			));
+
+      $this->setidtechnology($idtechnology);
+
+      if (NULL !== $this->getimage() && !is_string($this->getimage())) {
+
+        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getimage());
+        
+        if ($imageUrl) {
+
+          $this->setimage($imageUrl);
+
+        }
+
+      }
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::CREATED, 
+        "success", 
+        "Tecnologia criada com sucesso",
+        $this->getAttributes()
+      );
+
+    } catch (\Exception $e) {
+			
+			return ApiResponseFormatter::formatResponse(
+        $e->getCode(), 
+        "error", 
+        "Falha ao criar tecnologia: " . $e->getMessage(),
+        null
+      );
+			
+		}
+
+  }
+
+  public function update() 
+	{
+
+    $sql = "UPDATE tb_technologies
+            SET desname = :desname
+            WHERE idtechnology = :idtechnology";
+
+    try {
+
+      $this->checkTechnologyExists($this->getdesname(), $this->getidtechnology());
+
+      $db = new Database();
+      
+      $db->query($sql, array(
+        ":desname"      => $this->getdesname(),
+        ":idtechnology" => $this->getidtechnology()
+      ));
+
+      if (NULL !== $this->getimage() && !is_string($this->getimage())) {
+
+        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getimage());
+        
+        if ($imageUrl) {
+
+          $this->setimage($imageUrl);
+
+        }
+
+      }
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Tecnologia atualizada com sucesso",
+        $this->getAttributes()
+      );
+
+    } catch (\Exception $e) {
+
+      return ApiResponseFormatter::formatResponse(
+        $e->getCode(), 
+        "error", 
+        "Falha ao atualizar tecnologia: " . $e->getMessage(),
+        null
+      );
+      
+    }
+
+  }
+
   public static function list() 
   {    
     
@@ -134,105 +233,6 @@ class Technology extends Model
 		}		
 
 	}
-
-  public function create()
-  {
-
-    $sql = "INSERT INTO tb_technologies (desname) VALUES (:desname)";
-
-    try {
-
-      $this->checkTechnologyExists($this->getdesname());
-      
-      $db = new Database();
-
-			$idtechnology = $db->insert($sql, array(
-				":desname" => $this->getdesname()
-			));
-
-      $this->setidtechnology($idtechnology);
-
-      if (NULL !== $this->getimage() && !is_string($this->getimage())) {
-
-        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getimage());
-        
-        if ($imageUrl) {
-
-          $this->setimage($imageUrl);
-
-        }
-
-      }
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::CREATED, 
-        "success", 
-        "Tecnologia criada com sucesso",
-        $this->getAttributes()
-      );
-
-    } catch (\Exception $e) {
-			
-			return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao criar tecnologia: " . $e->getMessage(),
-        null
-      );
-			
-		}
-
-  }
-
-  public function update() 
-	{
-
-    $sql = "UPDATE tb_technologies
-            SET desname = :desname
-            WHERE idtechnology = :idtechnology";
-
-    try {
-
-      $this->checkTechnologyExists($this->getdesname(), $this->getidtechnology());
-
-      $db = new Database();
-      
-      $db->query($sql, array(
-        ":desname"      => $this->getdesname(),
-        ":idtechnology" => $this->getidtechnology()
-      ));
-
-      if (NULL !== $this->getimage() && !is_string($this->getimage())) {
-
-        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getimage());
-        
-        if ($imageUrl) {
-
-          $this->setimage($imageUrl);
-
-        }
-
-      }
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Tecnologia atualizada com sucesso",
-        $this->getAttributes()
-      );
-
-    } catch (\Exception $e) {
-
-      return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao atualizar tecnologia: " . $e->getMessage(),
-        null
-      );
-      
-    }
-
-  }
 
   public static function delete($idtechnology) 
 	{

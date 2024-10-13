@@ -44,7 +44,7 @@ $app->get('/technologies/page/{page}', function (Request $request, Response $res
 
 });
 
-$app->post('/technologies/create', function (Request $request, Response $response) {
+$app->post('/technologies/save', function (Request $request, Response $response) {
 
   $data = $request->getParsedBody();
 
@@ -54,29 +54,15 @@ $app->post('/technologies/create', function (Request $request, Response $respons
 
   $technology->setAttributes($data);
 
-  $results = $technology->create();
+  if (!isset($data['idtechnology'])) {
+    
+    $results = $technology->create();
 
-  $response->getBody()->write(json_encode($results));
+  } else {
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    $results = $technology->update();
 
-});
-
-$app->post('/technologies/update/{id}', function (Request $request, Response $response) {
-
-  $data = $request->getParsedBody();
-
-  $data['idtechnology'] = (int)$request->getAttribute('id');
-
-  $data['image'] = isset($_FILES['image']) ? $_FILES['image'] : NULL;
-
-  $technology = new Technology();
-
-  $technology->setAttributes($data);
-
-  $results = $technology->update();
+  }
 
   $response->getBody()->write(json_encode($results));
 

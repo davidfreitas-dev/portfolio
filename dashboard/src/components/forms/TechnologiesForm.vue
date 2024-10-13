@@ -8,6 +8,8 @@ import Input from '../shared/Input.vue';
 import InputFile from '../shared/InputFile.vue';
 import Toast from '../shared/Toast.vue';
 
+const emit = defineEmits(['onCloseModal']);
+
 const props = defineProps({
   technology: {
     type: Object,
@@ -20,44 +22,29 @@ const props = defineProps({
 
 const technology = ref({ ...props.technology });
 
-const createTechnology = (requestData) => {
-  return axios.post('/technologies/create', requestData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-};
-
-const updateTechnology = (idtechnology, requestData) => {
-  return axios.post(`/technologies/update/${idtechnology}`, requestData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-};
-
 const buildFormData = (technology) => {
   const formData = new FormData();
-  formData.append('desname', technology.desname);
+  if (technology.idtechnology) formData.append('idtechnology', technology.idtechnology);
   if (technology.desimage instanceof File) formData.append('image', technology.desimage);
+  formData.append('desname', technology.desname);
   return formData;
 };
 
 const toastRef = ref(null);
+
 const isLoading = ref(false);
-const emit = defineEmits(['onCloseModal']);
 
 const save = async (technology) => {
   isLoading.value = true;
 
-  const { idtechnology } = technology;
-
   const formData = buildFormData(technology);
 
   try {
-    const response = idtechnology 
-      ? await updateTechnology(idtechnology, formData) 
-      : await createTechnology(formData);
+    const response = axios.post('/technologies/save', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    });
 
     toastRef.value?.showToast(response.status, response.message);
 
