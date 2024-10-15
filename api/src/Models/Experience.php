@@ -3,11 +3,93 @@
 namespace App\Models;
 
 use App\DB\Database;
+use App\Models\Model;
 use App\Enums\HttpStatus as HTTPStatus;
 use App\Utils\ApiResponseFormatter;
 
-class Experience
+class Experience extends Model
 {
+
+  public function create()
+  {
+
+    $sql = "INSERT INTO tb_experiences (destitle, desdescription, dtstart, dtend)
+            VALUES (:destitle, :desdescription, :dtstart, :dtend)";
+
+    try {
+      
+      $db = new Database();
+
+			$idexperience = $db->insert($sql, array(
+				":destitle"       => $this->getdestitle(),
+				":desdescription" => $this->getdesdescription(),
+				":dtstart"        => $this->getdtstart(),
+				":dtend"          => $this->getdtend()
+			));
+
+      $this->setidexperience($idexperience);
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::CREATED, 
+        "success", 
+        "Experiência criada com sucesso",
+        $this->getAttributes()
+      );
+
+    } catch (\PDOException $e) {
+			
+			return ApiResponseFormatter::formatResponse(
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        "error", 
+        "Falha ao criar experiência: " . $e->getMessage(),
+        null
+      );
+			
+		}
+
+  }
+
+  public function update() 
+	{
+
+    $sql = "UPDATE tb_experiences
+            SET destitle = :destitle,
+                desdescription = :desdescription,
+                dtstart = :dtstart,
+                dtend = :dtend
+            WHERE idexperience = :idexperience";
+
+    try {
+
+      $db = new Database();
+      
+      $db->query($sql, array(
+				":idexperience"   => $this->getidexperience(),
+        ":destitle"       => $this->getdestitle(),
+        ":desdescription" => $this->getdesdescription(),
+        ":dtstart"        => $this->getdtstart(),
+        ":dtend"          => $this->getdtend()
+      ));
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Experiência atualizada com sucesso",
+        $this->getAttributes()
+      );
+
+    } catch (\PDOException $e) {
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        "error", 
+        "Falha ao atualizar experiência: " . $e->getMessage(),
+        null
+      );
+      
+    }
+
+  }
 
   public static function list() 
   {    
@@ -20,28 +102,23 @@ class Experience
 
 			$results = $db->select($sql);
 			
-			if (count($results)) {
+			if (empty($results)) {
 
-				return ApiResponseFormatter::formatResponse(
-          HTTPStatus::OK, 
-          "success", 
-          "Lista de experiências",
-          $results
-        );
+				throw new \Exception("Nenhuma experiência encontrada.", HTTPStatus::NO_CONTENT);        
 
 			}
       
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::NO_CONTENT,
+        HTTPStatus::OK, 
         "success", 
-        "Nenhuma experiência encontrada",
-        null
+        "Lista de experiências",
+        $results
       );
 
-		} catch (\PDOException $e) {
+		} catch (\Exception $e) {
 
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao obter experiências: " . $e->getMessage(),
         null
@@ -65,28 +142,23 @@ class Experience
 				":idexperience"=>$idexperience
 			));
 
-      if (count($results)) {
+      if (empty($results)) {
 			
-			  return ApiResponseFormatter::formatResponse(
-          HTTPStatus::OK, 
-          "success", 
-          "Detalhes da experiência",
-          $results[0]
-        );
+			  throw new \Exception("Experiência não encontrada.", HTTPStatus::NOT_FOUND);        
         
       }
 
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::NOT_FOUND,
-        "error", 
-        "Experiência não encontrada",
-        null
+        HTTPStatus::OK, 
+        "success", 
+        "Detalhes da experiência",
+        $results[0]
       );
 
-		} catch (\PDOException $e) {
+		} catch (\Exception $e) {
 			
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao obter experiência: " . $e->getMessage(),
         null
@@ -116,12 +188,7 @@ class Experience
 			
 			if (empty($results)) {
 
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NO_CONTENT,
-          "success", 
-          "Nenhuma experiência encontrada",
-          null
-        );
+        throw new \Exception("Nenhuma experiência encontrada", HTTPStatus::NO_CONTENT);        
         
       } 
 
@@ -136,10 +203,10 @@ class Experience
         ]
       );
 
-		} catch (\PDOException $e) {
+		} catch (\Exception $e) {
 
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao obter experiências: " . $e->getMessage(),
         null
@@ -148,85 +215,6 @@ class Experience
 		}		
 
 	}
-
-  public static function create($experience)
-  {
-
-    $sql = "INSERT INTO tb_experiences (destitle, desdescription, dtstart, dtend)
-            VALUES (:destitle, :desdescription, :dtstart, :dtend)";
-
-    try {
-      
-      $db = new Database();
-
-			$db->query($sql, array(
-				":destitle"=>$experience['destitle'],
-				":desdescription"=>$experience['desdescription'],
-				":dtstart"=>$experience['dtstart'],
-				":dtend"=>$experience['dtend']
-			));
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::CREATED, 
-        "success", 
-        "Experiência criada com sucesso",
-        null
-      );
-
-    } catch (\PDOException $e) {
-			
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao criar experiência: " . $e->getMessage(),
-        null
-      );
-			
-		}
-
-  }
-
-  public static function update($idexperience, $experience) 
-	{
-
-    $sql = "UPDATE tb_experiences
-            SET destitle = :destitle,
-                desdescription = :desdescription,
-                dtstart = :dtstart,
-                dtend = :dtend
-            WHERE idexperience = :idexperience";
-
-    try {
-
-      $db = new Database();
-      
-      $db->query($sql, array(
-				":idexperience"=>$idexperience,
-        ":destitle"=>$experience['destitle'],
-        ":desdescription"=>$experience['desdescription'],
-        ":dtstart"=>$experience['dtstart'],
-        ":dtend"=>$experience['dtend']
-      ));
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Experiência atualizada com sucesso",
-        null
-      );
-
-    } catch (\PDOException $e) {
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao atualizar experiência: " . $e->getMessage(),
-        null
-      );
-      
-    }
-
-  }
 
   public static function delete($idexperience) 
 	{

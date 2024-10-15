@@ -44,27 +44,23 @@ $app->get('/experiences/page/{page}', function (Request $request, Response $resp
 
 });
 
-$app->post('/experiences/create', function (Request $request, Response $response) {
+$app->post('/experiences/save', function (Request $request, Response $response) {
 
-  $payload = $request->getParsedBody();
+  $data = $request->getParsedBody();
 
-  $results = Experience::create($payload);
+  $experience = new Experience();
 
-  $response->getBody()->write(json_encode($results));
+  $experience->setAttributes($data);
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+  if (!isset($data['idexperience'])) {
+    
+    $results = $experience->create();
 
-});
+  } else {
 
-$app->put('/experiences/update/{id}', function (Request $request, Response $response, array $args) {
+    $results = $experience->update();
 
-  $id = $args['id'];
-
-  $payload = $request->getParsedBody();
-
-  $results = Experience::update($id, $payload);
+  }
 
   $response->getBody()->write(json_encode($results));
 
