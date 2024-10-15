@@ -29,9 +29,7 @@ class UploadHandler
   
       }
 
-      $dist = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 
-            "storage" . DIRECTORY_SEPARATOR .
-            $directory;
+      $dist = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . $directory;
 
       if (!is_dir($dist)) {
 
