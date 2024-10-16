@@ -3,12 +3,74 @@
 namespace App\Models;
 
 use App\DB\Database;
+use App\Models\Model;
 use App\Utils\UploadHandler;
 use App\Enums\HttpStatus as HTTPStatus;
 use App\Utils\ApiResponseFormatter;
 
-class Project
+class Project extends Model
 {
+
+  public function save()
+  {
+
+    $sql = "CALL sp_projects_save(
+      :idproject, 
+      :destitle, 
+      :desdescription, 
+      :technologies,
+      :deslink
+    )";
+
+    try {
+      
+      $db = new Database();
+
+			$results = $db->select($sql, array(
+				":idproject"      => $this->getidproject() ?? 0,
+				":destitle"       => $this->getdestitle(),
+				":desdescription" => $this->getdesdescription(),
+        ":deslink"        => $this->getdeslink(),
+				":technologies"   => $this->gettechnologies()
+			));
+
+      if (empty($results)) {
+        
+        throw new \Exception("Falha ao criar/atualizar projeto", HTTPStatus::BAD_REQUEST);
+        
+      }
+
+      if (NULL !== $this->getdesimage() && !is_string($this->getdesimage())) {
+
+        $imageUrl = $this->setPhoto($results[0]['idproject'], $this->getdesimage());
+  
+        if ($imageUrl) {
+
+          $results[0]['desimage'] = $imageUrl;
+
+        }
+
+      }
+      
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Projeto criado/atualizado com sucesso",
+        $results[0]
+      );
+
+    } catch (\Exception $e) {
+			
+			return ApiResponseFormatter::formatResponse(
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        "error", 
+        "Falha ao criar/atualizar projeto: " . $e->getMessage(),
+        null
+      );
+			
+		}
+
+  }
 
   public static function list()
   {
@@ -22,28 +84,23 @@ class Project
 
 			$results = $db->select($sql);
 			
-			if (count($results)) {
+			if (empty($results)) {
 
-				return ApiResponseFormatter::formatResponse(
-          HTTPStatus::OK, 
-          "success", 
-          "Lista de projetos",
-          $results
-        );
+				throw new \Exception("Nenhum projeto encontrado.", HTTPStatus::NO_CONTENT);
 
 			}
       
       return ApiResponseFormatter::formatResponse(
-        HTTPStatus::NO_CONTENT,
+        HTTPStatus::OK, 
         "success", 
-        "Nenhum projeto encontrado",
-        null
+        "Lista de projetos",
+        $results
       );
 
-		} catch (\PDOException $e) {
+		} catch (\Exception $e) {
 
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao obter projetos: " . $e->getMessage(),
         null
@@ -67,28 +124,23 @@ class Project
 				":idproject"=>$idproject
 			));
 
-      if (count($results)) {
+      if (empty($results)) {
 			
-			  return ApiResponseFormatter::formatResponse(
-          HTTPStatus::OK, 
-          "success", 
-          "Detalhes do projeto",
-          $results[0]
-        );
+			  throw new \Exception("Projeto não encontrado.", HTTPStatus::NOT_FOUND);
         
       }
 
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::NOT_FOUND,
-        "error", 
-        "Projeto não encontrado",
-        null
+        HTTPStatus::OK, 
+        "success", 
+        "Detalhes do projeto",
+        $results[0]
       );
 
-		} catch (\PDOException $e) {
-			
+		} catch (\Exception $e) {
+
 			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        $e->getCode(), 
         "error", 
         "Falha ao obter projeto: " . $e->getMessage(),
         null
@@ -127,122 +179,43 @@ class Project
 
         if (empty($results)) {
 
-            return ApiResponseFormatter::formatResponse(
-                HTTPStatus::NO_CONTENT,
-                "success",
-                "Nenhum projeto encontrado",
-                null
-            );
+          throw new \Exception("Nenhum projeto encontrado.", HTTPStatus::NO_CONTENT);
 
         }
         
         foreach ($results as &$result) {
-            $result['technologies'] = $result['technologies']
-                ? json_decode('[' . $result['technologies'] . ']', true)
-                : [];
+          $result['technologies'] = $result['technologies']
+            ? json_decode('[' . $result['technologies'] . ']', true)
+            : [];
         }
 
         return ApiResponseFormatter::formatResponse(
-            HTTPStatus::OK,
-            "success",
-            "Lista de projetos",
-            [
-                "projects" => $results,
-                "total" => (int)$resultsTotal[0]["nrtotal"],
-                "pages" => ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)
-            ]
+          HTTPStatus::OK,
+          "success",
+          "Lista de projetos",
+          [
+            "projects" => $results,
+            "total" => (int)$resultsTotal[0]["nrtotal"],
+            "pages" => ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)
+          ]
         );
 
-    } catch (\PDOException $e) {
-
-        return ApiResponseFormatter::formatResponse(
-            HTTPStatus::INTERNAL_SERVER_ERROR,
-            "error",
-            "Falha ao obter projetos: " . $e->getMessage(),
-            null
-        );
-        
-    }
-  }
-
-  public static function save($project)
-  {
-
-    $sql = "CALL sp_projects_create(
-      :idproject, 
-      :destitle, 
-      :desdescription, 
-      :technologies,
-      :deslink
-    )";
-
-    $idproject = isset($project['idproject']) ? $project['idproject'] : 0;
-
-    try {
-      
-      $db = new Database();
-
-			$results = $db->select($sql, array(
-				":idproject"=>$idproject,
-				":destitle"=>$project['destitle'],
-				":desdescription"=>$project['desdescription'],
-        ":deslink"=> $project['deslink'],
-				":technologies"=>$project['technologies']
-			));
-
-      if (empty($results)) {
-        
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::BAD_REQUEST,
-          "error", 
-          "Falha ao criar/atualizar projeto",
-          null
-        );
-
-      }
-
-      if (!is_string($project['desimage'])) {
-
-        $photoUploaded = UploadHandler::uploadPhoto($results[0]['idproject'], $project['image'], "projects");
-  
-        if ($photoUploaded) {
-          
-          $imageUrl = self::setPhoto($results[0]['idproject']);
-
-          $results[0]['image'] = $imageUrl;
-
-        }
-
-      }
-
-      $code = $project['idcategory'] ? HTTPStatus::OK : HTTPStatus::CREATED;
-
-      $message = $idproject ? "Projeto atualizado com sucesso" : "Projeto criado com sucesso";
+    } catch (\Exception $e) {
 
       return ApiResponseFormatter::formatResponse(
-        $code, 
-        "success", 
-        $message,
-        $results[0]
-      );
-
-    } catch (\PDOException $e) {
-			
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao criar/atualizar projeto: " . $e->getMessage(),
+        $e->getCode(),
+        "error",
+        "Falha ao obter projetos: " . $e->getMessage(),
         null
       );
-			
-		}
-
+        
+    }
   }
 
   public static function delete($idproject) 
 	{
 
-    $sql = "CALL sp_projects_delete(:idproject)";
+    $sql = "DELETE FROM tb_projects WHERE idproject = :idproject";
 		
 		try {
 
@@ -252,17 +225,7 @@ class Project
 				':idproject'=>$idproject
 			));
 
-      $imagePath = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 
-                    "res" . DIRECTORY_SEPARATOR . 
-                    "img" . DIRECTORY_SEPARATOR . 
-                    "projects" . DIRECTORY_SEPARATOR . 
-                    $idproject . ".jpg";
-
-      if (file_exists($imagePath)) {
-
-        unlink($imagePath);
-
-      }
+      UploadHandler::deletePhoto($idproject, "projects");
 
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 
@@ -284,32 +247,39 @@ class Project
 
   }
 
-  private static function setPhoto($idproject) 
-	{
+  private function setPhoto($idproject, $image)
+  {
 
-    $imageUrl = $_ENV['API_URL']."/images/projects/".$idproject.".jpg";
+    $photoUploaded = UploadHandler::uploadPhoto($idproject, $image, "projects");
 
-    $sql = "UPDATE tb_projects
-            SET desimage = :desimage
-            WHERE idproject = :idproject";
-		
-		try {
+    if (!$photoUploaded) {
 
-			$db = new Database();
-			
-			$db->query($sql, array(
-				':idproject'=>$idproject,
-				':desimage'=>$imageUrl
-			));
+      return null;
+      
+    }
+
+    $imageUrl = $_ENV['API_URL'] . "/images/projects/" . $idproject . ".jpg";
+
+    $sql = "UPDATE tb_projects SET desimage = :desimage WHERE idproject = :idproject";
+    
+    try {
+  
+      $db = new Database();
+
+      $db->query($sql, array(
+        ':desimage'  => $imageUrl,
+        ':idproject' => $idproject
+      ));
 
       return $imageUrl;
 
-		} catch (\PDOException $e) {
-
-			return null;
-			
-		}
+    } catch (\PDOException $e) {
+  
+      return null;
+    
+    }
 
   }
+
 
 }

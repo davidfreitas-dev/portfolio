@@ -48,7 +48,7 @@ $app->post('/technologies/save', function (Request $request, Response $response)
 
   $data = $request->getParsedBody();
 
-  $data['image'] = isset($_FILES['image']) ? $_FILES['image'] : NULL;
+  $data['desimage'] = isset($_FILES['image']) ? $_FILES['image'] : NULL;
 
   $technology = new Technology();
 

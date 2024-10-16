@@ -28,9 +28,9 @@ class Technology extends Model
 
       $this->setidtechnology($idtechnology);
 
-      if (NULL !== $this->getimage() && !is_string($this->getimage())) {
+      if (NULL !== $this->getdesimage() && !is_string($this->getdesimage())) {
 
-        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getimage());
+        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getdesimage());
         
         if ($imageUrl) {
 
@@ -78,9 +78,9 @@ class Technology extends Model
         ":idtechnology" => $this->getidtechnology()
       ));
 
-      if (NULL !== $this->getimage() && !is_string($this->getimage())) {
+      if (NULL !== $this->getdesimage() && !is_string($this->getdesimage())) {
 
-        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getimage());
+        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getdesimage());
         
         if ($imageUrl) {
 
@@ -247,6 +247,8 @@ class Technology extends Model
 			$db->query($sql, array(
 				":idtechnology"=>$idtechnology
 			));
+
+      UploadHandler::deletePhoto($idtechnology, "technologies");
 			
 			return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 

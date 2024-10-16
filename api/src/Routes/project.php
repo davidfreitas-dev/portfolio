@@ -46,11 +46,15 @@ $app->get('/projects/page/{page}', function (Request $request, Response $respons
 
 $app->post('/projects/save', function (Request $request, Response $response) {
 
-  $payload = $request->getParsedBody();
+  $data = $request->getParsedBody();
 
-  $payload['desimage'] = isset($_FILES['image']) ? $_FILES['image'] : null;
+  $data['desimage'] = isset($_FILES['image']) ? $_FILES['image'] : null;
 
-  $results = Project::save($payload);
+  $project = new Project();
+
+  $project->setAttributes($data);
+  
+  $results = $project->save();
 
   $response->getBody()->write(json_encode($results));
 

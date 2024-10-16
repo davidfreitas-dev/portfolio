@@ -25,14 +25,7 @@ DELIMITER $$
 --
 -- Procedimentos
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_projects_create`(
-  `pidproject` INT, 
-  `pdestitle` VARCHAR(128), 
-  `pdesdescription` TEXT, 
-  `ptechnologies` VARCHAR(255),
-  `pdeslink` VARCHAR(255) -- Novo parâmetro para o link
-)
-BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_projects_save`(`pidproject` INT, `pdestitle` VARCHAR(128), `pdesdescription` TEXT, `ptechnologies` VARCHAR(255),`pdeslink` VARCHAR(255)) BEGIN
   DECLARE vidproject INT;
   DECLARE vidtechnology INT;
   DECLARE vcommaposition INT;
@@ -73,21 +66,7 @@ BEGIN
   SELECT * FROM tb_projects WHERE idproject = vidproject;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_projects_delete` (`pidproject` INT) BEGIN
-  DELETE FROM tb_projectstechnologies WHERE idproject = pidproject;
-  DELETE FROM tb_projects WHERE idproject = pidproject;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_users_create` (
-  `pdesperson` VARCHAR(64), 
-  `pdeslogin` VARCHAR(64), 
-  `pdespassword` VARCHAR(256), 
-  `pdesemail` VARCHAR(128), 
-  `pnrphone` VARCHAR(15), 
-  `pnrcpf` VARCHAR(15), 
-  `pinadmin` TINYINT
-)   
-BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_users_create` (`pdesperson` VARCHAR(64), `pdeslogin` VARCHAR(64), `pdespassword` VARCHAR(256), `pdesemail` VARCHAR(128), `pnrphone` VARCHAR(15), `pnrcpf` VARCHAR(15), `pinadmin` TINYINT) BEGIN
   DECLARE vidperson INT;
     
   INSERT INTO tb_persons (desperson, desemail, nrphone, nrcpf)
@@ -121,16 +100,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_users_delete` (`piduser` INT) BE
   SET FOREIGN_KEY_CHECKS = 1;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_users_update` (
-  `piduser` INT, 
-  `pdesperson` VARCHAR(64), 
-  `pdeslogin` VARCHAR(64), 
-  `pdesemail` VARCHAR(128), 
-  `pnrphone` VARCHAR(15), 
-  `pnrcpf` VARCHAR(15), 
-  `pinadmin` TINYINT
-)   
-BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_users_update` (`piduser` INT, `pdesperson` VARCHAR(64), `pdeslogin` VARCHAR(64), `pdesemail` VARCHAR(128), `pnrphone` VARCHAR(15), `pnrcpf` VARCHAR(15), `pinadmin` TINYINT) BEGIN
   DECLARE vidperson INT;
     
   SELECT idperson INTO vidperson
@@ -362,13 +332,13 @@ ALTER TABLE `tb_persons`
 -- AUTO_INCREMENT de tabela `tb_projects`
 --
 ALTER TABLE `tb_projects`
-  MODIFY `idproject` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idproject` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `tb_technologies`
 --
 ALTER TABLE `tb_technologies`
-  MODIFY `idtechnology` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idtechnology` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `tb_users`
@@ -396,7 +366,7 @@ ALTER TABLE `tb_userspasswordsrecoveries`
 -- Restrições para tabelas `tb_projectstechnologies`
 --
 ALTER TABLE `tb_projectstechnologies`
-  ADD CONSTRAINT `tb_projectstechnologies_ibfk_1` FOREIGN KEY (`idproject`) REFERENCES `tb_projects` (`idproject`),
+  ADD CONSTRAINT `tb_projectstechnologies_ibfk_1` FOREIGN KEY (`idproject`) REFERENCES `tb_projects` (`idproject`) ON DELETE CASCADE,
   ADD CONSTRAINT `tb_projectstechnologies_ibfk_2` FOREIGN KEY (`idtechnology`) REFERENCES `tb_technologies` (`idtechnology`);
 
 --

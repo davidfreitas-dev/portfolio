@@ -51,4 +51,17 @@ class UploadHandler
 
 	}
 
+  public static function deletePhoto($id, $directory)
+  {
+
+    $dist = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $id . ".jpg";
+
+    if (file_exists($dist)) {
+
+      unlink($dist);
+
+    }
+    
+  }
+
 }
