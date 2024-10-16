@@ -90,9 +90,9 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 - [Technology Save](#technology-save)
 - [Technology Delete](#technology-delete)
 - [Projects List](#projects-list)
-- [Project Details](#project-details)
 - [Projects Page](#projects-page)
-- [Project Create/Update](#project-create/update)
+- [Project Details](#project-details)
+- [Project Save](#project-save)
 - [Project Delete](#project-delete)
 
 #### User Registration
@@ -337,7 +337,7 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 
 **Response:** All projects 5 items per page
 
-#### Project Create/Update
+#### Project Save
 
 ```http
   POST /projects/save
@@ -345,7 +345,7 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 
 | Parameter        | Type      | Description                                        |
 | :--------------- | :-------- | :------------------------------------------------- |
-| `idproject`      | `integer` | Project ID                                         |
+| `idproject`      | `integer` | Project ID (to update)                             |
 | `destitle`       | `string`  | **Required**. Project title                        |
 | `desdescription` | `string`  | **Required**. Project description                  |
 | `deslink`        | `string`  | Project link                                       |
@@ -354,9 +354,9 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 
 **Note:** When the Project ID is greater than zero, an update will be made based on the Project ID, otherwise an insertion will be made.
 
-**Observation:** The parameters should be passed within a single JSON object.
+**Observation:** The parameters should be passed within a FormData object with Content-Type: multipart/form-data on headers.
 
-**Response:** Void
+**Response:** Project data
 
 #### Project Delete
 
