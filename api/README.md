@@ -37,6 +37,41 @@ See:
 
 The HOSTNAME in .env file should be the same of docker-compose file db:container_name
 
+## Autenticação e Segurança
+
+### Autenticação com JWT (JSON Web Token)
+
+A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos para autenticar e autorizar as requisições:
+
+1. **Obtenção do Token JWT:**
+   - Para acessar os recursos protegidos da API, você precisa obter um token JWT. Isso é feito enviando uma requisição `POST` para o endpoint `/signin` com as credenciais do usuário (e.g., e-mail e senha).
+
+2. **Incluindo o Token nas Requisições:**
+   - Após obter o token JWT, ele deve ser incluído no cabeçalho `Authorization` em todas as requisições subsequentes para acessar os recursos protegidos.
+
+   **Formato do Cabeçalho:**
+
+   ```
+   Authorization: Bearer <token>
+   ```
+
+   **Exemplo de Requisição Autenticada:**
+
+   ```http
+   GET /users
+   Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   ```
+
+3. **Expiração do Token:**
+   - O token JWT possui um tempo de expiração. Após esse período, será necessário obter um novo token através do processo de autenticação.
+   - Se o token estiver expirado ou for inválido, a API retornará um erro `401 Unauthorized`.
+
+4. **Rotas Protegidas:**
+   - Todas as rotas que exigem autenticação são protegidas. A tentativa de acessar essas rotas sem um token válido resultará em um erro `401 Unauthorized`.
+
+5. **Logout (Opcional):**
+   - A API pode implementar um endpoint de logout que invalida o token JWT, garantindo que ele não possa mais ser usado. Este passo é opcional e depende da implementação específica da API.
+
 ## API Documentation
 
 - [User Registration](#user-registration)
@@ -45,16 +80,14 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 - [User Validate Token](#user-validate-token)
 - [User Password Reset](#user-password-reset)
 - [Experiences List](#experiences-list)
-- [Experience Details](#experience-details)
 - [Experiences Page](#experiences-page)
-- [Experience Create](#experience-create)
-- [Experience Update](#experience-update)
+- [Experience Details](#experience-details)
+- [Experience Save](#experience-save)
 - [Experience Delete](#experience-delete)
 - [Technologies List](#technologies-list)
-- [Technology Details](#technology-details)
 - [Technologies Page](#technologies-page)
-- [Technology Create](#technology-Create)
-- [Technology Update](#technology-update)
+- [Technology Details](#technology-details)
+- [Technology Save](#technology-save)
 - [Technology Delete](#technology-delete)
 - [Projects List](#projects-list)
 - [Project Details](#project-details)
@@ -154,18 +187,6 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 
 **Response:** List of experiences
 
-#### Experience Details
-
-```http
-  GET /experiences/id
-```
-
-| Parameter      | Type      | Description                                          |
-| :------------- | :-------- | :--------------------------------------------------- |
-| `idexperience` | `integer` | **Required**. Experience ID                          |
-
-**Response:** Experience details
-
 #### Experiences Page
 
 ```http
@@ -178,32 +199,27 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 
 **Response:** All experiences 5 items per page
 
-#### Experience Create
+#### Experience Details
 
 ```http
-  POST /experiences/create
+  GET /experiences/id
 ```
 
-| Parameter        | Type     | Description                                         |
-| :--------------- | :------- | :-------------------------------------------------- |
-| `destitle`       | `string` | **Required**. Experience title                      |
-| `desdescription` | `string` | **Required**. Experience description                |
-| `dtstart`        | `string` | **Required**. Experience start (Ex: Jan 2024)       |
-| `dtend`          | `string` | **Required**. Experience end (Ex: Dez 2024)         |
+| Parameter      | Type      | Description                                          |
+| :------------- | :-------- | :--------------------------------------------------- |
+| `idexperience` | `integer` | **Required**. Experience ID                          |
 
-**Observation:** The parameters should be passed within a single JSON object.
+**Response:** Experience details
 
-**Response:** Void
-
-#### Experience Update
+#### Experience Save
 
 ```http
-  PUT /experiences/update/id
+  POST /experiences/save
 ```
 
 | Parameter        | Type      | Description                                        |
 | :--------------- | :-------- | :------------------------------------------------- |
-| `idexperience`   | `integer` | **Required**. Experience ID                        |
+| `idexperience`   | `integer` | Experience ID (to update)                          |
 | `destitle`       | `string`  | **Required**. Experience title                     |
 | `desdescription` | `string`  | **Required**. Experience description               |
 | `dtstart`        | `string`  | **Required**. Experience start (Ex: Jan 2024)      |
@@ -211,7 +227,7 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 
 **Observation:** The parameters should be passed within a single JSON object.
 
-**Response:** Void
+**Response:** Experience data
 
 #### Experience Delete
 
@@ -235,18 +251,6 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 
 **Response:** List of technologies
 
-#### Technology Details
-
-```http
-  GET /technologies/id
-```
-
-| Parameter      | Type      | Description                                         |
-| :------------- | :-------- | :-------------------------------------------------- |
-| `idtechnology` | `integer` | **Required**. Technology ID                         |
-
-**Response:** Technology details
-
 #### Technologies Page
 
 ```http
@@ -259,33 +263,33 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 
 **Response:** All technologies 5 items per page
 
-#### Technology Create
+#### Technology Details
 
 ```http
-  POST /technologies/create
+  GET /technologies/id
 ```
 
-| Parameter | Type     | Description                                               |
-| :-------- | :------- | :-------------------------------------------------------- |
-| `desname` | `string` | **Required**. Technology name                             |
+| Parameter      | Type      | Description                                         |
+| :------------- | :-------- | :-------------------------------------------------- |
+| `idtechnology` | `integer` | **Required**. Technology ID                         |
 
-**Observation:** The parameters should be passed within a single JSON object.
+**Response:** Technology details
 
-**Response:** Void
-
-#### Technology Update
+#### Technology Save
 
 ```http
-  PUT /technologies/update/id
+  POST /technologies/save
 ```
 
-| Parameter | Type     | Description                                               |
-| :-------- | :------- | :-------------------------------------------------------- |
-| `desname` | `string` | **Required**. Technology name                             |
+| Parameter      | Type      | Description                                          |
+| :------------- | :-------  | :--------------------------------------------------- |
+| `idtechnology` | `integer` | Technology ID (to update)                            |
+| `desname`      | `string`  | **Required**. Technology name                        |
+| `desimage`     | `string`  | Image binary                                         |
 
-**Observation:** The parameters should be passed within a single JSON object.
+**Observation:** The parameters should be passed within a FormData object with Content-Type: multipart/form-data on headers.
 
-**Response:** Void
+**Response:** Technology data
 
 #### Technology Delete
 
