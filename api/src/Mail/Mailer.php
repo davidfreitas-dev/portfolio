@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Enums\HttpStatus as HTTPStatus;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -76,8 +77,73 @@ class Mailer {
 		//Set the subject line
 		$this->mail->Subject = $subject;
 		//Replace the plain text body with one created manually
-		$this->mail->Body    = 'Hi, ' . $data['name'] . '<br /><br />Click on the link below to set new password <br /><br /> ' . $data['link'];
-		$this->mail->AltBody = 'This is a plain-text message body';
+		$this->mail->Body = '
+    <html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #ffffff;
+                color: #3c3c3c;
+                padding: 20px;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #ffffff;
+                border: 1px solid #dddddd;
+                border-radius: 8px;
+            }
+            .header {
+                text-align: center;
+                padding-bottom: 20px;
+            }
+            .header h1 {
+                color: #01c38d;
+                margin: 0;
+            }
+            .content {
+                font-size: 16px;
+                line-height: 1.6;
+            }
+            .button {
+                display: inline-block;
+                padding: 10px 20px;
+                margin-top: 20px;
+                background-color: #01c38d;
+                color: #ffffff;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 30px;
+                font-size: 12px;
+                color: #999999;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Recuperação de Senha</h1>
+            </div>
+            <div class="content">
+                <p>Olá ' . $data['name'] . ',</p>
+                <p>Recebemos uma solicitação para redefinir a sua senha. Clique no botão abaixo para prosseguir.</p>
+                <a href="' . $data['link'] . '" class="button">Redefinir Senha</a>
+                <p>Se você não solicitou esta alteração, por favor, ignore este e-mail.</p>
+            </div>
+            <div class="footer">
+                <p>© ' . date('Y') . ' Sua Empresa. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </body>
+    </html>';
+
+    $this->mail->AltBody = 'Olá ' . $data['name'] . ',\nRecebemos uma solicitação para redefinir a sua senha. Use o link abaixo para redefini-la:\n' . $data['link'];
 
 		//Attach an image file
 		//$mail->addAttachment('images/phpmailer_mini.png');
@@ -93,8 +159,8 @@ class Mailer {
 
 		} catch (Exception $e) {
     		
-			echo "Message could not be sent. Mailer Error: {$this->mail->ErrorInfo}";
-		
+			throw new Exception("Não foi possível enviar o e-mail. Erro do Mailer: {$this->mail->ErrorInfo}", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
 		}
 
 	}
