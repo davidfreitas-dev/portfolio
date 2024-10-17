@@ -98,9 +98,20 @@ class Project extends Model
 			
 			if (empty($results)) {
 
-				throw new \Exception("Nenhum projeto encontrado.", HTTPStatus::NO_CONTENT);
+				return ApiResponseFormatter::formatResponse(
+          HTTPStatus::NO_CONTENT, 
+          "success", 
+          "Nenhum projeto encontrado.",
+          NULL
+        );
 
 			}
+
+      foreach ($results as &$result) {
+        $result['technologies'] = $result['technologies']
+          ? json_decode('[' . $result['technologies'] . ']', true)
+          : [];
+      }
       
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 
@@ -115,57 +126,6 @@ class Project extends Model
         $e->getCode(), 
         "error", 
         "Falha ao obter projetos: " . $e->getMessage(),
-        null
-      );
-			
-		}
-
-  }
-
-  public static function get($idproject)
-	{
-
-    $sql = "SELECT 
-              p.*, 
-              GROUP_CONCAT(
-                DISTINCT CONCAT(
-                  '{\"idtechnology\":', t.idtechnology, 
-                  ',\"desname\":\"', t.desname, 
-                  ',\"desimage\":\"', t.desimage, '\"}'
-                ) SEPARATOR ','
-              ) AS technologies
-            FROM tb_projects p
-            LEFT JOIN tb_projectstechnologies pt ON p.idproject = pt.idproject
-            LEFT JOIN tb_technologies t ON pt.idtechnology = t.idtechnology
-            WHERE p.idproject = :idproject";
-
-		try {
-
-			$db = new Database();
-
-			$results = $db->select($sql, array(
-				":idproject"=>$idproject
-			));
-
-      if (empty($results)) {
-			
-			  throw new \Exception("Projeto não encontrado.", HTTPStatus::NOT_FOUND);
-        
-      }
-
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Detalhes do projeto",
-        $results[0]
-      );
-
-		} catch (\Exception $e) {
-
-			return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao obter projeto: " . $e->getMessage(),
         null
       );
 			
@@ -204,7 +164,12 @@ class Project extends Model
 
         if (empty($results)) {
 
-          throw new \Exception("Nenhum projeto encontrado.", HTTPStatus::NO_CONTENT);
+          return ApiResponseFormatter::formatResponse(
+            HTTPStatus::NO_CONTENT, 
+            "success", 
+            "Nenhum projeto encontrado.",
+            NULL
+          );
 
         }
         
@@ -235,6 +200,68 @@ class Project extends Model
       );
         
     }
+  }
+
+  public static function get($idproject)
+	{
+
+    $sql = "SELECT 
+              p.*, 
+              GROUP_CONCAT(
+                DISTINCT CONCAT(
+                  '{\"idtechnology\":', t.idtechnology, 
+                  ',\"desname\":\"', t.desname, 
+                  ',\"desimage\":\"', t.desimage, '\"}'
+                ) SEPARATOR ','
+              ) AS technologies
+            FROM tb_projects p
+            LEFT JOIN tb_projectstechnologies pt ON p.idproject = pt.idproject
+            LEFT JOIN tb_technologies t ON pt.idtechnology = t.idtechnology
+            WHERE p.idproject = :idproject";
+
+		try {
+
+			$db = new Database();
+
+			$results = $db->select($sql, array(
+				":idproject"=>$idproject
+			));
+
+      if (empty($results)) {
+			
+			  return ApiResponseFormatter::formatResponse(
+          HTTPStatus::NOT_FOUND, 
+          "success", 
+          "Projeto não encontrado.",
+          NULL
+        );
+        
+      }
+
+      foreach ($results as &$result) {
+        $result['technologies'] = $result['technologies']
+          ? json_decode('[' . $result['technologies'] . ']', true)
+          : [];
+      }
+
+			return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Detalhes do projeto",
+        $results[0]
+      );
+
+		} catch (\Exception $e) {
+
+			return ApiResponseFormatter::formatResponse(
+        $e->getCode(), 
+        "error", 
+        "Falha ao obter projeto: " . $e->getMessage(),
+        null
+      );
+			
+		}
+
   }
 
   public static function delete($idproject) 

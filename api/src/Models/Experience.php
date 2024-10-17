@@ -104,7 +104,12 @@ class Experience extends Model
 			
 			if (empty($results)) {
 
-				throw new \Exception("Nenhuma experiência encontrada.", HTTPStatus::NO_CONTENT);        
+				return ApiResponseFormatter::formatResponse(
+          HTTPStatus::NO_CONTENT, 
+          "success", 
+          "Nenhuma experiência encontrada.",
+          NULL
+        );
 
 			}
       
@@ -128,46 +133,6 @@ class Experience extends Model
 
 	}
 
-  public static function get($idexperience)
-	{
-
-    $sql = "SELECT * FROM tb_experiences
-            WHERE idexperience = :idexperience";
-
-		try {
-
-			$db = new Database();
-
-			$results = $db->select($sql, array(
-				":idexperience"=>$idexperience
-			));
-
-      if (empty($results)) {
-			
-			  throw new \Exception("Experiência não encontrada.", HTTPStatus::NOT_FOUND);        
-        
-      }
-
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Detalhes da experiência",
-        $results[0]
-      );
-
-		} catch (\Exception $e) {
-			
-			return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao obter experiência: " . $e->getMessage(),
-        null
-      );
-			
-		}
-
-  }
-
   public static function getPage($page = 1, $itemsPerPage = 5)
 	{
 
@@ -188,7 +153,12 @@ class Experience extends Model
 			
 			if (empty($results)) {
 
-        throw new \Exception("Nenhuma experiência encontrada", HTTPStatus::NO_CONTENT);        
+        return ApiResponseFormatter::formatResponse(
+          HTTPStatus::NO_CONTENT, 
+          "success", 
+          "Nenhuma experiência encontrada.",
+          NULL
+        );
         
       } 
 
@@ -215,6 +185,51 @@ class Experience extends Model
 		}		
 
 	}
+
+  public static function get($idexperience)
+	{
+
+    $sql = "SELECT * FROM tb_experiences
+            WHERE idexperience = :idexperience";
+
+		try {
+
+			$db = new Database();
+
+			$results = $db->select($sql, array(
+				":idexperience"=>$idexperience
+			));
+
+      if (empty($results)) {
+			
+			  return ApiResponseFormatter::formatResponse(
+          HTTPStatus::NOT_FOUND, 
+          "success", 
+          "Experiência não encontrada.",
+          NULL
+        );
+        
+      }
+
+			return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Detalhes da experiência",
+        $results[0]
+      );
+
+		} catch (\Exception $e) {
+			
+			return ApiResponseFormatter::formatResponse(
+        $e->getCode(), 
+        "error", 
+        "Falha ao obter experiência: " . $e->getMessage(),
+        null
+      );
+			
+		}
+
+  }
 
   public static function delete($idexperience) 
 	{

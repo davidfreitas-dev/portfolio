@@ -123,7 +123,12 @@ class Technology extends Model
 			
 			if (empty($results)) {
 
-        throw new \Exception("Nenhuma tecnologia encontrada.", HTTPStatus::NO_CONTENT);
+        return ApiResponseFormatter::formatResponse(
+          HTTPStatus::NO_CONTENT, 
+          "success", 
+          "Nenhuma tecnologia encontrada.",
+          NULL
+        );
         
       }
       
@@ -147,45 +152,6 @@ class Technology extends Model
 
 	}
 
-  public static function get($idtechnology)
-	{
-
-    $sql = "SELECT * FROM tb_technologies WHERE idtechnology = :idtechnology";
-
-		try {
-
-			$db = new Database();
-
-			$results = $db->select($sql, array(
-				":idtechnology"=>$idtechnology
-			));
-
-      if (empty($results)) {
-			
-        throw new \Exception("Tecnologia não encontrada.", HTTPStatus::NOT_FOUND);
-        
-      }
-      
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Detalhes da tecnologia",
-        $results[0]
-      );
-
-		} catch (\Exception $e) {
-			
-			return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao obter tecnologia: " . $e->getMessage(),
-        null
-      );
-			
-		}
-
-  }
-
   public static function getPage($page = 1, $itemsPerPage = 5)
 	{
 
@@ -206,7 +172,12 @@ class Technology extends Model
 			
 			if (empty($results)) {
 
-        throw new \Exception("Nenhuma tecnologia encontrada.", HTTPStatus::NO_CONTENT);
+        return ApiResponseFormatter::formatResponse(
+          HTTPStatus::NO_CONTENT, 
+          "success", 
+          "Nenhuma tecnologia encontrada.",
+          NULL
+        );
         
       } 
 
@@ -233,6 +204,50 @@ class Technology extends Model
 		}		
 
 	}
+
+  public static function get($idtechnology)
+	{
+
+    $sql = "SELECT * FROM tb_technologies WHERE idtechnology = :idtechnology";
+
+		try {
+
+			$db = new Database();
+
+			$results = $db->select($sql, array(
+				":idtechnology"=>$idtechnology
+			));
+
+      if (empty($results)) {
+			
+        return ApiResponseFormatter::formatResponse(
+          HTTPStatus::NOT_FOUND, 
+          "success", 
+          "Tecnologia não encontrada.",
+          NULL
+        );
+        
+      }
+      
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Detalhes da tecnologia",
+        $results[0]
+      );
+
+		} catch (\Exception $e) {
+			
+			return ApiResponseFormatter::formatResponse(
+        $e->getCode(), 
+        "error", 
+        "Falha ao obter tecnologia: " . $e->getMessage(),
+        null
+      );
+			
+		}
+
+  }
 
   public static function delete($idtechnology) 
 	{
