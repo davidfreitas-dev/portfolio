@@ -75,8 +75,20 @@ class Project extends Model
   public static function list()
   {
 
-    $sql = "SELECT * FROM tb_projects
-            ORDER BY idproject DESC";
+    $sql = "SELECT 
+              p.*, 
+              GROUP_CONCAT(
+                DISTINCT CONCAT(
+                  '{\"idtechnology\":', t.idtechnology, 
+                  ',\"desname\":\"', t.desname, 
+                  ',\"desimage\":\"', t.desimage, '\"}'
+                ) SEPARATOR ','
+              ) AS technologies
+            FROM tb_projects p
+            LEFT JOIN tb_projectstechnologies pt ON p.idproject = pt.idproject
+            LEFT JOIN tb_technologies t ON pt.idtechnology = t.idtechnology
+            GROUP BY p.idproject
+            ORDER BY p.dtregister";
 		
 		try {
 
@@ -113,8 +125,19 @@ class Project extends Model
   public static function get($idproject)
 	{
 
-    $sql = "SELECT * FROM tb_projects
-            WHERE idproject = :idproject";
+    $sql = "SELECT 
+              p.*, 
+              GROUP_CONCAT(
+                DISTINCT CONCAT(
+                  '{\"idtechnology\":', t.idtechnology, 
+                  ',\"desname\":\"', t.desname, 
+                  ',\"desimage\":\"', t.desimage, '\"}'
+                ) SEPARATOR ','
+              ) AS technologies
+            FROM tb_projects p
+            LEFT JOIN tb_projectstechnologies pt ON p.idproject = pt.idproject
+            LEFT JOIN tb_technologies t ON pt.idtechnology = t.idtechnology
+            WHERE p.idproject = :idproject";
 
 		try {
 
@@ -156,12 +179,14 @@ class Project extends Model
     $start = ($page - 1) * $itemsPerPage;
 
     $sql = "SELECT 
-                p.*, 
-                GROUP_CONCAT(
-                    DISTINCT CONCAT(
-                        '{\"idtechnology\":', t.idtechnology, ',\"desname\":\"', t.desname, '\"}'
-                    ) SEPARATOR ','
-                ) AS technologies
+              p.*, 
+              GROUP_CONCAT(
+                DISTINCT CONCAT(
+                  '{\"idtechnology\":', t.idtechnology, 
+                  ',\"desname\":\"', t.desname, 
+                  ',\"desimage\":\"', t.desimage, '\"}'
+                ) SEPARATOR ','
+              ) AS technologies
             FROM tb_projects p
             LEFT JOIN tb_projectstechnologies pt ON p.idproject = pt.idproject
             LEFT JOIN tb_technologies t ON pt.idtechnology = t.idtechnology
