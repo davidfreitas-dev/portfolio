@@ -22,22 +22,20 @@ $app->add(new BasePathMiddleware($app));
 $app->addErrorMiddleware(true, true, true);
 
 $app->add(new Tuupola\Middleware\JwtAuthentication([
-  "header" => "X-Token",
-  "regexp" => "/(.*)/",
   "path" => "/api",
-  "secure" => "false",
   "ignore" => [
+    "/api/images", 
     "/api/signin", 
     "/api/signup", 
     "/api/forgot", 
     "/api/forgot/token", 
     "/api/forgot/reset", 
-    "/api/images", 
     "/api/experiences($|/)",
-    "/api/technologies($|/)",
     "/api/projects($|/)",
     "/api/($|/)"
   ],
+  "secure" => true,
+  "relaxed" => ["localhost"],
   "secret" => $_ENV['JWT_SECRET_KEY'],
   "algorithm" => "HS256",
   "attribute" => "jwt",
