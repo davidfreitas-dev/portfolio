@@ -81,7 +81,7 @@ class Project extends Model
                 DISTINCT CONCAT(
                   '{\"idtechnology\":', t.idtechnology, 
                   ',\"desname\":\"', t.desname, 
-                  ',\"desimage\":\"', t.desimage, '\"}'
+                  '\",\"desimage\":\"', COALESCE(t.desimage, ''), '\"}'
                 ) SEPARATOR ','
               ) AS technologies
             FROM tb_projects p
@@ -144,7 +144,7 @@ class Project extends Model
                 DISTINCT CONCAT(
                   '{\"idtechnology\":', t.idtechnology, 
                   ',\"desname\":\"', t.desname, 
-                  ',\"desimage\":\"', t.desimage, '\"}'
+                  '\",\"desimage\":\"', COALESCE(t.desimage, ''), '\"}'
                 ) SEPARATOR ','
               ) AS technologies
             FROM tb_projects p
@@ -211,7 +211,7 @@ class Project extends Model
                 DISTINCT CONCAT(
                   '{\"idtechnology\":', t.idtechnology, 
                   ',\"desname\":\"', t.desname, 
-                  ',\"desimage\":\"', t.desimage, '\"}'
+                  '\",\"desimage\":\"', COALESCE(t.desimage, ''), '\"}'
                 ) SEPARATOR ','
               ) AS technologies
             FROM tb_projects p
