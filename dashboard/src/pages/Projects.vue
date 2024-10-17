@@ -11,7 +11,7 @@ import Toast from '../components/shared/Toast.vue';
 import Modal from '../components/shared/Modal.vue';
 import ProjectsForm from '../components/forms/ProjectsForm.vue';
 
-const tableHead = reactive(['#', 'ID', 'Nome', 'Descrição', 'Data']);
+const tableHead = reactive(['#', 'ID', 'Nome', 'Descrição', 'Atualizado em']);
 
 const page = ref(1);
 const toastRef = ref(null);
@@ -133,7 +133,7 @@ const handleProject = (project) => {
               </td>
 
               <td class="px-6 py-4">
-                {{ $filters.formatDate(project.dtregister) }}
+                {{ $filters.formatDate(project.dtupdate) }}
               </td>
             </tr>
           </tbody>

@@ -74,7 +74,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="flex flex-col md:flex-row items-center justify-between h-16 my-5 md:m-0">
+  <div v-if="totalItems" class="flex flex-col md:flex-row items-center justify-between h-16 my-5 md:m-0">
     <span class="text-sm text-gray-400">
       Exibindo {{ itemRange }} de {{ totalItems }} itens
     </span>
