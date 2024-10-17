@@ -7,7 +7,7 @@ $app->get('/images/{folder}/{image}', function (Request $request, Response $resp
 
   $imageDirectoryPath = '/../../storage/';
 
-  $defaultImage = 'no-image.jpg';
+  $defaultImage = 'no-image.png';
 
   $imagePath = __DIR__ . $imageDirectoryPath . $args['folder'] . '/' . $args['image'];
 

@@ -12,7 +12,8 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (request) => {
-    request.headers['X-Token'] = storeSession.session && storeSession.session.token ? storeSession.session.token : '';
+    const token = storeSession.session && storeSession.session.token ? storeSession.session.token : '';
+    request.headers['Authorization'] = token ? `Bearer ${token}` : '';
     return request;
   },
   (error) => {

@@ -114,7 +114,11 @@ const handleProject = (project) => {
 
               <td class="px-6 py-4">
                 <div class="flex items-center gap-5 min-w-[150px]">
-                  <img :src="project.desimage" class="h-12 w-12 rounded-md">
+                  <img
+                    v-if="project.desimage"
+                    :src="project.desimage"
+                    class="h-12 w-12 rounded-md"
+                  >
 
                   <div class="hover:text-primary hover:underline cursor-pointer line-clamp-2" @click="handleProject(project)">
                     {{ project.destitle }}
