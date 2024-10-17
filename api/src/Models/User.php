@@ -246,7 +246,7 @@ class User extends Model {
   private function checkUserExists($login, $email, $cpf, $iduser = null) 
   {
 
-    $cpf = preg_replace('/[^0-9]/is', '', $cpf);
+    $cpf = $cpf !== NULL ? preg_replace('/[^0-9]/is', '', $cpf) : '';
 
     $sql = "SELECT * FROM tb_users a 
             INNER JOIN tb_persons b 
