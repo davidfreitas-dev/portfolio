@@ -176,6 +176,7 @@ CREATE TABLE `tb_projects` (
   `desdescription` text NOT NULL,
   `desimage` varchar(255) DEFAULT NULL,
   `deslink` varchar(255) DEFAULT NULL,
+  `inactive` tinyint(1) NOT NULL DEFAULT '1',
   `dtregister` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `dtupdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

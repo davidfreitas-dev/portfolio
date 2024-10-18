@@ -347,7 +347,7 @@ class Project extends Model
 			$db = new Database();
 			
 			$db->query($sql, array(
-				':idproject'=>$idproject
+				':idproject' => $idproject
 			));
 
       UploadHandler::deletePhoto($idproject, "projects");
@@ -355,7 +355,7 @@ class Project extends Model
       return ApiResponseFormatter::formatResponse(
         HTTPStatus::OK, 
         "success", 
-        "Projeto excluído com sucesso",
+        "Projeto excluído com sucesso.",
         null
       );
 
@@ -370,6 +370,40 @@ class Project extends Model
 			
 		}
 
+  }
+
+  public function updateStatus()
+  {
+
+    $sql = "UPDATE tb_projects SET inactive = :status WHERE idproject = :idproject";
+
+    try {
+
+      $db = new Database();
+      
+      $db->query($sql, array(
+				':status'    => $this->getinactive(),
+				':idproject' => $this->getidproject()
+			));
+
+      return ApiResponseFormatter::formatResponse(
+        HTTPStatus::OK, 
+        "success", 
+        "Status do projeto atualizado com sucesso.",
+        null
+      );
+
+    } catch (\PDOException $e) {
+
+			return ApiResponseFormatter::formatResponse(
+        HTTPStatus::INTERNAL_SERVER_ERROR, 
+        "error", 
+        "Falha ao atualizar status do projeto: " . $e->getMessage(),
+        null
+      );
+			
+		}
+    
   }
 
   private function setPhoto($idproject, $image)
