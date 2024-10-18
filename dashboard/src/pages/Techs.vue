@@ -1,9 +1,11 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, watch, onMounted } from 'vue';
+import { debounce } from 'vue-debounce';
 import axios from '../api/axios';
 import MainContainer from '../components/shared/MainContainer.vue';
 import Breadcrumb from '../components/shared/Breadcrumb.vue';
 import Wrapper from '../components/shared/Wrapper.vue';
+import InputSearch from '../components/shared/InputSearch.vue';
 import Button from '../components/shared/Button.vue';
 import Pagination from '../components/shared/Pagination.vue';
 import Loader from '../components/shared/Loader.vue';
@@ -11,12 +13,21 @@ import Toast from '../components/shared/Toast.vue';
 import Modal from '../components/shared/Modal.vue';
 import TechnologiesForm from '../components/forms/TechnologiesForm.vue';
 
+const emit = defineEmits(['onSearch']);
+
 const tableHead = reactive(['#', 'ID', 'Tecnologia']);
 
 const page = ref(1);
+const search = ref('');
 const toastRef = ref(null);
 const paginationRef = ref(null);
 const isLoading = ref(false);
+
+const handleDebounce = debounce((search) => console.log('onSearch', search), '500ms');
+
+watch(search, (newSearch) => {
+  handleDebounce(newSearch);
+});
 
 const changePage = (currentPage) => {
   page.value = currentPage;
@@ -63,17 +74,7 @@ const handleTechnology = (technology) => {
 
 <template>
   <MainContainer>
-    <Breadcrumb title="Tecnologias" description="Adicione as tecnologias usadas em seus projetos.">
-      <Button @click="handleTechnology()">
-        <span class="material-icons">
-          add
-        </span>
-        
-        <span class="hidden md:block">
-          Adicionar
-        </span>
-      </Button>
-    </Breadcrumb>
+    <Breadcrumb title="Tecnologias" description="Adicione as tecnologias usadas em seus projetos." />
 
     <Wrapper>
       <div class="text-center text-secondary my-10">
@@ -81,6 +82,20 @@ const handleTechnology = (technology) => {
         <span v-if="!isLoading && (!data || !data.technologies.length)">
           Nenhuma tecnologia encontrada.
         </span>
+      </div>
+
+      <div class="flex justify-between items-center w-full mb-8">
+        <InputSearch v-model="search" placeholder="Buscar Tecnologia" />
+
+        <Button @click="handleTechnology()">
+          <span class="material-icons">
+            add
+          </span>
+        
+          <span class="hidden md:block">
+            Adicionar
+          </span>
+        </Button>
       </div>
 
       <div v-if="!isLoading && data && data.technologies.length" class="data-table relative overflow-x-auto my-3">
