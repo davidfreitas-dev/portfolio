@@ -12,11 +12,13 @@ import Wrapper from '../components/shared/Wrapper.vue';
 import Input from '../components/shared/Input.vue';
 import Button from '../components/shared/Button.vue';
 import Toast from '../components/shared/Toast.vue';
+import ModalConfirm from '../components/shared/ModalConfirm.vue';
 
 const router = useRouter();
 const storeSession = useSessionStore();
 const isLoading = ref(false);
 const toastRef = ref(null);
+const modalRef = ref(null);
 const userData = ref({});
 
 const loadData = async () => {
@@ -32,6 +34,10 @@ const loadData = async () => {
 onMounted(async () => {
   await loadData();
 });
+
+const handleLogout = () => {
+  modalRef.value?.openModal();
+};
 
 const logout = () => {
   storeSession.clearSession();
@@ -79,7 +85,7 @@ const submitForm = async (event) => {
 <template>
   <MainContainer>
     <Breadcrumb title="Configurações" description="Atualize suas informações pessoais aqui.">
-      <Button @click="logout">
+      <Button @click="handleLogout">
         <span class="material-icons">
           logout
         </span>
@@ -117,6 +123,13 @@ const submitForm = async (event) => {
         </div>
       </form>
     </Wrapper>
+
+    <ModalConfirm
+      ref="modalRef"
+      header="Deseja realmente sair?"
+      message="Todas as sessões ativas serão encerradas."
+      @confirm-action="logout"
+    />
 
     <Toast ref="toastRef" />
   </MainContainer>
