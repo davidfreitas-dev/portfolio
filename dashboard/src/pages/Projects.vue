@@ -75,6 +75,17 @@ const handleProject = (project) => {
   selectedProject.value = project;
   showModal();
 };
+
+const updateProjectStatus = async (project) => {
+  try {
+    await axios.put(`/projects/status/${project.idproject}`, {
+      inactive: project.inactive
+    });
+  } catch (error) {
+    console.log(error);
+    toastRef.value?.showToast('error', 'Falha ao atualizar o status do projeto.');
+  }
+};
 </script>
 
 <template>
@@ -157,7 +168,7 @@ const handleProject = (project) => {
               </td>
 
               <td class="px-6 py-4">
-                <Switch />
+                <Switch v-model="project.inactive" @update:model-value="() => updateProjectStatus(project)" />
               </td>
             </tr>
           </tbody>

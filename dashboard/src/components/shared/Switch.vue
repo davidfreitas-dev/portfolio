@@ -3,22 +3,22 @@ import { ref, watch } from 'vue';
 
 const props = defineProps({
   modelValue: {
-    type: Boolean,
-    default: false,
+    type: Number, // 1 ativo / 0 inativo
+    default: 0,
   }
 });
 
 const emit = defineEmits(['update:modelValue']);
 
-const isChecked = ref(props.modelValue);
+const isChecked = ref(!!props.modelValue);
 
 watch(() => props.modelValue, (newValue) => {
-  isChecked.value = newValue;
+  isChecked.value = !!newValue;
 });
 
 const toggleSwitch = () => {
   isChecked.value = !isChecked.value;
-  emit('update:modelValue', isChecked.value);
+  emit('update:modelValue', isChecked.value ? 1 : 0);
 };
 </script>
 
