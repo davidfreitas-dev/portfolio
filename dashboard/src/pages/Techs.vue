@@ -23,7 +23,7 @@ const toastRef = ref(null);
 const paginationRef = ref(null);
 const isLoading = ref(false);
 
-const handleDebounce = debounce((search) => console.log('onSearch', search), '500ms');
+const handleDebounce = debounce((search) => loadData(), '500ms');
 
 watch(search, (newSearch) => {
   handleDebounce(newSearch);
@@ -39,8 +39,14 @@ const data = ref(null);
 const loadData = async () => {
   isLoading.value = true;
 
+  let endpoint = `/technologies/page/${page.value}`;
+
+  if (search.value) {
+    endpoint = `/technologies/search/${search.value}/${page.value}`;
+  }
+
   try {
-    const response = await axios.get(`/technologies/page/${page.value}`);
+    const response = await axios.get(endpoint);
     data.value = response.data ?? null;
   } catch (error) {
     console.log(error);
@@ -77,25 +83,25 @@ const handleTechnology = (technology) => {
     <Breadcrumb title="Tecnologias" description="Adicione as tecnologias usadas em seus projetos." />
 
     <Wrapper>
-      <div class="text-center text-secondary my-10">
-        <Loader v-if="isLoading" color="primary" />
-        <span v-if="!isLoading && (!data || !data.technologies.length)">
-          Nenhuma tecnologia encontrada.
-        </span>
-      </div>
-
-      <div class="flex justify-between items-center w-full mb-8">
+      <div class="flex justify-between items-center w-full my-5">
         <InputSearch v-model="search" placeholder="Buscar Tecnologia" />
 
         <Button @click="handleTechnology()">
           <span class="material-icons">
             add
           </span>
-        
+  
           <span class="hidden md:block">
             Adicionar
           </span>
         </Button>
+      </div>
+
+      <div class="text-center text-secondary my-10">
+        <Loader v-if="isLoading" color="primary" />
+        <span v-if="!isLoading && (!data || !data.technologies.length)">
+          Nenhuma tecnologia encontrada.
+        </span>
       </div>
 
       <div v-if="!isLoading && data && data.technologies.length" class="data-table relative overflow-x-auto my-3">
