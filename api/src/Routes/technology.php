@@ -30,6 +30,22 @@ $app->get('/technologies/{id}', function (Request $request, Response $response, 
 
 });
 
+$app->get('/technologies/search/{search}/{page}', function (Request $request, Response $response, array $args) {
+
+  $page = $args['page'];
+  
+  $search = $args['search'];
+
+  $results = Technology::getPageSearch($search, $page);
+
+  $response->getBody()->write(json_encode($results));
+
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
+
+});
+
 $app->get('/technologies/page/{page}', function (Request $request, Response $response, array $args) {
 
   $page = $args['page'];
