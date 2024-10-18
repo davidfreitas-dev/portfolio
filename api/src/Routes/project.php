@@ -30,6 +30,22 @@ $app->get('/projects/{id}', function (Request $request, Response $response, arra
 
 });
 
+$app->get('/projects/search/{search}/{page}', function (Request $request, Response $response, array $args) {
+
+  $page = $args['page'];
+  
+  $search = $args['search'];
+
+  $results = Project::getPageSearch($search, $page);
+
+  $response->getBody()->write(json_encode($results));
+
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
+
+});
+
 $app->get('/projects/page/{page}', function (Request $request, Response $response, array $args) {
 
   $page = $args['page'];

@@ -86,7 +86,7 @@ const handleTechnology = (technology) => {
       <div class="flex justify-between items-center w-full my-5">
         <InputSearch v-model="search" placeholder="Buscar Tecnologia" />
 
-        <Button @click="handleTechnology()">
+        <Button @click="handleTechnology">
           <span class="material-icons">
             add
           </span>
@@ -97,7 +97,7 @@ const handleTechnology = (technology) => {
         </Button>
       </div>
 
-      <div class="text-center text-secondary my-10">
+      <div class="flex justify-center items-center w-full text-secondary my-10">
         <Loader v-if="isLoading" color="primary" />
         <span v-if="!isLoading && (!data || !data.technologies.length)">
           Nenhuma tecnologia encontrada.

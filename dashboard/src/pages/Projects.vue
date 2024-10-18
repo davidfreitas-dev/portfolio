@@ -1,22 +1,32 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, watch, onMounted } from 'vue';
+import { debounce } from 'vue-debounce';
 import axios from '../api/axios';
 import MainContainer from '../components/shared/MainContainer.vue';
 import Breadcrumb from '../components/shared/Breadcrumb.vue';
 import Wrapper from '../components/shared/Wrapper.vue';
+import InputSearch from '../components/shared/InputSearch.vue';
 import Button from '../components/shared/Button.vue';
+import Switch from '../components/shared/Switch.vue';
 import Pagination from '../components/shared/Pagination.vue';
 import Loader from '../components/shared/Loader.vue';
 import Toast from '../components/shared/Toast.vue';
 import Modal from '../components/shared/Modal.vue';
 import ProjectsForm from '../components/forms/ProjectsForm.vue';
 
-const tableHead = reactive(['#', 'ID', 'Nome', 'Descrição', 'Atualizado em']);
+const tableHead = reactive(['#', 'ID', 'Nome', 'Descrição', 'Atualizado em', 'Status']);
 
 const page = ref(1);
+const search = ref('');
 const toastRef = ref(null);
 const paginationRef = ref(null);
 const isLoading = ref(false);
+
+const handleDebounce = debounce((search) => loadData(), '500ms');
+
+watch(search, (newSearch) => {
+  handleDebounce(newSearch);
+});
 
 const changePage = (currentPage) => {
   page.value = currentPage;
@@ -28,8 +38,14 @@ const data = ref(null);
 const loadData = async () => {
   isLoading.value = true;
 
+  let endpoint = `/projects/page/${page.value}`;
+
+  if (search.value) {
+    endpoint = `/projects/search/${search.value}/${page.value}`;
+  }
+
   try {
-    const response = await axios.get(`/projects/page/${page.value}`);
+    const response = await axios.get(endpoint);
     data.value = response.data ?? null;
   } catch (error) {
     console.log(error);
@@ -63,20 +79,24 @@ const handleProject = (project) => {
 
 <template>
   <MainContainer>
-    <Breadcrumb title="Projetos" description="Adicione os projetos do seu portfolio.">
-      <Button @click="handleProject">
-        <span class="material-icons">
-          add
-        </span>
-        
-        <span class="hidden md:block">
-          Adicionar
-        </span>
-      </Button>
-    </Breadcrumb>
+    <Breadcrumb title="Projetos" description="Adicione os projetos do seu portfolio." />
 
     <Wrapper>
-      <div class="text-center text-secondary my-10">
+      <div class="flex justify-between items-center w-full my-5">
+        <InputSearch v-model="search" placeholder="Buscar Projeto" />
+
+        <Button @click="handleProject">
+          <span class="material-icons">
+            add
+          </span>
+        
+          <span class="hidden md:block">
+            Adicionar
+          </span>
+        </Button>
+      </div>
+
+      <div class="flex justify-center items-center w-full text-secondary my-10">
         <Loader v-if="isLoading" color="primary" />
         <span v-if="!isLoading && (!data || !data.projects.length)">
           Nenhum projeto encontrado.
@@ -134,6 +154,10 @@ const handleProject = (project) => {
 
               <td class="px-6 py-4">
                 {{ $filters.formatDate(project.dtupdate) }}
+              </td>
+
+              <td class="px-6 py-4">
+                <Switch />
               </td>
             </tr>
           </tbody>
