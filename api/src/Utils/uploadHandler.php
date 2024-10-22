@@ -33,25 +33,21 @@ class UploadHandler
 
       if (!is_dir($dist)) {
 
-        mkdir($dist, 0777, true);
+          mkdir($dist, 0777, true);
 
       }
 
-      $timestamp = time();
-
-      $imageName = md5($id . $timestamp);
-
-      $dist = $dist . DIRECTORY_SEPARATOR . $imageName . ".jpg";
+      $dist = $dist . DIRECTORY_SEPARATOR . $id . ".jpg";
 
       imagejpeg($image, $dist);
 
       imagedestroy($image);
 
-      return $imageName;
+      return true;
 
     }
 
-    return null;
+    return false;
 
 	}
 

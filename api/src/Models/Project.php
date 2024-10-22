@@ -409,15 +409,15 @@ class Project extends Model
   private function setPhoto($idproject, $image)
   {
 
-    $imageName = UploadHandler::uploadPhoto($idproject, $image, "projects");
+    $photoUploaded = UploadHandler::uploadPhoto($idproject, $image, "projects");
 
-    if (!$imageName) {
+    if (!$photoUploaded) {
 
       return null;
       
     }
 
-    $imageUrl = $_ENV['API_URL'] . "/images/projects/" . $imageName . ".jpg";
+    $imageUrl = $_ENV['API_URL'] . "/images/projects/" . $idproject . ".jpg";
 
     $sql = "UPDATE tb_projects SET desimage = :desimage WHERE idproject = :idproject";
     
