@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+use App\Enums\HttpStatus as HTTPStatus;
+
 class UploadHandler
 {
 
@@ -11,6 +13,8 @@ class UploadHandler
 		if (isset($file['name'])) {
 
       $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+      
+      $image = null;
 
       switch ($extension) {
 
@@ -26,42 +30,83 @@ class UploadHandler
         case "png":
         $image = imagecreatefrompng($file["tmp_name"]);
         break;
+
+        default:
+        throw new \Exception("Extensão de arquivo inválida: $extension. São permitidas apenas as extensões: jpg, jpeg, png e gif", HTTPStatus::BAD_REQUEST);
   
+      }
+
+      if (!$image) {
+
+        throw new \Exception("Não foi possível criar a imagem.", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
       }
 
       $dist = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . $directory;
 
-      if (!is_dir($dist)) {
-
-          mkdir($dist, 0777, true);
-
+      if (!is_dir($dist) && !mkdir($dist, 0777, true)) {
+        
+        throw new \Exception("Falha ao criar o diretório: $dist", HTTPStatus::INTERNAL_SERVER_ERROR);
+    
       }
 
-      $dist = $dist . DIRECTORY_SEPARATOR . $id . ".jpg";
+      self::deletePhoto($id, $directory);
+
+      $timestamp = time();
+
+      $hash = md5($timestamp);
+
+      $imageName = $hash . "-" . $id;
+
+      $dist = $dist . DIRECTORY_SEPARATOR . $imageName . ".jpg";
 
       imagejpeg($image, $dist);
 
       imagedestroy($image);
 
-      return true;
+      return $imageName;
 
     }
 
-    return false;
+    return null;
 
 	}
 
   public static function deletePhoto($id, $directory)
   {
 
-    $dist = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $id . ".jpg";
+    $dist = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . $directory;
 
-    if (file_exists($dist)) {
+    $existingFileName = self::checkExistingPhoto($id, $dist);
+    
+    $imagePath = $dist . DIRECTORY_SEPARATOR . $existingFileName;
 
-      unlink($dist);
+    if (file_exists($imagePath)) {
+
+      unlink($imagePath);
 
     }
     
   }
+
+  private static function checkExistingPhoto($id, $dist)
+  {
+    
+    $files = scandir($dist);
+    
+    foreach ($files as $file) {
+        
+      if (preg_match('/^[a-f0-9]{32}-' . preg_quote($id) . '\.jpg$/', $file)) {
+          
+        return $file; 
+
+      }
+        
+    }
+
+    return null;
+
+  }
+
 
 }
