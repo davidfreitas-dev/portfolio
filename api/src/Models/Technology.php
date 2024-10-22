@@ -385,15 +385,15 @@ class Technology extends Model
   private function setPhoto($idtechnology, $image)
   {
     
-    $photoUploaded = UploadHandler::uploadPhoto($idtechnology, $image, "technologies");
+    $imageName = UploadHandler::uploadPhoto($idtechnology, $image, "technologies");
 
-    if (!$photoUploaded) {
+    if (!$imageName) {
       
       return null;      
 
     }
 
-    $imageUrl = $_ENV['API_URL']."/images/technologies/".$idtechnology.".jpg";
+    $imageUrl = $_ENV['API_URL'] . "/images/technologies/" . $imageName . ".jpg";
       
     $sql = "UPDATE tb_technologies SET desimage = :desimage WHERE idtechnology = :idtechnology";
     
