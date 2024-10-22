@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, nextTick } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import axios from '../../api/axios';
@@ -46,7 +46,7 @@ const save = async (technology) => {
       }
     });
 
-    toastRef.value?.showToast(response.status, response.message);
+    await nextTick();
 
     emit('onCloseModal');
   } catch (error) {

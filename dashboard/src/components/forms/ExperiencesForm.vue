@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength } from '@vuelidate/validators';
 import axios from '../../api/axios';
@@ -38,10 +38,11 @@ const emit = defineEmits(['onCloseModal']);
 const save = async (experience) => {
   isLoading.value = true;
 
+  const { idexperience } = experience;
+
   try {
-    const { idexperience } = experience;
     const response = idexperience ? await updateExperience(experience) : await createExperience(experience);
-    toastRef.value?.showToast(response.status, response.message);
+    await nextTick();
     emit('onCloseModal');
   } catch (error) {
     console.log(error);

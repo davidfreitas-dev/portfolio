@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, nextTick, onMounted } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import axios from '../../api/axios';
@@ -67,6 +67,8 @@ const save = async (project) => {
         'Content-Type': 'multipart/form-data',
       },
     });
+
+    await nextTick();
 
     emit('onCloseModal');
   } catch (error) {
