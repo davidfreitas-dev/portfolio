@@ -12,7 +12,7 @@ import Wrapper from '../components/shared/Wrapper.vue';
 import Input from '../components/shared/Input.vue';
 import Button from '../components/shared/Button.vue';
 import Toast from '../components/shared/Toast.vue';
-import ModalConfirm from '../components/shared/ModalConfirm.vue';
+import Dialog from '../components/shared/Dialog.vue';
 
 const router = useRouter();
 const storeSession = useSessionStore();
@@ -124,7 +124,7 @@ const submitForm = async (event) => {
       </form>
     </Wrapper>
 
-    <ModalConfirm
+    <Dialog
       ref="modalRef"
       header="Deseja realmente sair?"
       message="Todas as sessões ativas serão encerradas."

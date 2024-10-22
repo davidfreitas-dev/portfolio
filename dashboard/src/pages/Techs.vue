@@ -10,12 +10,13 @@ import Button from '../components/shared/Button.vue';
 import Pagination from '../components/shared/Pagination.vue';
 import Loader from '../components/shared/Loader.vue';
 import Toast from '../components/shared/Toast.vue';
+import Dialog from '../components/shared/Dialog.vue';
 import Modal from '../components/shared/Modal.vue';
 import TechnologiesForm from '../components/forms/TechnologiesForm.vue';
 
 const emit = defineEmits(['onSearch']);
 
-const tableHead = reactive(['#', 'ID', 'Tecnologia']);
+const tableHead = reactive(['#', 'ID', 'Tecnologia', 'Ações']);
 
 const page = ref(1);
 const search = ref('');
@@ -59,6 +60,25 @@ const loadData = async () => {
 onMounted(async () => {
   await loadData();
 });
+
+const deleteTech = async () => {
+  const technologyId = selectedTechnology.value.idtechnology;
+  
+  try {
+    await axios.delete(`/technologies/delete/${technologyId}`);
+    await loadData();
+  } catch (error) {
+    console.log(error);
+    toastRef.value?.showToast(error.data?.status, 'Falha ao deletar tecnologia');
+  }
+};
+
+const dialogRef = ref(null);
+
+const handleDeleteTech = async (technology) => {
+  selectedTechnology.value = technology;
+  dialogRef.value?.openModal();
+};
 
 const modalRef = ref(null);
 
@@ -125,15 +145,15 @@ const handleTechnology = (technology) => {
               :key="i"
               class="border-b hover:bg-gray-50"
             >
-              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+              <th scope="row" class="w-[10%] px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                 {{ i + 1 }}
               </th>
 
-              <td class="px-6 py-4">
+              <td class="w-[10%] px-6 py-4">
                 #{{ tech.idtechnology }}
               </td>
 
-              <td class="px-6 py-4">
+              <td class="w-[65%] px-6 py-4">
                 <div class="flex items-center gap-5 min-w-[150px]">
                   <img
                     v-if="tech.desimage"
@@ -144,6 +164,26 @@ const handleTechnology = (technology) => {
                   <div class="hover:text-primary hover:underline cursor-pointer line-clamp-2" @click="handleTechnology(tech)">
                     {{ tech.desname }}
                   </div>
+                </div>
+              </td>
+
+              <td class="w-[15%] px-6 py-4">
+                <div class="flex gap-3">
+                  <Button size="small" @click="handleTechnology(tech)">
+                    <span class="material-icons">
+                      edit
+                    </span>
+                  </Button>
+
+                  <Button
+                    size="small"
+                    color="danger"
+                    @click="handleDeleteTech(tech)"
+                  >
+                    <span class="material-icons">
+                      delete
+                    </span>
+                  </Button>
                 </div>
               </td>
             </tr>
@@ -158,6 +198,13 @@ const handleTechnology = (technology) => {
         @on-page-change="changePage"
       />
     </Wrapper>
+    
+    <Dialog
+      ref="dialogRef"
+      header="Deseja realmente excluir esta tecnologia?"
+      message="Ao clicar em confirmar as informações serão excluidas permanentemente."
+      @confirm-action="deleteTech"
+    />
 
     <Modal
       ref="modalRef"

@@ -57,16 +57,6 @@ const save = async (technology) => {
   isLoading.value = false;
 };
 
-const deleteTechnology = async (technologyId) => {
-  try {
-    await axios.delete(`/technologies/delete/${technologyId}`);
-    emit('onCloseModal');
-  } catch (error) {
-    console.log(error);
-    toastRef.value?.showToast(error.data?.status, 'Falha ao deletar tecnologia');
-  }
-};
-
 const imagePreview = ref(undefined);
 
 watch(
@@ -131,17 +121,6 @@ const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
         :disabled="isLoading || isFormValid"
       >
         Salvar Dados
-      </Button>
-
-      <Button
-        v-if="technology.idtechnology"
-        type="button"
-        color="secondary"
-        class="mt-5 mr-3"
-        :disabled="isLoading"
-        @click="deleteTechnology(technology.idtechnology)"
-      >
-        Excluir Dados
       </Button>
     </div>
   </form>
