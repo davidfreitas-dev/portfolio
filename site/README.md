@@ -1,13 +1,39 @@
-# https://davidfreitas.dev.br
+## Olá! Eu sou o David. 👋  
+Seja bem-vindo ao meu portfólio! Explore meus projetos, habilidades e trajetória. 🌐  
 
-Olá! Eu sou o David. Clique no link acima para acessar meu site pessoal!
+Acesse meu portfólio completo clicando no link abaixo:
 
-Ou se preferir use os botões abaixo para acessar meus perfis.
+🔗 [**davidfreitas.dev.br**](https://davidfreitas.dev.br)
 
-[![Github Badge](https://img.shields.io/badge/-Github-000?style=flat-square&logo=Github&logoColor=white&link=https://github.com/davidfrei7as)](https://github.com/davidfrei7as)
+Ou conecte-se comigo nas redes sociais:
 
-[![Linkedin Badge](https://img.shields.io/badge/-LinkedIn-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/davidfrei7as/)](https://www.linkedin.com/in/davidfrei7as/)
+[![Github Badge](https://img.shields.io/badge/-Github-000?style=for-the-badge&logo=Github&logoColor=white&link=https://github.com/davidfreitas-dev)](https://github.com/davidfreitas-dev)
+[![Linkedin Badge](https://img.shields.io/badge/-LinkedIn-0077B5?style=for-the-badge&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/davidfreitas-dev/)](https://www.linkedin.com/in/davidfreitas-dev/)
+[![Instagram Badge](https://img.shields.io/badge/-Instagram-E4405F?style=for-the-badge&logo=Instagram&logoColor=white&link=https://www.instagram.com/davidfreitas.dev)](https://www.instagram.com/davidfreitas.dev)
 
-[![Youtube Badge](https://img.shields.io/badge/-YouTube-ff0000?style=flat-square&labelColor=ff0000&logo=youtube&logoColor=white&link=https://www.youtube.com/user/davidfrei7as)](https://www.youtube.com/user/davidfrei7as)
+---
 
-### Obrigado pela visita!
+### 🚀 Tecnologias e Ferramentas:
+
+- HTML, CSS, JavaScript
+- PHP, Laravel, Slim Framework
+- Vue.js, Node.js
+- MySQL, PostgreSQL
+- Git, GitHub, CI/CD
+
+---
+
+### 📊 Estatísticas do GitHub
+
+![Estatísticas do GitHub](https://github-readme-stats.vercel.app/api?username=davidfreitas-dev&show_icons=true&theme=radical)
+
+---
+
+### 🌟 Destaques
+
+- 🚀 **Projetos:** Desenvolvimento de sistemas de e-commerce, API's RESTful, dashboards interativos e muito mais.
+- 💼 **Experiência:** Anos de experiência em desenvolvimento de software, contribuindo para diversas soluções inovadoras.
+
+---
+
+**Obrigado pela visita!**
