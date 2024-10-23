@@ -8,6 +8,7 @@ import Input from '../shared/Input.vue';
 import InputFile from '../shared/InputFile.vue';
 import Textarea from '../shared/Textarea.vue';
 import MultiSelect from '../shared/MultiSelect.vue';
+import Switch from '../shared/Switch.vue';
 import Toast from '../shared/Toast.vue';
 
 const props = defineProps({
@@ -18,6 +19,7 @@ const props = defineProps({
       desdescription: '',
       desimage: '',
       deslink: '',
+      inactive: 0,
       technologies: []
     })
   }
@@ -49,6 +51,7 @@ const buildFormData = (project) => {
   formData.append('destitle', project.destitle);
   formData.append('desdescription', project.desdescription);
   formData.append('deslink', project.deslink);
+  formData.append('inactive', project.inactive);
   formData.append('technologies', project.technologies);
   if (project.desimage instanceof File) formData.append('image', project.desimage);
   return formData;
@@ -77,16 +80,6 @@ const save = async (project) => {
   }
   
   isLoading.value = false;
-};
-
-const deleteProject = async (projectId) => {
-  try {
-    await axios.delete(`/projects/delete/${projectId}`);
-    emit('onCloseModal');
-  } catch (error) {
-    console.log(error);
-    toastRef.value?.showToast(error.data?.status, 'Falha ao deletar projeto');
-  }
 };
 
 const techs = ref([]);
@@ -198,6 +191,11 @@ const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
       @handle-select-change="handleSelectChange"
     />
 
+    <div class="flex flex-col gap-2">
+      <label class="text-font font-semibold">Ativo</label>
+      <Switch v-model="project.inactive" class="ml-1" />
+    </div>
+
     <div class="flex flex-row-reverse">
       <Button
         class="mt-5"
@@ -205,17 +203,6 @@ const isFormValid = computed(() => v$.value.$pending || v$.value.$invalid);
         :disabled="isLoading || isFormValid"
       >
         Salvar Dados
-      </Button>
-
-      <Button
-        v-if="project.idproject"
-        type="button"
-        color="secondary"
-        class="mt-5 mr-3"
-        :disabled="isLoading"
-        @click="deleteProject(project.idproject)"
-      >
-        Excluir Dados
       </Button>
     </div>
   </form>

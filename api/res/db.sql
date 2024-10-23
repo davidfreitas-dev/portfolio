@@ -25,7 +25,7 @@ DELIMITER $$
 --
 -- Procedimentos
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_projects_save`(`pidproject` INT, `pdestitle` VARCHAR(128), `pdesdescription` TEXT, `ptechnologies` VARCHAR(255),`pdeslink` VARCHAR(255)) BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_projects_save`(`pidproject` INT, `pdestitle` VARCHAR(128), `pdesdescription` TEXT, `pdeslink` VARCHAR(255), `pinactive` TINYINT(1), `ptechnologies` VARCHAR(255)) BEGIN
   DECLARE vidproject INT;
   DECLARE vidtechnology INT;
   DECLARE vcommaposition INT;
@@ -35,7 +35,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_projects_save`(`pidproject` INT,
     SET 
       destitle = pdestitle,
       desdescription = pdesdescription,
-      deslink = pdeslink
+      deslink = pdeslink,
+      inactive = pinactive
     WHERE idproject = pidproject;
       
     SET vidproject = pidproject;
@@ -43,8 +44,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_projects_save`(`pidproject` INT,
     DELETE FROM tb_projectstechnologies 
     WHERE idproject = pidproject;
   ELSE
-    INSERT INTO tb_projects (destitle, desdescription, deslink) 
-    VALUES (pdestitle, pdesdescription, pdeslink);
+    INSERT INTO tb_projects (destitle, desdescription, deslink, inactive) 
+    VALUES (pdestitle, pdesdescription, pdeslink, pinactive);
     
     SET vidproject = LAST_INSERT_ID();
   END IF;

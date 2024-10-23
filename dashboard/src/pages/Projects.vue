@@ -7,14 +7,14 @@ import Breadcrumb from '../components/shared/Breadcrumb.vue';
 import Wrapper from '../components/shared/Wrapper.vue';
 import InputSearch from '../components/shared/InputSearch.vue';
 import Button from '../components/shared/Button.vue';
-import Switch from '../components/shared/Switch.vue';
+import Dialog from '../components/shared/Dialog.vue';
 import Pagination from '../components/shared/Pagination.vue';
 import Loader from '../components/shared/Loader.vue';
 import Toast from '../components/shared/Toast.vue';
 import Modal from '../components/shared/Modal.vue';
 import ProjectsForm from '../components/forms/ProjectsForm.vue';
 
-const tableHead = reactive(['#', 'ID', 'Nome', 'Descrição', 'Atualizado em', 'Status']);
+const tableHead = reactive(['#', 'ID', 'Status', 'Título', 'Descrição', 'Atualizado em', 'Ações']);
 
 const page = ref(1);
 const search = ref('');
@@ -59,6 +59,25 @@ onMounted(async () => {
   await loadData();
 });
 
+const deleteProject = async () => {
+  const projectId = selectedProject.value.idproject;
+  
+  try {
+    await axios.delete(`/projects/delete/${projectId}`);
+    loadData();
+  } catch (error) {
+    console.log(error);
+    toastRef.value?.showToast(error.data?.status, 'Falha ao deletar projeto');
+  }
+};
+
+const dialogRef = ref(null);
+
+const handleDeleteProject = async (project) => {
+  selectedProject.value = project;
+  dialogRef.value?.openModal();
+};
+
 const modalRef = ref(null);
 
 const showModal = () => {
@@ -74,17 +93,6 @@ const selectedProject = ref(null);
 const handleProject = (project) => {
   selectedProject.value = project;
   showModal();
-};
-
-const updateProjectStatus = async (project) => {
-  try {
-    await axios.put(`/projects/status/${project.idproject}`, {
-      inactive: project.inactive
-    });
-  } catch (error) {
-    console.log(error);
-    toastRef.value?.showToast('error', 'Falha ao atualizar o status do projeto.');
-  }
 };
 </script>
 
@@ -122,7 +130,7 @@ const updateProjectStatus = async (project) => {
                 v-for="(item, i) in tableHead"
                 :key="i"
                 scope="col"
-                class="px-6 py-3"
+                class="px-6 py-3 truncate"
               >
                 {{ item }}
               </th>
@@ -144,6 +152,16 @@ const updateProjectStatus = async (project) => {
               </td>
 
               <td class="px-6 py-4">
+                <span v-if="project.inactive === 1" class="material-icons text-primary">
+                  check_circle
+                </span>
+
+                <span v-else class="material-icons text-red-500">
+                  cancel
+                </span>
+              </td>
+
+              <td class="px-6 py-4">
                 <div class="flex items-center gap-5 min-w-[150px]">
                   <img
                     v-if="project.desimage"
@@ -151,15 +169,17 @@ const updateProjectStatus = async (project) => {
                     class="h-12 w-12 rounded-md"
                   >
 
-                  <div class="hover:text-primary hover:underline cursor-pointer line-clamp-2" @click="handleProject(project)">
+                  <div class="hover:text-primary hover:underline cursor-pointer truncate" @click="handleProject(project)">
                     {{ project.destitle }}
                   </div>
                 </div>
               </td>
 
               <td class="px-6 py-4">
-                <div class="flex items-center gap-3 min-w-[250px]">
-                  {{ project.desdescription }}
+                <div class="flex items-center gap-3 w-[250px]">
+                  <div class="truncate">
+                    {{ project.desdescription }}
+                  </div>
                 </div>
               </td>
 
@@ -168,7 +188,23 @@ const updateProjectStatus = async (project) => {
               </td>
 
               <td class="px-6 py-4">
-                <Switch v-model="project.inactive" @update:model-value="() => updateProjectStatus(project)" />
+                <div class="flex gap-3">
+                  <Button size="small" @click="handleProject(project)">
+                    <span class="material-icons">
+                      edit
+                    </span>
+                  </Button>
+
+                  <Button
+                    size="small"
+                    color="danger"
+                    @click="handleDeleteProject(project)"
+                  >
+                    <span class="material-icons">
+                      delete
+                    </span>
+                  </Button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -182,6 +218,13 @@ const updateProjectStatus = async (project) => {
         @on-page-change="changePage"
       />
     </Wrapper>
+
+    <Dialog
+      ref="dialogRef"
+      header="Deseja realmente excluir este projeto?"
+      message="Ao clicar em confirmar as informações serão excluidas permanentemente."
+      @confirm-action="deleteProject"
+    />
 
     <Modal
       ref="modalRef"

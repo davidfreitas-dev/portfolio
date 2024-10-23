@@ -52,11 +52,9 @@ class UploadHandler
 
       self::deletePhoto($id, $directory);
 
-      $timestamp = time();
+      $timestamp = date('YmdHis');
 
-      $hash = md5($timestamp);
-
-      $imageName = $hash . "-" . $id;
+      $imageName = $timestamp . $id;
 
       $dist = $dist . DIRECTORY_SEPARATOR . $imageName . ".jpg";
 
@@ -96,7 +94,7 @@ class UploadHandler
     
     foreach ($files as $file) {
         
-      if (preg_match('/^[a-f0-9]{32}-' . preg_quote($id) . '\.jpg$/', $file)) {
+      if (preg_match('/^\d{14}' . preg_quote($id) . '\.jpg$/', $file)) {
           
         return $file; 
 

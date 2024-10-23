@@ -18,8 +18,9 @@ class Project extends Model
       :idproject, 
       :destitle, 
       :desdescription, 
-      :technologies,
-      :deslink
+      :deslink,
+      :inactive,
+      :technologies
     )";
 
     try {
@@ -31,6 +32,7 @@ class Project extends Model
 				":destitle"       => $this->getdestitle(),
 				":desdescription" => $this->getdesdescription(),
         ":deslink"        => $this->getdeslink(),
+        ":inactive"       => $this->getinactive(),
 				":technologies"   => $this->gettechnologies()
 			));
 
