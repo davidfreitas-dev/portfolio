@@ -17,7 +17,7 @@ app.config.globalProperties.$filters = {
   },
   formatDateMonthYear(date) { 
     const [month, year] = date.split('/');
-    return dayjs(`${year}-${month}-01`).locale('pt-br').format('MMMM YYYY').toUpperCase();   
+    return dayjs(`${year}-${month}-01`).locale('pt-br').format('MMM YYYY').toUpperCase();   
   }
 };
 

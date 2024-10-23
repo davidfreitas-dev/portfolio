@@ -1,22 +1,32 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, watch, onMounted } from 'vue';
+import { debounce } from 'vue-debounce';
 import axios from '../api/axios';
 import MainContainer from '../components/shared/MainContainer.vue';
 import Breadcrumb from '../components/shared/Breadcrumb.vue';
 import Wrapper from '../components/shared/Wrapper.vue';
+import InputSearch from '../components/shared/InputSearch.vue';
 import Pagination from '../components/shared/Pagination.vue';
 import Button from '../components/shared/Button.vue';
 import Loader from '../components/shared/Loader.vue';
 import Toast from '../components/shared/Toast.vue';
+import Dialog from '../components/shared/Dialog.vue';
 import Modal from '../components/shared/Modal.vue';
 import ExperiencesForm from '../components/forms/ExperiencesForm.vue';
 
-const tableHead = reactive(['#', 'ID', 'Título', 'Descrição', 'Início', 'Fim']);
+const tableHead = reactive(['#', 'ID', 'Título', 'Descrição', 'Início', 'Fim', 'Ações']);
 
 const page = ref(1);
+const search = ref('');
 const toastRef = ref(null);
 const paginationRef = ref(null);
 const isLoading = ref(false);
+
+const handleDebounce = debounce((search) => loadData(), '500ms');
+
+watch(search, (newSearch) => {
+  handleDebounce(newSearch);
+});
 
 const changePage = (currentPage) => {
   page.value = currentPage;
@@ -27,9 +37,15 @@ const data = ref(null);
 
 const loadData = async () => {
   isLoading.value = true;
+  
+  let endpoint = `/experiences/page/${page.value}`;
+
+  if (search.value) {
+    endpoint = `/experiences/search/${search.value}/${page.value}`;
+  }
 
   try {
-    const response = await axios.get(`/experiences/page/${page.value}`);
+    const response = await axios.get(endpoint);
     data.value = response.data ?? null;
   } catch (error) {
     console.log(error);
@@ -43,6 +59,25 @@ onMounted(async () => {
   await loadData();
 });
 
+const deleteExperience = async () => {
+  const technologyId = selectedExperience.value.idexperience;
+  
+  try {
+    await axios.delete(`/experiences/delete/${technologyId}`);
+    await loadData();
+  } catch (error) {
+    console.log(error);
+    toastRef.value?.showToast(error.data?.status, 'Falha ao deletar experiência');
+  }
+};
+
+const dialogRef = ref(null);
+
+const handleDeleteExperience = async (experience) => {
+  selectedExperience.value = experience;
+  dialogRef.value?.openModal();
+};
+
 const modalRef = ref(null);
 
 const showModal = () => {
@@ -55,7 +90,7 @@ const closeModal = () => {
 
 const selectedExperience = ref(null);
 
-const handleEexperience = (experience) => {
+const handleExperience = (experience) => {
   selectedExperience.value = experience;
   showModal();
 };
@@ -63,20 +98,24 @@ const handleEexperience = (experience) => {
 
 <template>
   <MainContainer>
-    <Breadcrumb title="Experiências" description="Adicione suas experiências profissionais ou colaborações em projetos.">
-      <Button @click="handleEexperience">
-        <span class="material-icons">
-          add
-        </span>
-        
-        <span class="hidden md:block">
-          Adicionar
-        </span>
-      </Button>
-    </Breadcrumb>
+    <Breadcrumb title="Experiências" description="Adicione suas experiências profissionais ou colaborações em projetos." />
 
     <Wrapper>
-      <div class="text-center text-secondary my-10">
+      <div class="flex justify-between items-center w-full my-5">
+        <InputSearch v-model="search" placeholder="Buscar Experiência" />
+
+        <Button @click="handleExperience">
+          <span class="material-icons">
+            add
+          </span>
+  
+          <span class="hidden md:block">
+            Adicionar
+          </span>
+        </Button>
+      </div>
+
+      <div class="flex justify-center items-center w-full text-secondary my-10">
         <Loader v-if="isLoading" color="primary" />
         <span v-if="!isLoading && (!data || !data.experiences.length)">
           Nenhuma experiência encontrada.
@@ -112,22 +151,44 @@ const handleEexperience = (experience) => {
                 #{{ experience.idexperience }}
               </td>
 
-              <td class="px-6 py-4 hover:text-primary hover:underline cursor-pointer" @click="handleEexperience(experience)">
+              <td class="px-6 py-4 hover:text-primary hover:underline cursor-pointer truncate" @click="handleExperience(experience)">
                 {{ experience.destitle }}
               </td>
 
               <td class="px-6 py-4">
-                <div class="flex items-center gap-3 min-w-[275px]">
-                  {{ experience.desdescription }}
+                <div class="flex items-center gap-3 w-[250px]">
+                  <div class="truncate">
+                    {{ experience.desdescription }}
+                  </div>
                 </div>
               </td>
 
-              <td class="px-6 py-4">
+              <td class="px-6 py-4 truncate">
                 {{ $filters.formatDateMonthYear(experience.dtstart) }}
               </td>
 
-              <td class="px-6 py-4">
+              <td class="px-6 py-4 truncate">
                 {{ $filters.formatDateMonthYear(experience.dtend) }}
+              </td>
+
+              <td class="px-6 py-4">
+                <div class="flex gap-3">
+                  <Button size="small" @click="handleExperience(experience)">
+                    <span class="material-icons">
+                      edit
+                    </span>
+                  </Button>
+
+                  <Button
+                    size="small"
+                    color="danger"
+                    @click="handleDeleteExperience(experience)"
+                  >
+                    <span class="material-icons">
+                      delete
+                    </span>
+                  </Button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -141,6 +202,13 @@ const handleEexperience = (experience) => {
         @on-page-change="changePage"
       />
     </Wrapper>
+    
+    <Dialog
+      ref="dialogRef"
+      header="Deseja realmente excluir esta experiência?"
+      message="Ao clicar em confirmar as informações serão excluidas permanentemente."
+      @confirm-action="deleteExperience"
+    />
 
     <Modal
       ref="modalRef"

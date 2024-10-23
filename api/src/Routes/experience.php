@@ -30,6 +30,22 @@ $app->get('/experiences/{id}', function (Request $request, Response $response, a
 
 });
 
+$app->get('/experiences/search/{search}/{page}', function (Request $request, Response $response, array $args) {
+
+  $page = $args['page'];
+  
+  $search = $args['search'];
+
+  $results = Experience::getPageSearch($search, $page);
+
+  $response->getBody()->write(json_encode($results));
+
+  return $response
+    ->withHeader('content-type', 'application/json')
+    ->withStatus($results['code']);
+
+});
+
 $app->get('/experiences/page/{page}', function (Request $request, Response $response, array $args) {
 
   $page = $args['page'];
