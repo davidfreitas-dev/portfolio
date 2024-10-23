@@ -80,26 +80,6 @@ $app->post('/projects/save', function (Request $request, Response $response) {
 
 });
 
-$app->put('/projects/status/{id}', function (Request $request, Response $response, array $args) {
-
-  $data = $request->getParsedBody();
-
-  $data['idproject'] = $args['id'];
-
-  $project = new Project();
-
-  $project->setAttributes($data);
-
-  $results = $project->updateStatus();
-
-  $response->getBody()->write(json_encode($results));
-
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
-
-});
-
 $app->delete('/projects/delete/{id}', function (Request $request, Response $response, array $args) {
 
   $id = $args['id'];
