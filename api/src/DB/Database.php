@@ -12,11 +12,18 @@ class Database {
 		$this->conn = new \PDO(
 			"mysql:dbname=".$_ENV['DB_NAME'].";host=".$_ENV['DB_HOST'], 
 			$_ENV['DB_USER'],
-			$_ENV['DB_PASSWORD'], 
+			$_ENV['DB_PASS'], 
 			array(\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8;SET time_zone='America/Sao_Paulo'")
 		);
 
 	}
+
+  public function getConnection()
+  {
+    
+    return $this->conn;
+  
+  }
 
   private function setParams($statement, $parameters = array())
 	{
@@ -93,7 +100,7 @@ class Database {
 
 	}
 
-	public function query($rawQuery, $params = array())
+	public function query($rawQuery, $params = array()):int
 	{
 
 		try {

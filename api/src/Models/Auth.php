@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use App\DB\Database;
-use App\Mail\Mailer;
 use App\Models\User;
 use App\Utils\PasswordHelper;
 use App\Traits\TokenGenerator;
 use App\Utils\AESCryptographer;
-use App\Utils\ApiResponseFormatter;
 use App\Enums\HttpStatus as HTTPStatus;
 
 class Auth {
@@ -18,267 +16,222 @@ class Auth {
   public static function signup($data) 
 	{
 
-		try {
-
-      $user = new User();
-
-      $user->setAttributes($data);
-
-      $data = $user->create();
-
-      $jwt = self::generateToken($data);
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::CREATED, 
-        "success", 
-        "Usuário cadastrado com sucesso",
-        $jwt
-      );
-
-    } catch (\Exception $e) {
-
-      return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao cadastrar usuário: " . $e->getMessage(),
-        null
-      );
+		$requiredFields = ["name", "email", "password", "cpfcnpj"];
+      
+    foreach ($requiredFields as $field) {
+      
+      if (!isset($data[$field]) || trim($data[$field]) === "") {
+        
+        throw new \Exception("O campo '$field' é obrigatório.", HTTPStatus::BAD_REQUEST);
+      
+      }
 
     }
+
+    $user = new User();
+
+    $user->setAttributes($data);
+
+    $data = $user->create();
+
+    $jwt = self::generateToken($data);
+
+    return $jwt;
 
 	}
         
-  public static function signin($credential, $password)
+  public static function signin($login, $password)
   {
 
-    $sql = "SELECT * FROM tb_users a 
-            INNER JOIN tb_persons b 
-            ON a.idperson = b.idperson 
-            WHERE a.deslogin = :deslogin 
-            OR b.desemail = :desemail	
-            OR b.nrcpf = :nrcpf";
+    $sql = "SELECT 
+            u.id,
+            p.name,
+            p.email,
+            p.phone,
+            p.cpfcnpj,
+            u.password,
+            u.is_active,
+            u.created_at,
+            u.updated_at,
+            r.id AS role_id,
+            r.name AS role_name
+          FROM users u
+          INNER JOIN persons p ON p.id = u.id
+          LEFT JOIN user_roles ur ON ur.user_id = u.id
+          LEFT JOIN roles r ON r.id = ur.role_id
+          WHERE (p.email = :login OR p.cpfcnpj = :login)";
 
-    try {
+    $login = trim($login);
       
-      $db = new Database();
-
-      $results = $db->select($sql, array(
-        ":deslogin" => $credential,
-        ":desemail" => $credential,
-        ":nrcpf"    => $credential
-      ));
-
-      if (empty($results) || !password_verify($password, $results[0]['despassword'])) {
-
-        throw new \Exception("Usuário inexistente ou senha inválida.", HTTPStatus::UNAUTHORIZED);
-  
-      }
-
-      $jwt = self::generateToken($results[0]);
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK,
-        "success", 
-        "Usuário autenticado com sucesso",
-        $jwt
-      );   
-
-    } catch (\Exception $e) {
+    if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
       
-      return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha na autenticação do usuário: " . $e->getMessage(),
-        null
-      );
-
+      $login = strtolower($login);
+    
     }
     
-  }
+    $db = new Database();
 
-  public static function getForgotLink($email)
-  {
+    $results = $db->select($sql, array(
+      ":login" => $login
+    ));
 
-    $sql = "SELECT * FROM tb_persons a 
-            INNER JOIN tb_users b 
-            USING(idperson) 
-            WHERE a.desemail = :email";
-
-    try {
+    if (empty($results)) {
       
-      $db = new Database();
+      throw new \Exception("Usuário inexistente ou senha inválida.", HTTPStatus::UNAUTHORIZED);
+    
+    }
 
-      $results = $db->select($sql, array(
-        ":email" => $email
-      ));
+    $user = $results[0];
+
+    if (!password_verify($password, $user["password"])) {
       
-      if (empty($results)) {
-            
-        throw new \Exception("O e-mail informado não consta no banco de dados", HTTPStatus::NOT_FOUND);
+      throw new \Exception("Usuário inexistente ou senha inválida.", HTTPStatus::UNAUTHORIZED);
+    
+    }
+
+    $roles = [];
+    
+    foreach ($results as $row) {
+      
+      if (!empty($row['role_id'])) {
         
+        $roles[] = [
+          'id'   => $row['role_id'],
+          'name' => $row['role_name']
+        ];
+      
       }
-      
-      $user = $results[0];
-
-      $idrecovery = $db->insert(
-        "INSERT INTO tb_userspasswordsrecoveries (iduser, desip) VALUES (:iduser, :desip)", array(
-          ":iduser" => $user['iduser'],
-          ":desip"  => $_SERVER['REMOTE_ADDR']
-        )
-      ); 
-
-      $code = AESCryptographer::encrypt($idrecovery);
-
-      $link = $_ENV['DASHBOARD_URL']."/forgot/reset?code=$code";
-
-      $mailer = new Mailer(
-        $user['desemail'], 
-        $user['desperson'], 
-        "Redefinição de senha", 
-        array(
-          "name" => $user['desperson'],
-          "link" => $link
-        )
-      );				
-
-      $mailer->send();
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Link de redefinição de senha enviado para o e-mail informado.",
-        null
-      );
-
-    } catch (\Exception $e) {
-      
-      return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao enviar link de recuperação de senha: " . $e->getMessage(),
-        null
-      );
-
-    }		
-
-  }
-
-  public static function validateForgotLink($code)
-  {
-
-    if (!isset($code) || empty($code)) {
-
-      throw new \Exception("Falha ao validar token: token inexistente.", HTTPStatus::UNAUTHORIZED);
-
-    }
-
-    $idrecovery = AESCryptographer::decrypt($code);
-
-    $sql = "SELECT * FROM tb_userspasswordsrecoveries a
-            INNER JOIN tb_users b USING(iduser)
-            INNER JOIN tb_persons c USING(idperson)
-            WHERE a.idrecovery = :idrecovery
-            AND a.dtrecovery IS NULL
-            AND DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW()";
     
-    try {
-      
-      $db = new Database();
-
-      $results = $db->select($sql, array(
-        ":idrecovery" => $idrecovery
-      ));
-
-      if (empty($results)) {
-
-        throw new \Exception("O link de redefinição utilizado expirou", HTTPStatus::UNAUTHORIZED);
-
-      } 
-      
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Link de redefinição validado com sucesso.",
-        $results[0]
-      );
-
-    } catch (\Exception $e) {
-      
-      return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao validar token: " . $e->getMessage(),
-        null
-      );
-
     }
+
+    $user['roles'] = $roles;
+
+    unset($user['password'], $user['role_id'], $user['role_name']);
+
+    $jwt = self::generateToken($user);
+
+    return $jwt;
+  
+  }
+
+  public static function getForgotLink(string $email)
+  {
+    
+    $sql = "SELECT u.id, p.name, p.email
+            FROM users u
+            INNER JOIN persons p ON u.id = p.id
+            WHERE p.email = :email
+            LIMIT 1";
+    
+    $db = new Database();
+    
+    $results = $db->select($sql, array(
+      ":email" => strtolower(trim($email))
+    ));
+
+    if (empty($results)) {
+        
+      throw new \Exception("Não foi possível encontrar um usuário com esse e-mail.", 404);
+    
+    }
+
+    $user = $results[0];
+
+    $recoveryId = $db->insert(
+      "INSERT INTO password_resets (user_id, ip_address, created_at, updated_at) 
+      VALUES (:user_id, :ip_address, NOW(), NOW())",
+      [
+        ":user_id"    => $user["id"],
+        ":ip_address" => $_SERVER["REMOTE_ADDR"]
+      ]
+    );
+
+    $code = AESCryptographer::encrypt([
+      "recovery_id" => $recoveryId,
+      "user_id"     => $user["id"]
+    ]);
+
+    return [
+      "link"        => $_ENV["SITE_URL"] . "/reset?code=$code",
+      "user"        => $user,
+      "id_recovery" => $recoveryId
+    ];
 
   }
 
-  public static function setNewPassword($password, $iduser)
+  public static function validateForgotLink(string $code)
   {
+    
+    $decryptedData = AESCryptographer::decrypt($code);
 
-    $sql = "UPDATE tb_users 
-            SET despassword = :despassword 
-            WHERE iduser = :iduser";
+    if (!is_array($decryptedData) || !isset($decryptedData["recovery_id"], $decryptedData["user_id"])) {
+      
+      throw new \Exception("Token inválido ou corrompido.", 401);
+    
+    }
+    
+    $recoveryId = $decryptedData["recovery_id"];
 
-    try {
+    $sql = "SELECT pr.*, u.id AS user_id, p.name, p.email
+            FROM password_resets pr
+            INNER JOIN users u ON u.id = pr.user_id
+            INNER JOIN persons p ON p.id = u.id
+            WHERE pr.id = :id
+              AND pr.used_at IS NULL
+              AND DATE_ADD(pr.created_at, INTERVAL 1 HOUR) >= NOW()";
 
-      PasswordHelper::checkPasswordStrength($password);
+    $db = new Database();
+    
+    $results = $db->select($sql, array(
+      ":id" => $recoveryId
+    ));
 
-      $db = new Database();
-
-      $db->query($sql, array(
-        ":iduser"      => $iduser,
-        ":despassword" => PasswordHelper::hashPassword($password)
-      ));
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Senha alterada com sucesso.",
-        null
-      );
-
-    } catch (\Exception $e) {
-
-      return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao gravar nova senha: " . $e->getMessage(),
-        null
-      );
-
+    if (empty($results)) {
+      
+      throw new \Exception("O link de redefinição utilizado expirou.", 401);
+    
     }
 
+    return [
+      "user_id"     => $results[0]["user_id"],
+      "recovery_id" => $results[0]["id"]
+    ];
+  
   }
 
-  public static function setForgotUsed($idrecovery)
+  public static function setNewPassword(string $password, array $data)
   {
+    
+    PasswordHelper::checkPasswordStrength($password);
 
-    $sql = "UPDATE tb_userspasswordsrecoveries 
-            SET dtrecovery = NOW() 
-            WHERE idrecovery = :idrecovery";
+    $sql = "UPDATE users SET password = :password WHERE id = :user_id";
+    
+    $db = new Database();
+    
+    $db->query($sql, [
+      ":password" => PasswordHelper::hashPassword($password),
+      ":user_id"  => $data["user_id"]
+    ]);
 
-    try {
+    self::setForgotUsed($data["recovery_id"]);
 
-      $db = new Database();
+    return true;
+  
+  }
 
-      $db->query($sql, array(
-        ":idrecovery"=>$idrecovery
-      ));
-
-    } catch (\PDOException $e) {
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao definir senha antiga como usada: " . $e->getMessage(),
-        null
-      );
-
-    }
-
+  private static function setForgotUsed(int $recoveryId)
+  {
+    
+    $sql = "UPDATE password_resets 
+            SET used_at = NOW() 
+            WHERE id = :id";
+    
+    $db = new Database();
+    
+    $db->query($sql, array(
+      ":id" => $recoveryId
+    ));
+  
   }
 
 }

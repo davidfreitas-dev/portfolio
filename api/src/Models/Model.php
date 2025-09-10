@@ -16,10 +16,12 @@ class Model {
 		{
 
 			case "get":
+        $fieldName = $this->convertToCamelCase($fieldName);
 				return (isset($this->values[$fieldName])) ? $this->values[$fieldName] : NULL;
 			break;
 
 			case "set":
+        $fieldName = $this->convertToCamelCase($fieldName);
 				$this->values[$fieldName] = $args[0];
 			break;
 
@@ -32,7 +34,7 @@ class Model {
 
 		foreach ($data as $key => $value) {
 			
-			$this->{"set".$key}($value);
+			$this->{"set".$this->convertToPascalCase($key)}($value);
 
 		}
 
@@ -44,6 +46,20 @@ class Model {
 		return $this->values;
 
 	}
+
+  private function convertToCamelCase($string)
+  {
+      
+    return lcfirst($this->convertToPascalCase($string));
+
+  }
+
+  private function convertToPascalCase($string)
+  {
+      
+    return str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $string)));
+
+  }
 
 }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Handlers\ErrorHandler;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Selective\BasePath\BasePathMiddleware;
@@ -19,20 +20,22 @@ $app->addRoutingMiddleware();
 
 $app->add(new BasePathMiddleware($app));
 
-$app->addErrorMiddleware(true, true, true);
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+
+$errorMiddleware->setDefaultErrorHandler(new ErrorHandler());
 
 $app->add(new Tuupola\Middleware\JwtAuthentication([
-  "path" => "/api",
+  "path" => "/",
   "ignore" => [
-    "/api/images", 
-    "/api/signin", 
-    "/api/signup", 
-    "/api/forgot", 
-    "/api/forgot/token", 
-    "/api/forgot/reset", 
-    "/api/experiences($|/)",
-    "/api/projects($|/)",
-    "/api/($|/)"
+    "/images", 
+    "/signin", 
+    "/signup", 
+    "/forgot", 
+    "/forgot/token", 
+    "/forgot/reset", 
+    "/experiences($|/)",
+    "/projects($|/)",
+    "/($|/)"
   ],
   "secure" => true,
   "relaxed" => ["localhost"],
@@ -47,20 +50,18 @@ $app->add(new Tuupola\Middleware\JwtAuthentication([
   }
 ]));
 
-$app->group('/api', function () use ($app) {
-  $app->get('/', function (Request $request, Response $response) {
-    $response->getBody()->write(json_encode([
-      'message' => 'Welcome to the Personal Portfolio Site API!'
-    ]));    
-    return $response->withHeader('content-type', 'application/json');
-  });
-
-  require_once __DIR__ . '/../src/Routes/auth.php';
-  require_once __DIR__ . '/../src/Routes/experience.php';
-  require_once __DIR__ . '/../src/Routes/image.php';
-  require_once __DIR__ . '/../src/Routes/project.php';
-  require_once __DIR__ . '/../src/Routes/technology.php';
-  require_once __DIR__ . '/../src/Routes/user.php';
+$app->get('/', function (Request $request, Response $response) {
+  $response->getBody()->write(json_encode([
+    'message' => 'Welcome to the Personal Portfolio Site API!'
+  ]));    
+  return $response->withHeader('content-type', 'application/json');
 });
+
+require_once __DIR__ . '/../src/Routes/auth.php';
+require_once __DIR__ . '/../src/Routes/experience.php';
+require_once __DIR__ . '/../src/Routes/image.php';
+require_once __DIR__ . '/../src/Routes/project.php';
+require_once __DIR__ . '/../src/Routes/technology.php';
+require_once __DIR__ . '/../src/Routes/user.php';
 
 $app->run();

@@ -3,63 +3,80 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Models\User;
+use App\Utils\ApiResponseFormatter;
+use App\Enums\HttpStatus as HTTPStatus;
 
-$app->get('/users', function (Request $request, Response $response) {
+$app->get('/users/me', function (Request $request, Response $response) {
 
-  $results = User::list();
+  $jwt  = $request->getAttribute("jwt");
 
-  $response->getBody()->write(json_encode($results));
+  $userId = (int)$jwt['id'];
+
+  $user = User::get($userId);
+
+  $apiResponse = ApiResponseFormatter::formatResponse(
+    HTTPStatus::OK,
+    "success",
+    "Dados do usuário",
+    $user
+  );
+
+  $response->getBody()->write(json_encode($apiResponse));
 
   return $response
     ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    ->withStatus($apiResponse['code']);
 
 });
 
-$app->get('/users/{id}', function (Request $request, Response $response, array $args) {
+$app->put('/users/me', function (Request $request, Response $response) {
 
-  $id = $args['id'];
+  $jwt  = $request->getAttribute("jwt");
+  
+  $requestData = $request->getParsedBody();
 
-  $results = User::get($id);
-
-  $response->getBody()->write(json_encode($results));
-
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
-
-});
-
-$app->put('/users/update/{id}', function (Request $request, Response $response, array $args) {
-
-  $data = $request->getParsedBody();
-
-  $data['iduser'] = (int)$args['id'];
+  $requestData['user_id'] = (int)$jwt['id'];
 
   $user = new User();
+  
+  $user->setAttributes($requestData);
 
-  $user->setAttributes($data);
+  $result = $user->update();
 
-  $results = $user->update();
+  $apiResponse = ApiResponseFormatter::formatResponse(
+    HTTPStatus::OK,
+    "success",
+    "Usuário atualizado com sucesso",
+    $result
+  );
 
-  $response->getBody()->write(json_encode($results));
+  $response->getBody()->write(json_encode($apiResponse));
 
   return $response
     ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
-
+    ->withStatus($apiResponse['code']);
+    
 });
 
-$app->delete('/users/delete/{id}', function (Request $request, Response $response, array $args) {
+$app->delete('/users/me', function (Request $request, Response $response) {
 
-  $id = $args['id'];
+  $jwt = $request->getAttribute("jwt");
 
-  $results = User::delete($id);
+  $userId = (int)$jwt['id'];
 
-  $response->getBody()->write(json_encode($results));
+  User::delete($userId);
+
+  $apiResponse = ApiResponseFormatter::formatResponse(
+    HTTPStatus::OK,
+    "success",
+    "Usuário excluido com sucesso",
+    NULL
+  );
+
+  $response->getBody()->write(json_encode($apiResponse));
 
   return $response
     ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    ->withStatus($apiResponse['code']);
 
 });
