@@ -34,4 +34,4 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
-          EXCLUDE: "/.git/, .gitignore, .env.example, .dockerignore, docker-compose.yml, Dockerfile, README.md"
+          EXCLUDE: "/.git/, .gitignore, .env.example, .dockerignore, docker-compose.yml, Dockerfile, README.md, nginx/"

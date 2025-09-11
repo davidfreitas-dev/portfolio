@@ -80,10 +80,10 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 - [User Validate Token](#user-validate-token)
 - [User Password Reset](#user-password-reset)
 - [Experiences List](#experiences-list)
-- [Experiences Page](#experiences-page)
-- [Experience Details](#experience-details)
-- [Experience Save](#experience-save)
-- [Experience Delete](#experience-delete)
+- [Experiences Details](#experiences-details)
+- [Experiences Create](#experiences-create)
+- [Experiences Update](#experiences-update)
+- [Experiences Delete](#experiences-delete)
 - [Technologies List](#technologies-list)
 - [Technologies Page](#technologies-page)
 - [Technology Details](#technology-details)
@@ -183,61 +183,68 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
   GET /experiences
 ```
 
-**Note:** No parameters needed.
+| Parameter | Type      | Description                                          |
+| :-------- | :-------- | :--------------------------------------------------- |
+| `page`    | `integer` | **Required**. Page number                            |
+| `limit`   | `integer` | **Required**. Number of items per page               |
+| `search`  | `string`  | **Required**. Search term                            |
+
+**Note:** Parameters should be passed as query strings
 
 **Response:** List of experiences
 
-#### Experiences Page
-
-```http
-  GET /experiences/page/page
-```
-
-| Parameter      | Type      | Description                                          |
-| :------------- | :-------- | :--------------------------------------------------- |
-| `page`         | `integer` | **Required**. Page number                            |
-
-**Response:** All experiences 5 items per page
-
-#### Experience Details
+#### Experiences Details
 
 ```http
   GET /experiences/id
 ```
 
-| Parameter      | Type      | Description                                          |
-| :------------- | :-------- | :--------------------------------------------------- |
-| `idexperience` | `integer` | **Required**. Experience ID                          |
+**Note:** No parameters needed
 
-**Response:** Experience details
+**Response:** Experience data
 
-#### Experience Save
+#### Experiences Create
 
 ```http
-  POST /experiences/save
+  POST /experiences
 ```
 
-| Parameter        | Type      | Description                                        |
-| :--------------- | :-------- | :------------------------------------------------- |
-| `idexperience`   | `integer` | Experience ID (to update)                          |
-| `destitle`       | `string`  | **Required**. Experience title                     |
-| `desdescription` | `string`  | **Required**. Experience description               |
-| `dtstart`        | `string`  | **Required**. Experience start (Ex: Jan 2024)      |
-| `dtend`          | `string`  | **Required**. Experience end (Ex: Dez 2024)        |
+| Parameter     | Type      | Description                                        |
+| :------------ | :-------- | :------------------------------------------------- |
+| `title`       | `string`  | **Required**. Experience title                     |
+| `description` | `string`  | **Required**. Experience description               |
+| `start_date`  | `string`  | **Required**. Experience start (Ex: Jan 2024)      |
+| `end_date`    | `string`  | **Required**. Experience end (Ex: Dez 2024)        |
 
 **Observation:** The parameters should be passed within a single JSON object.
 
 **Response:** Experience data
 
-#### Experience Delete
+#### Experiences Update
 
 ```http
-  DELETE /experiences/delete/id
+  PUT /experiences/id
 ```
 
-| Parameter      | Type      | Description                                          |
-| :------------- | :-------- | :--------------------------------------------------- |
-| `idexperience` | `integer` | **Required**. Experience ID                          |
+| Parameter     | Type      | Description                                        |
+| :------------ | :-------- | :------------------------------------------------- |
+| `id`          | `integer` | **Required**. Experience ID                        |
+| `title`       | `string`  | **Required**. Experience title                     |
+| `description` | `string`  | **Required**. Experience description               |
+| `start_date`  | `string`  | **Required**. Experience start (Ex: Jan 2024)      |
+| `end_date`    | `string`  | **Required**. Experience end (Ex: Dez 2024)        |
+
+**Observation:** The parameters should be passed within a single JSON object.
+
+**Response:** Experience data
+
+#### Experiences Delete
+
+```http
+  DELETE /experiences/id
+```
+
+**Note:** No parameters needed
 
 **Response:** Void
 

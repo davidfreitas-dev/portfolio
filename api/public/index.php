@@ -32,9 +32,7 @@ $app->add(new Tuupola\Middleware\JwtAuthentication([
     "/signup", 
     "/forgot", 
     "/forgot/token", 
-    "/forgot/reset", 
-    "/experiences($|/)",
-    "/projects($|/)",
+    "/forgot/reset",
     "/($|/)"
   ],
   "secure" => true,

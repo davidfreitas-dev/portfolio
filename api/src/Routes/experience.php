@@ -3,16 +3,34 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Models\Experience;
+use App\Middleware\RoleMiddleware;
+use App\Utils\ApiResponseFormatter;
+use App\Enums\HttpStatus as HTTPStatus;
 
 $app->get('/experiences', function (Request $request, Response $response) {
 
-  $results = Experience::list();
+  $queryParams = $request->getQueryParams();
 
-  $response->getBody()->write(json_encode($results));
+  $page = isset($queryParams['page']) ? (int)$queryParams['page'] : 1;
+  
+  $limit = isset($queryParams['limit']) ? (int)$queryParams['limit'] : 10;
+  
+  $search = isset($queryParams['search']) ? $queryParams['search'] : "";
+
+  $experiences = Experience::list($page, $limit, $search);
+
+  $responseBody = ApiResponseFormatter::formatResponse(
+    HTTPStatus::OK,
+    "success",
+    "Lista de experiências",
+    $experiences
+  );
+
+  $response->getBody()->write(json_encode($responseBody));
 
   return $response
     ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    ->withStatus($responseBody['code']);
 
 });
 
@@ -20,82 +38,96 @@ $app->get('/experiences/{id}', function (Request $request, Response $response, a
 
   $id = $args['id'];
 
-  $results = Experience::get($id);
+  $experience = Experience::get($id);
 
-  $response->getBody()->write(json_encode($results));
+  $responseBody = ApiResponseFormatter::formatResponse(
+    HTTPStatus::OK,
+    "success",
+    "Detalhes da experiência",
+    $experience
+  );
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
-
-});
-
-$app->get('/experiences/search/{search}/{page}', function (Request $request, Response $response, array $args) {
-
-  $page = $args['page'];
-  
-  $search = $args['search'];
-
-  $results = Experience::getPageSearch($search, $page);
-
-  $response->getBody()->write(json_encode($results));
+  $response->getBody()->write(json_encode($responseBody));
 
   return $response
     ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    ->withStatus($responseBody['code']);
 
 });
 
-$app->get('/experiences/page/{page}', function (Request $request, Response $response, array $args) {
+$app->group('/experiences', function ($group) {
 
-  $page = $args['page'];
+  $group->post('', function (Request $request, Response $response) {
 
-  $results = Experience::getPage($page);
+    $requestData = $request->getParsedBody();
 
-  $response->getBody()->write(json_encode($results));
+    $experience = new Experience();
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    $experience->setAttributes($requestData);
 
-});
+    $result = $experience->create();
 
-$app->post('/experiences/save', function (Request $request, Response $response) {
+    $responseBody = ApiResponseFormatter::formatResponse(
+      HTTPStatus::OK,
+      "success",
+      "Experiência adicionada com sucesso",
+      $result
+    );
 
-  $data = $request->getParsedBody();
+    $response->getBody()->write(json_encode($responseBody));
 
-  $experience = new Experience();
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($responseBody['code']);
 
-  $experience->setAttributes($data);
+  });
 
-  if (!isset($data['idexperience'])) {
-    
-    $results = $experience->create();
+  $group->put('/{id}', function (Request $request, Response $response, array $args) {
 
-  } else {
+    $requestData = $request->getParsedBody();
 
-    $results = $experience->update();
+    $requestData['id'] = (int)$args['id'];
 
-  }
+    $experience = new Experience();
 
-  $response->getBody()->write(json_encode($results));
+    $experience->setAttributes($requestData);
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    $result = $experience->update();
 
-});
+    $responseBody = ApiResponseFormatter::formatResponse(
+      HTTPStatus::CREATED,
+      "success",
+      "Experiência atualizada com sucesso",
+      $result
+    );
 
-$app->delete('/experiences/delete/{id}', function (Request $request, Response $response, array $args) {
+    $response->getBody()->write(json_encode($responseBody));
 
-  $id = $args['id'];
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($responseBody['code']);
 
-  $results = Experience::delete($id);
+  });
 
-  $response->getBody()->write(json_encode($results));
+  $group->delete('/{id}', function (Request $request, Response $response, array $args) {
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    $id = $args['id'];
 
-});
+    Experience::delete($id);
+
+    $responseBody = ApiResponseFormatter::formatResponse(
+      HTTPStatus::NO_CONTENT,
+      "success",
+      "Experiência excluída com sucesso",
+      NULL
+    );
+
+    $response->getBody()->write(json_encode($responseBody));
+
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($responseBody['code']);
+
+  });
+
+})->add(new RoleMiddleware("admin"));
