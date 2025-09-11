@@ -85,10 +85,9 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 - [Experiences Update](#experiences-update)
 - [Experiences Delete](#experiences-delete)
 - [Technologies List](#technologies-list)
-- [Technologies Page](#technologies-page)
-- [Technology Details](#technology-details)
-- [Technology Save](#technology-save)
-- [Technology Delete](#technology-delete)
+- [Technologies Details](#technologies-details)
+- [Technologies Save](#technologies-save)
+- [Technologies Delete](#technologies-delete)
 - [Projects List](#projects-list)
 - [Projects Page](#projects-page)
 - [Project Details](#project-details)
@@ -254,59 +253,49 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
   GET /technologies
 ```
 
-**Note:** No parameters needed.
+| Parameter | Type      | Description                  |
+| :-------- | :-------- | :--------------------------- |
+| `page`    | `integer` | **Required**. Page number    |
+| `limit`   | `integer` | **Required**. Items per page |
+| `search`  | `string`  | **Required**. Search term    |
+
+**Note:** Parameters should be passed as query strings
 
 **Response:** List of technologies
 
-#### Technologies Page
-
-```http
-  GET /technologies/page/page
-```
-
-| Parameter      | Type      | Description                                          |
-| :------------- | :-------- | :--------------------------------------------------- |
-| `page`         | `integer` | **Required**. Page number                            |
-
-**Response:** All technologies 5 items per page
-
-#### Technology Details
+#### Technologies Details
 
 ```http
   GET /technologies/id
 ```
 
-| Parameter      | Type      | Description                                         |
-| :------------- | :-------- | :-------------------------------------------------- |
-| `idtechnology` | `integer` | **Required**. Technology ID                         |
-
-**Response:** Technology details
-
-#### Technology Save
-
-```http
-  POST /technologies/save
-```
-
-| Parameter      | Type      | Description                                          |
-| :------------- | :-------  | :--------------------------------------------------- |
-| `idtechnology` | `integer` | Technology ID (to update)                            |
-| `desname`      | `string`  | **Required**. Technology name                        |
-| `desimage`     | `string`  | Image binary                                         |
-
-**Observation:** The parameters should be passed within a FormData object with Content-Type: multipart/form-data on headers.
+**Note:** No parameters needed
 
 **Response:** Technology data
 
-#### Technology Delete
+#### Technologies Save
+
+```http
+  POST /technologies
+```
+
+| Parameter | Type      | Description                                 |
+| :-------- | :-------- | :------------------------------------------ |
+| `id`      | `integer` | Technology ID (for update, omit for create) |
+| `name`    | `string`  | **Required**. Technology name               |
+| `image`   | `string`  | Image file (binary), optional               |
+
+**Observation:** Parameters should be passed as a FormData object with `Content-Type: multipart/form-data`.
+
+**Response:** Technology data
+
+#### Technologies Delete
 
 ```http
   DELETE /technologies/delete/id
 ```
 
-| Parameter      | Type      | Description                                         |
-| :------------- | :-------- | :-------------------------------------------------- |
-| `idtechnology` | `integer` | **Required**. Technology ID                         |
+**Note:** No parameters needed
 
 **Response:** Void
 

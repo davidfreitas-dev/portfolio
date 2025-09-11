@@ -4,7 +4,7 @@ namespace App\Utils;
 
 use App\Enums\HttpStatus as HTTPStatus;
 
-class UploadHandler
+class uploadHandler
 {
 
   public static function uploadPhoto($id, $file, $directory)
@@ -54,7 +54,7 @@ class UploadHandler
 
       $timestamp = date('YmdHis');
 
-      $imageName = $timestamp . $id;
+      $imageName = $directory . "_" . $timestamp . $id;
 
       $dist = $dist . DIRECTORY_SEPARATOR . $imageName . ".jpg";
 
@@ -66,7 +66,7 @@ class UploadHandler
 
     }
 
-    return null;
+    return false;
 
 	}
 
@@ -75,13 +75,23 @@ class UploadHandler
 
     $dist = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . $directory;
 
+    if (!is_dir($dist)) {
+      
+      exit;
+
+    }
+    
     $existingFileName = self::checkExistingPhoto($id, $dist);
     
-    $imagePath = $dist . DIRECTORY_SEPARATOR . $existingFileName;
+    if ($existingFileName) {
+      
+      $imagePath = $dist . DIRECTORY_SEPARATOR . $existingFileName;
+    
+      if (file_exists($imagePath)) {
 
-    if (file_exists($imagePath)) {
+        unlink($imagePath);
 
-      unlink($imagePath);
+      }
 
     }
     
@@ -89,22 +99,23 @@ class UploadHandler
 
   private static function checkExistingPhoto($id, $dist)
   {
-    
+
     $files = scandir($dist);
+
+    $dirName = basename($dist);
     
     foreach ($files as $file) {
         
-      if (preg_match('/^\d{14}' . preg_quote($id) . '\.jpg$/', $file)) {
+      if (preg_match('/^' . preg_quote($dirName . '_') . '\d{14}' . preg_quote($id) . '\.jpg$/', $file)) {
           
         return $file; 
 
       }
         
-    }
+    }    
 
-    return null;
+    return null; 
 
   }
-
 
 }

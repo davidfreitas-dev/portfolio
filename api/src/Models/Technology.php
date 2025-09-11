@@ -6,7 +6,6 @@ use App\DB\Database;
 use App\Models\Model;
 use App\Utils\UploadHandler;
 use App\Enums\HttpStatus as HTTPStatus;
-use App\Utils\ApiResponseFormatter;
 
 class Technology extends Model
 {
@@ -14,343 +13,240 @@ class Technology extends Model
   public function create()
   {
 
-    $sql = "INSERT INTO tb_technologies (desname) VALUES (:desname)";
+    $sql = "INSERT INTO technologies (name) VALUES (:name)";
 
     try {
 
-      $this->checkTechnologyExists($this->getdesname());
+      $this->checkTechnologyExists($this->getName());
       
       $db = new Database();
 
-			$idtechnology = $db->insert($sql, array(
-				":desname" => $this->getdesname()
+			$techId = $db->insert($sql, array(
+				":name" => $this->getName()
 			));
 
-      $this->setidtechnology($idtechnology);
+      $this->setId($techId);
 
-      if (NULL !== $this->getdesimage() && !is_string($this->getdesimage())) {
+      if (NULL !== $this->getImage() && !is_string($this->getImage())) {
 
-        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getdesimage());
+        $image = $this->setPhoto($this->getId(), $this->getImage());
         
-        if ($imageUrl) {
+        if ($image) {
 
-          $this->setimage($imageUrl);
+          $imageUrl = $_ENV['API_URL'] . "/images/technologies/" . $image;
+
+          $this->setImage($imageUrl);
 
         }
 
       }
 
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::CREATED, 
-        "success", 
-        "Tecnologia criada com sucesso",
-        $this->getAttributes()
-      );
+      return $this->getAttributes();
 
+    } catch (\PDOException $e) {
+        
+      throw new \Exception("Erro ao adicionar tecnologia", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
     } catch (\Exception $e) {
-			
-			return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao criar tecnologia: " . $e->getMessage(),
-        null
-      );
-			
-		}
+        
+      throw new \Exception($e->getMessage(), $e->getCode());
+      
+    }
 
   }
 
   public function update() 
 	{
 
-    $sql = "UPDATE tb_technologies
-            SET desname = :desname
-            WHERE idtechnology = :idtechnology";
+    $sql = "UPDATE technologies
+            SET name = :name
+            WHERE id = :id";
 
     try {
 
-      $this->checkTechnologyExists($this->getdesname(), $this->getidtechnology());
+      $this->checkTechnologyExists($this->getName(), $this->getId());
 
       $db = new Database();
       
       $db->query($sql, array(
-        ":desname"      => $this->getdesname(),
-        ":idtechnology" => $this->getidtechnology()
+        ":name" => $this->getName(),
+        ":id"   => $this->getId()
       ));
 
-      if (NULL !== $this->getdesimage() && !is_string($this->getdesimage())) {
+      if (NULL !== $this->getImage() && !is_string($this->getImage())) {
 
-        $imageUrl = $this->setPhoto($this->getidtechnology(), $this->getdesimage());
+        $image = $this->setPhoto($this->getId(), $this->getImage());
         
-        if ($imageUrl) {
+        if ($image) {
 
-          $this->setimage($imageUrl);
+          $imageUrl = $_ENV['API_URL'] . "/images/technologies/" . $image;
+
+          $this->setImage($imageUrl);
 
         }
 
       }
 
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Tecnologia atualizada com sucesso",
-        $this->getAttributes()
-      );
+      return $this->getAttributes();
 
+    } catch (\PDOException $e) {
+        
+      throw new \Exception("Erro ao atualizar tecnologia", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
     } catch (\Exception $e) {
-
-      return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao atualizar tecnologia: " . $e->getMessage(),
-        null
-      );
+        
+      throw new \Exception($e->getMessage(), $e->getCode());
       
     }
 
   }
 
-  public static function list() 
-  {    
-    
-    $sql = "SELECT * FROM tb_technologies ORDER BY idtechnology DESC";
-		
-		try {
-
-			$db = new Database();
-
-			$results = $db->select($sql);
-			
-			if (empty($results)) {
-
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NO_CONTENT, 
-          "success", 
-          "Nenhuma tecnologia encontrada.",
-          NULL
-        );
-        
-      }
+  public static function list($page = 1, $itemsPerPage = 10, $search = "")
+  {
       
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Lista de tecnologias",
-        $results
-      );
+    $params = [];
+      
+    $where = ["1=1"];
+    
+    $search = trim($search);
 
-		} catch (\Exception $e) {
-
-			return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao obter tecnologias: " . $e->getMessage(),
-        null
-      );
-			
-		}
-
-	}
-
-  public static function getPage($page = 1, $itemsPerPage = 5)
-	{
-
-    $start = ($page - 1) * $itemsPerPage;
-		
-		$sql = "SELECT SQL_CALC_FOUND_ROWS * 
-            FROM tb_technologies 
-            ORDER BY desname 
-            LIMIT $start, $itemsPerPage";		
-		
-		try {
-
-			$db = new Database();
-
-			$results = $db->select($sql);
-
-      $resultsTotal = $db->select("SELECT FOUND_ROWS() AS nrtotal");
-			
-			if (empty($results)) {
-
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NO_CONTENT, 
-          "success", 
-          "Nenhuma tecnologia encontrada.",
-          NULL
-        );
+    if (!empty($search)) {
         
-      } 
+      $where[] = "(t.name LIKE :search)";
+        
+      $params[":search"] = "%$search%";
 
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Lista de tecnologias",
-        [
-          "technologies" => $results,
-          "total" => (int)$resultsTotal[0]["nrtotal"],
-          "pages" => ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)
-        ]
-      );
+    }
 
-		} catch (\PDOException $e) {
+    $sql = "
+      SELECT " . ($page !== NULL && $itemsPerPage !== NULL ? "SQL_CALC_FOUND_ROWS" : "") . "
+        t.id,
+        t.name,
+        t.image
+      FROM technologies t
+      WHERE " . implode(" AND ", $where) . "
+      ORDER BY t.name ASC
+    ";
 
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao obter tecnologias: " . $e->getMessage(),
-        null
-      );
-			
-		}		
-
-	}
-
-  public static function getPageSearch($search, $page = 1, $itemsPerPage = 5)
-	{
-
-		$start = ($page - 1) * $itemsPerPage;
-
-    $sql = "SELECT SQL_CALC_FOUND_ROWS * 
-            FROM tb_technologies 
-            WHERE desname 
-            LIKE :search 
-            ORDER BY desname 
-            LIMIT $start, $itemsPerPage";
+    if ($page !== NULL && $itemsPerPage !== NULL) {
+      
+      $start = ($page - 1) * $itemsPerPage;
+      
+      $sql .= " LIMIT $start, $itemsPerPage";
+    
+    }
 
     try {
-      
+
       $db = new Database();
-      
-      $results = $db->select($sql, [
-        ':search' => '%' . $search . '%'
-      ]);
-  
-      $resultsTotal = $db->select("SELECT FOUND_ROWS() AS nrtotal;");
+
+      $results = $db->select($sql, $params);
 
       if (empty($results)) {
+          
+        throw new \Exception("Nenhuma tecnologia encontrada", HTTPStatus::NO_CONTENT);
         
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NO_CONTENT,  
-          "success", 
-          "Nenhuma tecnologia encontrada",
-          null
-        );
+      }
 
-			} 
+      if ($page !== NULL && $itemsPerPage !== NULL) {
+        
+        $total = (int)$db->select("SELECT FOUND_ROWS() AS total")[0]["total"];
 
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Lista de categorias",
-        [
+        return [
           "technologies" => $results,
-          "total" => (int)$resultsTotal[0]["nrtotal"],
-          "pages" => ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)
-        ]
-      );
+          "total" => $total,
+          "pages" => ceil($total / $itemsPerPage)
+        ];
+      
+      }
 
-		} catch (\PDOException $e) {
+      return $results;
 
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao obter tecnologias: " . $e->getMessage(),
-        null
-      );
-			
-		}		
+    } catch (\PDOException $e) {
 
-	}
+      var_dump($e->getMessage());exit;
+        
+      throw new \Exception("Erro ao obter lista de tecnologias", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
+    } catch (\Exception $e) {
+        
+      throw new \Exception($e->getMessage(), $e->getCode());
+      
+    }
 
-  public static function get($idtechnology)
+  }
+
+  public static function get($id)
 	{
 
-    $sql = "SELECT * FROM tb_technologies WHERE idtechnology = :idtechnology";
+    $sql = "SELECT * FROM technologies WHERE id = :id";
 
 		try {
 
 			$db = new Database();
 
 			$results = $db->select($sql, array(
-				":idtechnology"=>$idtechnology
+				":id" => $id
 			));
 
       if (empty($results)) {
 			
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NOT_FOUND, 
-          "success", 
-          "Tecnologia não encontrada.",
-          NULL
-        );
+        throw new \Exception("Tecnologia não encontrada", HTTPStatus::NOT_FOUND);
         
       }
       
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Detalhes da tecnologia",
-        $results[0]
-      );
+      return $results[0];
 
-		} catch (\Exception $e) {
-			
-			return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao obter tecnologia: " . $e->getMessage(),
-        null
-      );
-			
-		}
+		} catch (\PDOException $e) {
+        
+      throw new \Exception("Erro ao obter detalhes da tecnologia", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
+    } catch (\Exception $e) {
+        
+      throw new \Exception($e->getMessage(), $e->getCode());
+      
+    }
 
   }
 
-  public static function delete($idtechnology) 
+  public static function delete($id) 
 	{
 
-    $sql = "DELETE FROM tb_technologies
-            WHERE idtechnology = :idtechnology";		
+    $sql = "DELETE FROM technologies WHERE id = :id";		
 		
 		try {
 
 			$db = new Database();
 			
 			$db->query($sql, array(
-				":idtechnology"=>$idtechnology
+				":id" => $id
 			));
 
-      UploadHandler::deletePhoto($idtechnology, "technologies");
+      UploadHandler::deletePhoto($id, "technologies");
 			
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Tecnologia excluída com sucesso",
-        null
-      );
+			return true;
 
 		} catch (\PDOException $e) {
-
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao excluir tecnologia: " . $e->getMessage(),
-        null
-      );
-			
-		}
+        
+      throw new \Exception("Erro ao excluir tecnologia", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
+    } catch (\Exception $e) {
+        
+      throw new \Exception($e->getMessage(), $e->getCode());
+      
+    }
 
   }
 
-  private function checkTechnologyExists($name, $idtechnology = null) 
+  private function checkTechnologyExists($name, $id = NULL) 
   {
 
-    $sql = "SELECT * FROM tb_technologies WHERE desname = :desname";
+    $sql = "SELECT * FROM technologies WHERE name = :name";
 
     		
-    if ($idtechnology) {
+    if ($id) {
 
-      $sql .= " AND idtechnology != :idtechnology";
+      $sql .= " AND id != :id";
 
     }
     
@@ -358,11 +254,11 @@ class Technology extends Model
 
       $db = new Database();
       
-      $params = [":desname" => $name];
+      $params = [":name" => $name];
       
-      if ($idtechnology) {
+      if ($id) {
 
-        $params[":idtechnology"] = $idtechnology;
+        $params[":id"] = $id;
 
       }
       
@@ -374,43 +270,47 @@ class Technology extends Model
 
       }
 
+    } catch (\PDOException $e) {
+        
+      throw new \Exception("Erro ao verificar existência da tecnologia", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
     } catch (\Exception $e) {
-
+        
       throw new \Exception($e->getMessage(), $e->getCode());
-
+      
     }
 
   }
 
-  private function setPhoto($idtechnology, $image)
+  private function setPhoto($id, $image)
   {
     
-    $imageName = UploadHandler::uploadPhoto($idtechnology, $image, "technologies");
+    $imageName = UploadHandler::uploadPhoto($id, $image, "technologies");
 
     if (!$imageName) {
       
-      return null;      
+      return NULL;      
 
     }
 
-    $imageUrl = $_ENV['API_URL'] . "/images/technologies/" . $imageName . ".jpg";
+    $image = $imageName . ".jpg";
       
-    $sql = "UPDATE tb_technologies SET desimage = :desimage WHERE idtechnology = :idtechnology";
+    $sql = "UPDATE technologies SET image = :image WHERE id = :id";
     
     try {
 
       $db = new Database();
 
       $db->query($sql, array(
-        ':desimage'     => $imageUrl,
-        ':idtechnology' => $idtechnology
+        ':image' => $image,
+        ':id'    => $id
       ));
 
-      return $imageUrl;
+      return $image;
 
     } catch (\PDOException $e) {
 
-      return null;
+      return NULL;
 
     }
 

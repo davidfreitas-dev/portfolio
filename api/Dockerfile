@@ -1,7 +1,10 @@
 FROM php:8.3-fpm
 
-# Instala dependências do sistema e extensões PHP essenciais
+# Instala dependências do sistema e extensões PHP essenciais + GD
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     zip unzip curl git libzip-dev libonig-dev \
-    && docker-php-ext-install pdo_mysql mbstring zip \
+    libpng-dev libjpeg-dev libfreetype6-dev \
+    libxml2-dev libssl-dev nano vim \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo_mysql mbstring zip opcache \
     && apt-get clean && rm -rf /var/lib/apt/lists/*

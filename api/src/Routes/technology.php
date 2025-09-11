@@ -3,16 +3,34 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Models\Technology;
+use App\Middleware\RoleMiddleware;
+use App\Utils\ApiResponseFormatter;
+use App\Enums\HttpStatus as HTTPStatus;
 
 $app->get('/technologies', function (Request $request, Response $response) {
 
-  $results = Technology::list();
+  $queryParams = $request->getQueryParams();
 
-  $response->getBody()->write(json_encode($results));
+  $page = isset($queryParams['page']) ? (int)$queryParams['page'] : 1;
+  
+  $limit = isset($queryParams['limit']) ? (int)$queryParams['limit'] : 10;
+  
+  $search = isset($queryParams['search']) ? $queryParams['search'] : "";
+
+  $experiences = Technology::list($page, $limit, $search);
+
+  $responseBody = ApiResponseFormatter::formatResponse(
+    HTTPStatus::OK,
+    "success",
+    "Lista de Tecnologias",
+    $experiences
+  );
+
+  $response->getBody()->write(json_encode($responseBody));
 
   return $response
     ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    ->withStatus($responseBody['code']);
 
 });
 
@@ -20,84 +38,79 @@ $app->get('/technologies/{id}', function (Request $request, Response $response, 
 
   $id = $args['id'];
 
-  $results = Technology::get($id);
+  $experience = Technology::get($id);
 
-  $response->getBody()->write(json_encode($results));
+  $responseBody = ApiResponseFormatter::formatResponse(
+    HTTPStatus::OK,
+    "success",
+    "Detalhes da Tecnologia",
+    $experience
+  );
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
-
-});
-
-$app->get('/technologies/search/{search}/{page}', function (Request $request, Response $response, array $args) {
-
-  $page = $args['page'];
-  
-  $search = $args['search'];
-
-  $results = Technology::getPageSearch($search, $page);
-
-  $response->getBody()->write(json_encode($results));
+  $response->getBody()->write(json_encode($responseBody));
 
   return $response
     ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    ->withStatus($responseBody['code']);
 
 });
 
-$app->get('/technologies/page/{page}', function (Request $request, Response $response, array $args) {
+$app->group('/technologies', function ($group) {
 
-  $page = $args['page'];
+  $group->post('', function (Request $request, Response $response) {
 
-  $results = Technology::getPage($page);
+    $requestData = $request->getParsedBody();
 
-  $response->getBody()->write(json_encode($results));
+    $requestData['image'] = isset($_FILES['image']) ? $_FILES['image'] : NULL;
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    $experience = new Technology();
 
-});
+    $experience->setAttributes($requestData);
 
-$app->post('/technologies/save', function (Request $request, Response $response) {
+    if (!isset($requestData['id'])) {
 
-  $data = $request->getParsedBody();
+      $result = $experience->create();
 
-  $data['desimage'] = isset($_FILES['image']) ? $_FILES['image'] : NULL;
+    } else {
 
-  $technology = new Technology();
+      $result = $experience->update();
+      
+    }
 
-  $technology->setAttributes($data);
+    $responseBody = ApiResponseFormatter::formatResponse(
+      HTTPStatus::OK,
+      "success",
+      "Tecnologia adicionada/atualizada com sucesso",
+      $result
+    );
 
-  if (!isset($data['idtechnology'])) {
-    
-    $results = $technology->create();
+    $response->getBody()->write(json_encode($responseBody));
 
-  } else {
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($responseBody['code']);
 
-    $results = $technology->update();
+  });
 
-  }
+  $group->delete('/{id}', function (Request $request, Response $response, array $args) {
 
-  $response->getBody()->write(json_encode($results));
+    $id = $args['id'];
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    Technology::delete($id);
 
-});
+    $responseBody = ApiResponseFormatter::formatResponse(
+      HTTPStatus::NO_CONTENT,
+      "success",
+      "Tecnologia excluída com sucesso",
+      NULL
+    );
 
-$app->delete('/technologies/delete/{id}', function (Request $request, Response $response, array $args) {
+    $response->getBody()->write(json_encode($responseBody));
 
-  $id = $args['id'];
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($responseBody['code']);
 
-  $results = Technology::delete($id);
+  });
 
-  $response->getBody()->write(json_encode($results));
-
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
-
-});
+})->add(new RoleMiddleware("admin"));
