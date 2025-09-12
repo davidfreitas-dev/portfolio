@@ -29,16 +29,14 @@ class RoleMiddleware
     
     $jwt = $request->getAttribute("jwt");
 
-    if (!$jwt || !isset($jwt["roles"])) {
+    if (!$jwt || !isset($jwt["user"]->roles)) {
         
       return $this->deny("Acesso negado. Nenhuma role encontrada.");
       
     }
 
-    // Extrai roles do token
-    $userRoles = array_map(fn($r) => $r->name, $jwt["roles"]);
+    $userRoles = array_map(fn($r) => $r->name, $jwt['user']->roles);
 
-    // Verifica interseção
     $hasAccess = count(array_intersect($this->requiredRoles, $userRoles)) > 0;
 
     if (!$hasAccess) {

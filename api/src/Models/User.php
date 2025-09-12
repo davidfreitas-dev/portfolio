@@ -6,41 +6,29 @@ use App\DB\Database;
 use App\Models\Model;
 use App\Logging\ErrorLog;
 use App\Utils\PasswordHelper;
-use App\Traits\TokenGenerator;
+use App\Services\TokenService;
 use App\Handlers\DocumentHandler;
 use App\Enums\HttpStatus as HTTPStatus;
 
 class User extends Model {
 
-  use TokenGenerator;
-
   public static function get($userId)
 	{
-
-		$sql = "SELECT 
-              u.id, 
-              p.name, 
-              p.email, 
-              p.phone, 
-              p.cpfcnpj,
-              u.is_active, 
-              u.created_at, 
-              u.updated_at,
-              r.id AS role_id,
-              r.name AS role_name
-            FROM users u
-            INNER JOIN persons p ON u.id = p.id
-            LEFT JOIN user_roles ur ON ur.user_id = u.id
-            LEFT JOIN roles r ON r.id = ur.role_id
-            WHERE u.id = :userId";
 
 		try {
 
 			$db = new Database();
 
-			$results = $db->select($sql, array(
-				":userId" => $userId
-			));
+			$results = $db->select(
+        "SELECT u.id, p.name, p.email, p.phone, p.cpfcnpj, u.is_active, u.created_at, u.updated_at
+        FROM users u
+        INNER JOIN persons p ON u.id = p.id
+        WHERE u.id = :userId
+        LIMIT 1", 
+        array(
+          ":userId" => $userId
+        )
+      );
 
       if (empty($results)) {
 
@@ -50,22 +38,15 @@ class User extends Model {
 
       $user = $results[0];
 
-      foreach ($results as $row) {
-      
-        if (!empty($row['role_id'])) {
-          
-          $roles[] = [
-            'id'   => $row['role_id'],
-            'name' => $row['role_name']
-          ];
-        
-        }
-      
-      }
-
-      $user['roles'] = $roles;
-
-      unset($user['password'], $user['role_id'], $user['role_name']);
+      $user['roles'] = $db->select(
+        "SELECT r.id, r.name
+        FROM roles r
+        INNER JOIN user_roles ur ON ur.role_id = r.id
+        WHERE ur.user_id = :userId",
+        array(
+          ":userId" => $userId
+        )
+      );
 			
       return $user;
 
@@ -190,7 +171,7 @@ class User extends Model {
 
       $user = self::get($this->getUserId());
 
-      $jwt = self::generateToken($user);
+      $jwt = TokenService::generatePrivateToken($user);
 
 			return $jwt;
 

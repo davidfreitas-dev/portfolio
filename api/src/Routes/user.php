@@ -10,7 +10,7 @@ $app->get('/users/me', function (Request $request, Response $response) {
 
   $jwt  = $request->getAttribute("jwt");
 
-  $userId = (int)$jwt['id'];
+  $userId = (int)$jwt['user']->id;
 
   $user = User::get($userId);
 
@@ -35,7 +35,7 @@ $app->put('/users/me', function (Request $request, Response $response) {
   
   $requestData = $request->getParsedBody();
 
-  $requestData['user_id'] = (int)$jwt['id'];
+  $requestData['user_id'] = (int)$jwt['user']->id;
 
   $user = new User();
   
@@ -62,7 +62,7 @@ $app->delete('/users/me', function (Request $request, Response $response) {
 
   $jwt = $request->getAttribute("jwt");
 
-  $userId = (int)$jwt['id'];
+  $userId = (int)$jwt['user']->id;
 
   User::delete($userId);
 
