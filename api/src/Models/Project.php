@@ -4,409 +4,335 @@ namespace App\Models;
 
 use App\DB\Database;
 use App\Models\Model;
-use App\Utils\UploadHandler;
+use App\Handlers\UploadHandler;
 use App\Enums\HttpStatus as HTTPStatus;
-use App\Utils\ApiResponseFormatter;
 
 class Project extends Model
 {
 
-  public function save()
+  public function create()
   {
-
-    $sql = "CALL sp_projects_save(
-      :idproject, 
-      :destitle, 
-      :desdescription, 
-      :deslink,
-      :inactive,
-      :technologies
-    )";
+    
+    $sql = "INSERT INTO projects (title, description, link, is_active) 
+            VALUES (:title, :description, :link, :is_active)";
 
     try {
       
       $db = new Database();
 
-			$results = $db->select($sql, array(
-				":idproject"      => $this->getidproject() ?? 0,
-				":destitle"       => $this->getdestitle(),
-				":desdescription" => $this->getdesdescription(),
-        ":deslink"        => $this->getdeslink(),
-        ":inactive"       => $this->getinactive(),
-				":technologies"   => $this->gettechnologies()
-			));
+      $projectId = $db->insert($sql, [
+        ":title"       => $this->getTitle(),
+        ":description" => $this->getDescription(),
+        ":link"        => $this->getLink(),
+        ":is_active"   => $this->getIsActive() ?? true
+      ]);
 
-      if (empty($results)) {
+      $this->setId($projectId);
+
+      if (NULL !== $this->getImage() && !is_string($this->getImage())) {
         
-        throw new \Exception("Falha ao criar/atualizar projeto", HTTPStatus::BAD_REQUEST);
+        $image = $this->setPhoto($this->getId(), $this->getImage());
         
-      }
-
-      if (NULL !== $this->getdesimage() && !is_string($this->getdesimage())) {
-
-        $imageUrl = $this->setPhoto($results[0]['idproject'], $this->getdesimage());
-  
-        if ($imageUrl) {
-
-          $results[0]['desimage'] = $imageUrl;
-
+        if ($image) {
+          
+          $imageUrl = $_ENV['API_URL'] . "/images/projects/" . $image;
+          
+          $this->setImage($imageUrl);
+        
         }
-
-      }
       
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Projeto criado/atualizado com sucesso",
-        $results[0]
-      );
-
-    } catch (\Exception $e) {
-			
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao criar/atualizar projeto: " . $e->getMessage(),
-        null
-      );
-			
-		}
-
-  }
-
-  public static function list()
-  {
-
-    $sql = "SELECT 
-              p.*, 
-              GROUP_CONCAT(
-                DISTINCT CONCAT(
-                  '{\"idtechnology\":', t.idtechnology, 
-                  ',\"desname\":\"', t.desname, 
-                  '\",\"desimage\":\"', COALESCE(t.desimage, ''), '\"}'
-                ) SEPARATOR ','
-              ) AS technologies
-            FROM tb_projects p
-            LEFT JOIN tb_projectstechnologies pt ON p.idproject = pt.idproject
-            LEFT JOIN tb_technologies t ON pt.idtechnology = t.idtechnology
-            GROUP BY p.idproject
-            ORDER BY p.dtregister";
-		
-		try {
-
-			$db = new Database();
-
-			$results = $db->select($sql);
-			
-			if (empty($results)) {
-
-				return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NO_CONTENT, 
-          "success", 
-          "Nenhum projeto encontrado.",
-          NULL
-        );
-
-			}
-
-      foreach ($results as &$result) {
-        $result['technologies'] = $result['technologies']
-          ? json_decode('[' . $result['technologies'] . ']', true)
-          : [];
       }
+
+      $this->syncTechnologies($this->getTechnologies());
+
+      return $this->getAttributes();
+
+    } catch (\PDOException $e) {
       
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Lista de projetos",
-        $results
-      );
-
-		} catch (\Exception $e) {
-
-			return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao obter projetos: " . $e->getMessage(),
-        null
-      );
-			
-		}
-
-  }
-
-  public static function getPage($page = 1, $itemsPerPage = 5)
-  {
-
-    $start = ($page - 1) * $itemsPerPage;
-
-    $sql = "SELECT 
-              p.*, 
-              GROUP_CONCAT(
-                DISTINCT CONCAT(
-                  '{\"idtechnology\":', t.idtechnology, 
-                  ',\"desname\":\"', t.desname, 
-                  '\",\"desimage\":\"', COALESCE(t.desimage, ''), '\"}'
-                ) SEPARATOR ','
-              ) AS technologies
-            FROM tb_projects p
-            LEFT JOIN tb_projectstechnologies pt ON p.idproject = pt.idproject
-            LEFT JOIN tb_technologies t ON pt.idtechnology = t.idtechnology
-            GROUP BY p.idproject
-            ORDER BY p.dtregister
-            LIMIT $start, $itemsPerPage";
-
-    try {
-
-        $db = new Database();
-
-        $results = $db->select($sql);
-        
-        $resultsTotal = $db->select("SELECT FOUND_ROWS() AS nrtotal");
-
-        if (empty($results)) {
-
-          return ApiResponseFormatter::formatResponse(
-            HTTPStatus::NO_CONTENT, 
-            "success", 
-            "Nenhum projeto encontrado.",
-            NULL
-          );
-
-        }
-        
-        foreach ($results as &$result) {
-          $result['technologies'] = $result['technologies']
-            ? json_decode('[' . $result['technologies'] . ']', true)
-            : [];
-        }
-
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::OK,
-          "success",
-          "Lista de projetos",
-          [
-            "projects" => $results,
-            "total" => (int)$resultsTotal[0]["nrtotal"],
-            "pages" => ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)
-          ]
-        );
-
+      throw new \Exception("Erro ao criar projeto", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
     } catch (\Exception $e) {
-
-      return ApiResponseFormatter::formatResponse(
-        $e->getCode(),
-        "error",
-        "Falha ao obter projetos: " . $e->getMessage(),
-        null
-      );
-        
+      
+      throw new \Exception($e->getMessage(), $e->getCode());
+      
     }
   }
 
-  public static function getPageSearch($search, $page = 1, $itemsPerPage = 5)
+  public function update()
   {
-
-    $start = ($page - 1) * $itemsPerPage;
-
-    $sql = "SELECT 
-              p.*, 
-              GROUP_CONCAT(
-                DISTINCT CONCAT(
-                  '{\"idtechnology\":', t.idtechnology, 
-                  ',\"desname\":\"', t.desname, 
-                  '\",\"desimage\":\"', COALESCE(t.desimage, ''), '\"}'
-                ) SEPARATOR ','
-              ) AS technologies
-            FROM tb_projects p
-            LEFT JOIN tb_projectstechnologies pt ON p.idproject = pt.idproject
-            LEFT JOIN tb_technologies t ON pt.idtechnology = t.idtechnology
-            WHERE p.destitle LIKE :search
-            GROUP BY p.idproject
-            ORDER BY p.dtregister
-            LIMIT $start, $itemsPerPage";
+    
+    $sql = "UPDATE projects
+            SET title = :title, description = :description, link = :link, is_active = :is_active
+            WHERE id = :id";
 
     try {
-
+      
       $db = new Database();
 
-      $results = $db->select($sql, [
-        ':search' => '%' . $search . '%'
+      $db->query($sql, [
+        ":title"       => $this->getTitle(),
+        ":description" => $this->getDescription(),
+        ":link"        => $this->getLink(),
+        ":is_active"   => $this->getIsActive() ?? 1,
+        ":id"          => $this->getId()
       ]);
 
-      $resultsTotal = $db->select("SELECT FOUND_ROWS() AS nrtotal");
+      if (NULL !== $this->getImage() && !is_string($this->getImage())) {
+        
+        $image = $this->setPhoto($this->getId(), $this->getImage());
+        
+        if ($image) {
+          
+          $imageUrl = $_ENV['API_URL'] . "/images/projects/" . $image;
+          
+          $this->setImage($imageUrl);
+        
+        }
+      
+      }
+
+      $this->syncTechnologies($this->getTechnologies());
+
+      return $this->getAttributes();
+
+    } catch (\PDOException $e) {
+      
+      throw new \Exception("Erro ao atualizar projeto", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
+    } catch (\Exception $e) {
+      
+      throw new \Exception($e->getMessage(), $e->getCode());
+      
+    }
+  }
+
+  public static function list($page = 1, $itemsPerPage = 10, $search = "")
+  {
+    
+    $params = [];
+    
+    $where = ["1=1"];
+
+    $search = trim($search);
+    
+    if (!empty($search)) {
+      
+      $where[] = "(p.title LIKE :search OR p.description LIKE :search)";
+      
+      $params[":search"] = "%$search%";
+    
+    }
+
+    $sql = "
+      SELECT " . ($page !== NULL && $itemsPerPage !== NULL ? "SQL_CALC_FOUND_ROWS" : "") . "
+        p.id,
+        p.title,
+        p.description,
+        p.image,
+        p.link,
+        p.is_active,
+        p.created_at,
+        p.updated_at,
+        (
+          SELECT JSON_ARRAYAGG(JSON_OBJECT('id', t.id, 'name', t.name, 'image', t.image))
+          FROM project_technologies pt
+          JOIN technologies t ON pt.technology_id = t.id
+          WHERE pt.project_id = p.id
+        ) AS technologies
+      FROM projects p
+      WHERE " . implode(" AND ", $where) . "
+      ORDER BY p.created_at DESC
+    ";
+
+    if ($page !== NULL && $itemsPerPage !== NULL) {
+      
+      $start = ($page - 1) * $itemsPerPage;
+      
+      $sql .= " LIMIT $start, $itemsPerPage";
+    
+    }
+
+    try {
+      
+      $db = new Database();
+      
+      $results = $db->select($sql, $params);
 
       if (empty($results)) {
         
-        return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NO_CONTENT,  
-          "success", 
-          "Nenhum projeto encontrado",
-          null
-        );
-
+        throw new \Exception("Nenhum projeto encontrado", HTTPStatus::NO_CONTENT);
+        
       }
 
-      foreach ($results as &$result) {
-        $result['technologies'] = $result['technologies']
-          ? json_decode('[' . $result['technologies'] . ']', true)
+      foreach ($results as &$project) {
+        
+        $project['technologies'] = $project['technologies']
+          ? json_decode($project['technologies'], true)
           : [];
+      
       }
 
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Lista de projetos",
-        [
+      if ($page !== NULL && $itemsPerPage !== NULL) {
+        
+        $total = (int)$db->select("SELECT FOUND_ROWS() AS total")[0]["total"];
+        
+        return [
           "projects" => $results,
-          "total" => (int)$resultsTotal[0]["nrtotal"],
-          "pages" => ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)
+          "total"    => $total,
+          "pages"    => ceil($total / $itemsPerPage)
+        ];
+
+      }
+
+      return $results;
+
+    } catch (\PDOException $e) {
+      
+      throw new \Exception("Erro ao obter lista de projetos", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
+    } catch (\Exception $e) {
+      
+      throw new \Exception($e->getMessage(), $e->getCode());
+      
+    }
+  }
+
+  public static function get($id)
+  {
+    
+    try {
+      
+      $db = new Database();
+
+      $result = $db->select(
+        "SELECT * FROM projects WHERE id = :id LIMIT 1",
+        [":id" => $id]
+      );
+
+      if (empty($result)) {
+        
+        throw new \Exception("Projeto não encontrado", HTTPStatus::NOT_FOUND);
+        
+      }
+
+      $project = $result[0];
+
+      $project['technologies'] = $db->select(
+        "SELECT t.id, t.name, t.image 
+        FROM technologies t 
+        INNER JOIN project_technologies pt ON pt.technology_id = t.id 
+        WHERE pt.project_id = :id",
+        [":id" => $id]
+      );
+
+      return $project;
+
+    } catch (\PDOException $e) {
+      
+      throw new \Exception("Erro ao obter detalhes do projeto", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
+    } catch (\Exception $e) {
+      
+      throw new \Exception($e->getMessage(), $e->getCode());
+      
+    }
+
+  }
+
+  public static function delete($id)
+  {
+    
+    $sql = "DELETE FROM projects WHERE id = :id";
+    
+    try {
+      
+      $db = new Database();
+      
+      $db->query($sql, [":id" => $id]);
+
+      UploadHandler::deletePhoto($id, "projects");
+
+      return true;
+
+    } catch (\PDOException $e) {
+      
+      throw new \Exception("Erro ao excluir projeto", HTTPStatus::INTERNAL_SERVER_ERROR);
+      
+    } catch (\Exception $e) {
+      
+      throw new \Exception($e->getMessage(), $e->getCode());
+      
+    }
+
+  }
+
+  private function setPhoto($id, $image)
+  {
+    $imageName = UploadHandler::uploadPhoto($id, $image, "projects");
+
+    if (!$imageName) {
+      
+      return NULL;
+      
+    }
+
+    $image = $imageName . ".jpg";
+
+    $sql = "UPDATE projects SET image = :image WHERE id = :id";
+
+    try {
+      
+      $db = new Database();
+      
+      $db->query($sql, [
+        ':image' => $image,
+        ':id'    => $id
+      ]);
+
+      return $image;
+
+    } catch (\PDOException $e) {
+      
+      return NULL;
+      
+    }
+
+  }
+
+  private function syncTechnologies($technologies)
+  {
+
+    if (empty($technologies)) return;
+    
+    if (is_string($technologies)) {
+      
+      $technologies = array_filter(array_map('trim', explode(',', $technologies)));
+      
+    }
+
+    if (!is_array($technologies)) return;
+
+    $db = new Database();
+
+    $db->query(
+      "DELETE FROM project_technologies WHERE project_id = :id", 
+      [
+        ":id" => $this->getId()
+      ]
+    );
+
+    foreach ($technologies as $techId) {
+      
+      $db->query(
+        "INSERT INTO project_technologies (project_id, technology_id) VALUES (:pid, :tid)", 
+        [
+          ":pid" => $this->getId(),
+          ":tid" => $techId
         ]
       );
 
-    } catch (\PDOException $e) {
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao obter projetos: " . $e->getMessage(),
-        null
-      );
-
     }
 
   }
-
-  public static function get($idproject)
-	{
-
-    $sql = "SELECT 
-              p.*, 
-              GROUP_CONCAT(
-                DISTINCT CONCAT(
-                  '{\"idtechnology\":', t.idtechnology, 
-                  ',\"desname\":\"', t.desname, 
-                  '\",\"desimage\":\"', COALESCE(t.desimage, ''), '\"}'
-                ) SEPARATOR ','
-              ) AS technologies
-            FROM tb_projects p
-            LEFT JOIN tb_projectstechnologies pt ON p.idproject = pt.idproject
-            LEFT JOIN tb_technologies t ON pt.idtechnology = t.idtechnology
-            WHERE p.idproject = :idproject";
-
-		try {
-
-			$db = new Database();
-
-			$results = $db->select($sql, array(
-				":idproject"=>$idproject
-			));
-
-      if (empty($results)) {
-			
-			  return ApiResponseFormatter::formatResponse(
-          HTTPStatus::NOT_FOUND, 
-          "success", 
-          "Projeto não encontrado.",
-          NULL
-        );
-        
-      }
-
-      foreach ($results as &$result) {
-        $result['technologies'] = $result['technologies']
-          ? json_decode('[' . $result['technologies'] . ']', true)
-          : [];
-      }
-
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Detalhes do projeto",
-        $results[0]
-      );
-
-		} catch (\Exception $e) {
-
-			return ApiResponseFormatter::formatResponse(
-        $e->getCode(), 
-        "error", 
-        "Falha ao obter projeto: " . $e->getMessage(),
-        null
-      );
-			
-		}
-
-  }
-
-  public static function delete($idproject) 
-	{
-
-    $sql = "DELETE FROM tb_projects WHERE idproject = :idproject";
-		
-		try {
-
-			$db = new Database();
-			
-			$db->query($sql, array(
-				':idproject' => $idproject
-			));
-
-      UploadHandler::deletePhoto($idproject, "projects");
-
-      return ApiResponseFormatter::formatResponse(
-        HTTPStatus::OK, 
-        "success", 
-        "Projeto excluído com sucesso.",
-        null
-      );
-
-		} catch (\PDOException $e) {
-
-			return ApiResponseFormatter::formatResponse(
-        HTTPStatus::INTERNAL_SERVER_ERROR, 
-        "error", 
-        "Falha ao excluir projeto: " . $e->getMessage(),
-        null
-      );
-			
-		}
-
-  }
-
-  private function setPhoto($idproject, $image)
-  {
-
-    $imageName = UploadHandler::uploadPhoto($idproject, $image, "projects");
-
-    if (!$imageName) {
-
-      return null;
-      
-    }
-
-    $imageUrl = $_ENV['API_URL'] . "/images/projects/" . $imageName . ".jpg";
-
-    $sql = "UPDATE tb_projects SET desimage = :desimage WHERE idproject = :idproject";
-    
-    try {
   
-      $db = new Database();
-
-      $db->query($sql, array(
-        ':desimage'  => $imageUrl,
-        ':idproject' => $idproject
-      ));
-
-      return $imageUrl;
-
-    } catch (\PDOException $e) {
-  
-      return null;
-    
-    }
-
-  }
-
-
 }

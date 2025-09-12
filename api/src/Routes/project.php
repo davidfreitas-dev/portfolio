@@ -3,16 +3,34 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Models\Project;
+use App\Middleware\RoleMiddleware;
+use App\Utils\ApiResponseFormatter;
+use App\Enums\HttpStatus as HTTPStatus;
 
 $app->get('/projects', function (Request $request, Response $response) {
 
-  $results = Project::list();
+  $queryParams = $request->getQueryParams();
 
-  $response->getBody()->write(json_encode($results));
+  $page   = isset($queryParams['page']) ? (int)$queryParams['page'] : 1;
+  
+  $limit  = isset($queryParams['limit']) ? (int)$queryParams['limit'] : 10;
+  
+  $search = isset($queryParams['search']) ? $queryParams['search'] : "";
+
+  $projects = Project::list($page, $limit, $search);
+
+  $responseBody = ApiResponseFormatter::formatResponse(
+    HTTPStatus::OK,
+    "success",
+    "Lista de Projetos",
+    $projects
+  );
+
+  $response->getBody()->write(json_encode($responseBody));
 
   return $response
     ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    ->withStatus($responseBody['code']);
 
 });
 
@@ -20,76 +38,83 @@ $app->get('/projects/{id}', function (Request $request, Response $response, arra
 
   $id = $args['id'];
 
-  $results = Project::get($id);
+  $project = Project::get($id);
 
-  $response->getBody()->write(json_encode($results));
+  $responseBody = ApiResponseFormatter::formatResponse(
+    HTTPStatus::OK,
+    "success",
+    "Detalhes do Projeto",
+    $project
+  );
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
-
-});
-
-$app->get('/projects/search/{search}/{page}', function (Request $request, Response $response, array $args) {
-
-  $page = $args['page'];
-  
-  $search = $args['search'];
-
-  $results = Project::getPageSearch($search, $page);
-
-  $response->getBody()->write(json_encode($results));
+  $response->getBody()->write(json_encode($responseBody));
 
   return $response
     ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    ->withStatus($responseBody['code']);
 
 });
 
-$app->get('/projects/page/{page}', function (Request $request, Response $response, array $args) {
+$app->group('/projects', function ($group) {
 
-  $page = $args['page'];
+  $group->post('', function (Request $request, Response $response) {
 
-  $results = Project::getPage($page);
+    $requestData = $request->getParsedBody();
 
-  $response->getBody()->write(json_encode($results));
+    $requestData['image'] = isset($_FILES['image']) ? $_FILES['image'] : NULL;
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    $project = new Project();
+    
+    $project->setAttributes($requestData);
 
-});
+    if (!isset($requestData['id'])) {
+      
+      $result = $project->create();
+      
+      $message = "Projeto criado com sucesso";
 
-$app->post('/projects/save', function (Request $request, Response $response) {
+    } else {
+      
+      $result = $project->update();
+      
+      $message = "Projeto atualizado com sucesso";
+    
+    }
 
-  $data = $request->getParsedBody();
+    $responseBody = ApiResponseFormatter::formatResponse(
+      HTTPStatus::OK,
+      "success",
+      $message,
+      $result
+    );
 
-  $data['desimage'] = isset($_FILES['image']) ? $_FILES['image'] : null;
+    $response->getBody()->write(json_encode($responseBody));
 
-  $project = new Project();
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($responseBody['code']);
 
-  $project->setAttributes($data);
-  
-  $results = $project->save();
+  });
 
-  $response->getBody()->write(json_encode($results));
+  $group->delete('/{id}', function (Request $request, Response $response, array $args) {
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
+    $id = $args['id'];
 
-});
+    Project::delete($id);
 
-$app->delete('/projects/delete/{id}', function (Request $request, Response $response, array $args) {
+    $responseBody = ApiResponseFormatter::formatResponse(
+      HTTPStatus::NO_CONTENT,
+      "success",
+      "Projeto excluído com sucesso",
+      NULL
+    );
 
-  $id = $args['id'];
+    $response->getBody()->write(json_encode($responseBody));
 
-  $results = Project::delete($id);
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($responseBody['code']);
+      
+  });
 
-  $response->getBody()->write(json_encode($results));
-
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($results['code']);
-
-});
+})->add(new RoleMiddleware("admin"));

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Utils;
+namespace App\Handlers;
 
 use App\Enums\HttpStatus as HTTPStatus;
 
-class uploadHandler
+class UploadHandler
 {
 
   public static function uploadPhoto($id, $file, $directory)

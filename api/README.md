@@ -89,10 +89,9 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 - [Technologies Save](#technologies-save)
 - [Technologies Delete](#technologies-delete)
 - [Projects List](#projects-list)
-- [Projects Page](#projects-page)
-- [Project Details](#project-details)
-- [Project Save](#project-save)
-- [Project Delete](#project-delete)
+- [Projects Details](#projects-details)
+- [Projects Save](#projects-save)
+- [Projects Delete](#projects-delete)
 
 #### User Registration
 
@@ -256,8 +255,8 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 | Parameter | Type      | Description                  |
 | :-------- | :-------- | :--------------------------- |
 | `page`    | `integer` | **Required**. Page number    |
-| `limit`   | `integer` | **Required**. Items per page |
-| `search`  | `string`  | **Required**. Search term    |
+| `limit`   | `integer` | Items per page               |
+| `search`  | `string`  | Search term                  |
 
 **Note:** Parameters should be passed as query strings
 
@@ -285,7 +284,9 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 | `name`    | `string`  | **Required**. Technology name               |
 | `image`   | `string`  | Image file (binary), optional               |
 
-**Observation:** Parameters should be passed as a FormData object with `Content-Type: multipart/form-data`.
+**Note:** When the Technology ID is greater than zero, an update will be made based on the Technology ID, otherwise an insertion will be made.
+
+**Observation:** The parameters should be passed within a FormData object with Content-Type: multipart/form-data on headers.
 
 **Response:** Technology data
 
@@ -305,48 +306,39 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
   GET /projects
 ```
 
-**Note:** No parameters needed.
+| Parameter | Type      | Description                  |
+| :-------- | :-------- | :--------------------------- |
+| `page`    | `integer` | **Required**. Page number    |
+| `limit`   | `integer` | Items per page               |
+| `search`  | `string`  | Search term                  |
 
 **Response:** List of projects
 
-#### Project Details
+#### Projects Details
 
 ```http
   GET /projects/id
 ```
 
-| Parameter   | Type      | Description                                             |
-| :---------- | :-------- | :------------------------------------------------------ |
-| `idproject` | `integer` | **Required**. Project ID                                |
+**Note:** No parameters needed.
 
 **Response:** Project details
 
-#### Projects Page
-
-```http
-  GET /projects/page/page
-```
-
-| Parameter      | Type      | Description                                          |
-| :------------- | :-------- | :--------------------------------------------------- |
-| `page`         | `integer` | **Required**. Page number                            |
-
-**Response:** All projects 5 items per page
-
-#### Project Save
+#### Projects Save
 
 ```http
   POST /projects/save
 ```
 
-| Parameter        | Type      | Description                                        |
-| :--------------- | :-------- | :------------------------------------------------- |
-| `idproject`      | `integer` | Project ID (to update)                             |
-| `destitle`       | `string`  | **Required**. Project title                        |
-| `desdescription` | `string`  | **Required**. Project description                  |
-| `deslink`        | `string`  | Project link                                       |
-| `image`          | `string`  | Project image file                                 |
-| `technologies`   | `string`  | **Required**. String with techs ID's (Ex.: "1, 2") |
+| Parameter      | Type      | Description                                                                                    |
+| :------------- | :-------- | :--------------------------------------------------------------------------------------------- |
+| `id`           | `integer` | Project ID (for update, omit for create)                                                       |
+| `title`        | `string`  | **Required**. Project title                                                                    |
+| `description`  | `string`  | **Required**. Project description                                                              |
+| `link`         | `string`  | Project link                                                                                   |
+| `image`        | `file`    | Image file (binary)                                                                            |
+| `is_active`    | `boolean` | Indicates whether the project is active (`true` = active, `false` = inactive). Default: `true` |
+| `technologies` | `string`  | **Required**. List of related technology IDs (Ex.: `1, 2, 3`)                                  |
 
 **Note:** When the Project ID is greater than zero, an update will be made based on the Project ID, otherwise an insertion will be made.
 
@@ -354,14 +346,12 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 
 **Response:** Project data
 
-#### Project Delete
+#### Projects Delete
 
 ```http
-  DELETE /projects/delete/id
+  DELETE /projects/id
 ```
 
-| Parameter   | Type      | Description                                           |
-| :---------- | :-------- | :---------------------------------------------------- |
-| `idproject` | `integer` | **Required**. Project ID                              |
+**Note:** No parameters needed.
 
 **Response:** Void

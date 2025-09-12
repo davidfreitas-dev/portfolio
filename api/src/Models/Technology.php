@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\DB\Database;
 use App\Models\Model;
-use App\Utils\UploadHandler;
+use App\Handlers\UploadHandler;
 use App\Enums\HttpStatus as HTTPStatus;
 
 class Technology extends Model
