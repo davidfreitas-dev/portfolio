@@ -216,6 +216,8 @@ class Technology extends Model
 		
 		try {
 
+      self::get($id);
+
 			$db = new Database();
 			
 			$db->query($sql, array(

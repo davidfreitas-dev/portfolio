@@ -245,6 +245,8 @@ class Project extends Model
     $sql = "DELETE FROM projects WHERE id = :id";
     
     try {
+
+      self::get($id);
       
       $db = new Database();
       

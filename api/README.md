@@ -37,40 +37,45 @@ See:
 
 The HOSTNAME in .env file should be the same of docker-compose file db:container_name
 
-## Autenticação e Segurança
+## Authentication and Security
 
-### Autenticação com JWT (JSON Web Token)
+### Authentication with JWT (JSON Web Token)
 
-A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos para autenticar e autorizar as requisições:
+The API uses JWT (JSON Web Token) for authentication. Below are the steps to authenticate and authorize requests:
 
-1. **Obtenção do Token JWT:**
-   - Para acessar os recursos protegidos da API, você precisa obter um token JWT. Isso é feito enviando uma requisição `POST` para o endpoint `/signin` com as credenciais do usuário (e.g., e-mail e senha).
+1. **Obtaining the JWT Token:**
 
-2. **Incluindo o Token nas Requisições:**
-   - Após obter o token JWT, ele deve ser incluído no cabeçalho `Authorization` em todas as requisições subsequentes para acessar os recursos protegidos.
+   * To access the protected resources of the API, you need to obtain a JWT token. This is done by sending a `POST` request to the `/signin` endpoint with the user’s credentials (e.g., email and password).
 
-   **Formato do Cabeçalho:**
+2. **Including the Token in Requests:**
+
+   * After obtaining the JWT token, it must be included in the `Authorization` header in all subsequent requests to access protected resources.
+
+   **Header Format:**
 
    ```
    Authorization: Bearer <token>
    ```
 
-   **Exemplo de Requisição Autenticada:**
+   **Example of an Authenticated Request:**
 
    ```http
    GET /users
    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
    ```
 
-3. **Expiração do Token:**
-   - O token JWT possui um tempo de expiração. Após esse período, será necessário obter um novo token através do processo de autenticação.
-   - Se o token estiver expirado ou for inválido, a API retornará um erro `401 Unauthorized`.
+3. **Token Expiration:**
 
-4. **Rotas Protegidas:**
-   - Todas as rotas que exigem autenticação são protegidas. A tentativa de acessar essas rotas sem um token válido resultará em um erro `401 Unauthorized`.
+   * The JWT token has an expiration time. After this period, you will need to obtain a new token through the authentication process.
+   * If the token is expired or invalid, the API will return a `401 Unauthorized` error.
 
-5. **Logout (Opcional):**
-   - A API pode implementar um endpoint de logout que invalida o token JWT, garantindo que ele não possa mais ser usado. Este passo é opcional e depende da implementação específica da API.
+4. **Protected Routes:**
+
+   * All routes that require authentication are protected. Attempting to access these routes without a valid token will result in a `401 Unauthorized` error.
+
+5. **Logout (Optional):**
+
+   * The API may implement a logout endpoint that invalidates the JWT token, ensuring it can no longer be used. This step is optional and depends on the specific implementation of the API.
 
 ## API Documentation
 
@@ -293,7 +298,7 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 #### Technologies Delete
 
 ```http
-  DELETE /technologies/delete/id
+  DELETE /technologies/id
 ```
 
 **Note:** No parameters needed
@@ -327,7 +332,7 @@ A API utiliza JWT (JSON Web Token) para autenticação. Abaixo estão os passos 
 #### Projects Save
 
 ```http
-  POST /projects/save
+  POST /projects
 ```
 
 | Parameter      | Type      | Description                                                                                    |
