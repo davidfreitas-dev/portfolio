@@ -79,11 +79,13 @@ The API uses JWT (JSON Web Token) for authentication. Below are the steps to aut
 
 ## API Documentation
 
-- [User Registration](#user-registration)
-- [User Authentication](#user-authentication)
-- [User Password Recovery Token](#user-password-recovery-token)
-- [User Validate Token](#user-validate-token)
-- [User Password Reset](#user-password-reset)
+- [Users Registration](#users-registration)
+- [Users Authentication](#users-authentication)
+- [Users Password Recovery Token](#users-password-recovery-token)
+- [Users Validate Token](#users-validate-token)
+- [Users Password Reset](#users-password-reset)
+- [Users Details](#users-details)
+- [Users Update](#users-update)
 - [Experiences List](#experiences-list)
 - [Experiences Details](#experiences-details)
 - [Experiences Create](#experiences-create)
@@ -98,60 +100,54 @@ The API uses JWT (JSON Web Token) for authentication. Below are the steps to aut
 - [Projects Save](#projects-save)
 - [Projects Delete](#projects-delete)
 
-#### User Registration
+#### Users Registration
 
 ```http
   POST /signup
 ```
 
-| Parameter     | Type     | Description                                             |
-| :-----------  | :------- | :------------------------------------------------------ |
-| `desperson`   | `string` | **Required**. User's full name                          |
-| `deslogin`    | `string` | **Required**. User's username                           |
-| `despassword` | `string` | **Required**. User's password                           |
-| `desemail`    | `string` | **Required**. User's email address                      |
-| `nrphone`     | `string` | User's phone number                                     |
-| `nrcpf`       | `string` | User's CPF                                              |
-| `inadmin`     | `integer`| **Required**. User's access level (1 = admin, 0 = user) |
+| Parameter  | Type     | Description                          |
+| :--------  | :------- | :------------------------------------|
+| `name`     | `string` | **Required**. Full name              |
+| `email`    | `string` | **Required**. E-mail address         |
+| `phone`    | `string` | Phone number.                        |
+| `cpfcnpj`. | `string` | **Required**. User's document number |
+| `password` | `string` | **Required**. Password               |
 
 **Observation:** The parameters above should be passed within a single JSON object.
 
 **Response:** Data of the registered user
 
-#### User Authentication
+#### Users Authentication
 
 ```http
   POST /signin
 ```
 
-| Parameter     | Type     | Description                                             |
-| :-----------  | :------- | :------------------------------------------------------ |
-| `deslogin`    | `string` | User's username                                         |
-| `desemail`    | `string` | User's email address                                    |
-| `nrcpf`       | `string` | User's CPF                                              |
-| `despassword` | `string` | **Required**. User's password                           |
-
-**Note:** Authentication can be done using the username, email, or CPF along with the password.
+| Parameter  | Type     | Description                                             |
+| :--------- | :------- | :------------------------------------------------------ |
+| `login`    | `string` | **Required**. User's e-mail address or document number  |
+| `password` | `string` | **Required**. User's password                           |
 
 **Observation:** The parameters should be passed within a single JSON object.
 
 **Response:** Data of the authenticated user
 
-#### User Password Recovery Token
+#### Users Password Recovery Token
 
 ```http
   POST /forgot
 ```
 
-| Parameter  | Type     | Description                                               |
-| :--------- | :------- | :-------------------------------------------------------- |
-| `desemail` | `string` | **Required**. User's email address                        |
+| Parameter | Type     | Description                                               |
+| :-------- | :------- | :-------------------------------------------------------- |
+| `email`   | `string` | **Required**. User's e-mail address                       |
 
 **Observation:** The parameters should be passed within a single JSON object.
 
 **Response:** Void (The recovery token will be sent to e-mail)
 
-#### User Validate Token
+#### Users Validate Token
 
 ```http
   POST /forgot/token
@@ -165,20 +161,47 @@ The API uses JWT (JSON Web Token) for authentication. Below are the steps to aut
 
 **Response:** Void 
 
-#### User Password Reset
+#### Users Password Reset
 
 ```http
   POST /forgot/reset
 ```
 
-| Parameter     | Type     | Description                                            |
-| :------------ | :------- | :----------------------------------------------------- |
-| `code`        | `string` | **Required**. Code sent with recovery token            |
-| `despassword` | `string` | **Required**. New password                             |
+| Parameter  | Type     | Description                                            |
+| :--------- | :------- | :----------------------------------------------------- |
+| `code`     | `string` | **Required**. Code sent with recovery token            |
+| `password` | `string` | **Required**. New password                             |
 
 **Observation:** The parameters should be passed within a single JSON object.
 
 **Response:** Void 
+
+#### Users Details
+
+```http
+  POST /users/me
+```
+
+**Note:** No parameters needed
+
+**Response:** User data
+
+#### Users Update
+
+```http
+  POST /users/me
+```
+
+| Parameter  | Type     | Description                          |
+| :--------  | :------- | :------------------------------------|
+| `name`     | `string` | **Required**. Full name              |
+| `email`    | `string` | **Required**. E-mail address         |
+| `phone`    | `string` | Phone number.                        |
+| `cpfcnpj`. | `string` | **Required**. User's document number |
+
+**Observation:** The parameters above should be passed within a single JSON object.
+
+**Response:** Data of the registered user
 
 #### Experiences List
 
