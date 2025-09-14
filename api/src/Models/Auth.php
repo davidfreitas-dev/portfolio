@@ -34,7 +34,11 @@ class Auth {
 
     $jwt = TokenService::generatePrivateToken($data);
 
-    return $jwt;
+    return [
+      "token"      => $jwt,
+      "type"       => "Bearer",
+      "expires_in" => 3600
+    ];
 
 	}
         
@@ -87,7 +91,11 @@ class Auth {
 
     $jwt = TokenService::generatePrivateToken($user);
 
-    return $jwt;
+    return [
+      "token"      => $jwt,
+      "type"       => "Bearer",
+      "expires_in" => 3600
+    ];
   
   }
 

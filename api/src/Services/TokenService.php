@@ -35,9 +35,12 @@ class TokenService
   {
     
     $payload = [ 
-      "sub" => "site-client",
-      "roles" => [
-        ["name" => "public"]
+      "sub"  => "site-client",
+      "user" => [
+        "name"  => "Guest User",
+        "roles" => [
+          ["name" => "public"]
+        ]
       ], 
       "iat" => time(), 
       "exp" => time() + 3600 
