@@ -2,11 +2,12 @@
 
 namespace App\Mail;
 
-use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+use App\Interfaces\MailerInterface;
 use App\Enums\HttpStatus as HTTPStatus;
 
-class Mailer {
+class Mailer implements MailerInterface {
 
 	private PHPMailer $mail;
 
@@ -82,7 +83,7 @@ class Mailer {
 
     ob_start();
         
-    include __DIR__ . '/templates/default.php';
+    include __DIR__ . '/../../res/views/emails/default.php';
         
     return ob_get_clean();
 

@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
-use App\Mail\Mailer;
+use App\Interfaces\MailerInterface;
 
 class MailService
 {
-  private Mailer $mailer;
+  
+  private MailerInterface $mailer;
 
-  public function __construct(Mailer $mailer)
+  public function __construct(MailerInterface $mailer)
   {
       
     $this->mailer = $mailer;
