@@ -28,11 +28,12 @@ $app->add(new Tuupola\Middleware\JwtAuthentication([
   "path" => "/",
   "ignore" => [
     "/images", 
-    "/signin", 
-    "/signup", 
-    "/forgot", 
-    "/forgot/token", 
-    "/forgot/reset",
+    "/auth/signin", 
+    "/auth/signup", 
+    "/auth/forgot", 
+    "/auth/verify", 
+    "/auth/reset",
+    "/auth/token",
     "/($|/)"
   ],
   "secure" => true,
@@ -49,10 +50,13 @@ $app->add(new Tuupola\Middleware\JwtAuthentication([
 ]));
 
 $app->get('/', function (Request $request, Response $response) {
+  
   $response->getBody()->write(json_encode([
     'message' => 'Welcome to the Personal Portfolio Site API!'
   ]));    
+  
   return $response->withHeader('content-type', 'application/json');
+
 });
 
 require_once __DIR__ . '/../src/Routes/auth.php';

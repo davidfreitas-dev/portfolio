@@ -1,149 +1,177 @@
 <?php
 
 use App\Mail\Mailer;
-use App\Services\MailService;
 use App\Services\AuthService;
+use App\Services\MailService;
+use App\Services\TokenService;
 use App\Utils\ApiResponseFormatter;
 use App\Enums\HttpStatus as HTTPStatus;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-$app->post('/signup', function (Request $request, Response $response) {
+$app->group('/auth', function ($group) {
 
-  $requestData = $request->getParsedBody();
+  $group->post('/signup', function (Request $request, Response $response) {
 
-  $authService = new AuthService(
-    new \App\DB\Database(),
-    new \App\Services\TokenService()
-  );
+    $requestData = $request->getParsedBody();
 
-  $jwt = $authService->signup($requestData);
+    $authService = new AuthService(
+      new \App\DB\Database(),
+      new \App\Services\TokenService()
+    );
 
-  $apiResponse = ApiResponseFormatter::formatResponse(
-    HTTPStatus::OK,
-    "success",
-    "Cadastro realizado com sucesso",
-    $jwt
-  );
+    $jwt = $authService->signup($requestData);
 
-  $response->getBody()->write(json_encode($apiResponse));
+    $apiResponse = ApiResponseFormatter::formatResponse(
+      HTTPStatus::OK,
+      "success",
+      "Cadastro realizado com sucesso",
+      $jwt
+    );
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($apiResponse['code']);
+    $response->getBody()->write(json_encode($apiResponse));
 
-});
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($apiResponse['code']);
 
-$app->post('/signin', function (Request $request, Response $response) {
+  });
 
-  $requestData = $request->getParsedBody();
+  $group->post('/signin', function (Request $request, Response $response) {
 
-  $authService = new AuthService(
-    new \App\DB\Database(),
-    new \App\Services\TokenService()
-  );
+    $requestData = $request->getParsedBody();
 
-  $jwt = $authService->signin($requestData['login'], $requestData['password']);
+    $authService = new AuthService(
+      new \App\DB\Database(),
+      new \App\Services\TokenService()
+    );
 
-  $apiResponse = ApiResponseFormatter::formatResponse(
-    HTTPStatus::OK,
-    "success",
-    "Usuário autenticado com sucesso",
-    $jwt
-  );
+    $jwt = $authService->signin($requestData['login'], $requestData['password']);
 
-  $response->getBody()->write(json_encode($apiResponse));
+    $apiResponse = ApiResponseFormatter::formatResponse(
+      HTTPStatus::OK,
+      "success",
+      "Usuário autenticado com sucesso",
+      $jwt
+    );
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($apiResponse['code']);
+    $response->getBody()->write(json_encode($apiResponse));
 
-});
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($apiResponse['code']);
 
-$app->post('/forgot', function (Request $request, Response $response) {
+  });
 
-  $requestData = $request->getParsedBody();
+  $group->post('/forgot', function (Request $request, Response $response) {
 
-  $authService = new AuthService(
-    new \App\DB\Database(),
-    new \App\Services\TokenService()
-  );
+    $requestData = $request->getParsedBody();
 
-  $recovery = $authService->getForgotLink($requestData['email']);
+    $authService = new AuthService(
+      new \App\DB\Database(),
+      new \App\Services\TokenService()
+    );
 
-  $emailService = new MailService(new Mailer());
+    $recovery = $authService->getForgotLink($requestData['email']);
 
-  $emailService->sendPasswordReset(
-    $recovery['user']['email'],
-    $recovery['user']['name'],
-    $recovery['link']
-  );
+    $emailService = new MailService(new Mailer());
 
-  $apiResponse = ApiResponseFormatter::formatResponse( 
-    HTTPStatus::OK, 
-    "success", 
-    "Link de redefinição de senha enviado para o endereço de e-mail informado", 
-    NULL 
-  );
+    $emailService->sendPasswordReset(
+      $recovery['user']['email'],
+      $recovery['user']['name'],
+      $recovery['link']
+    );
 
-  $response->getBody()->write(json_encode($apiResponse));
-  
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($apiResponse['code']);
+    $apiResponse = ApiResponseFormatter::formatResponse( 
+      HTTPStatus::OK, 
+      "success", 
+      "Link de redefinição de senha enviado para o endereço de e-mail informado", 
+      NULL 
+    );
 
-});
+    $response->getBody()->write(json_encode($apiResponse));
+    
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($apiResponse['code']);
 
-$app->post('/forgot/token', function (Request $request, Response $response) {
+  });
 
-  $requestData = $request->getParsedBody();
+  $group->post('/verify', function (Request $request, Response $response) {
 
-  $authService = new AuthService(
-    new \App\DB\Database(),
-    new \App\Services\TokenService()
-  );
+    $requestData = $request->getParsedBody();
 
-  $tokenData = $authService->validateForgotLink($requestData['token']);
+    $authService = new AuthService(
+      new \App\DB\Database(),
+      new \App\Services\TokenService()
+    );
 
-  $apiResponse = ApiResponseFormatter::formatResponse(
-    HTTPStatus::OK,
-    "success",
-    "Token validado com sucesso",
-    $tokenData
-  );
+    $tokenData = $authService->validateForgotLink($requestData['token']);
 
-  $response->getBody()->write(json_encode($apiResponse));
+    $apiResponse = ApiResponseFormatter::formatResponse(
+      HTTPStatus::OK,
+      "success",
+      "Token validado com sucesso",
+      $tokenData
+    );
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($apiResponse['code']);
+    $response->getBody()->write(json_encode($apiResponse));
 
-});
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($apiResponse['code']);
 
-$app->post('/forgot/reset', function (Request $request, Response $response) {
+  });
 
-  $requestData = $request->getParsedBody();
+  $group->post('/reset', function (Request $request, Response $response) {
 
-  $authService = new AuthService(
-    new \App\DB\Database(),
-    new \App\Services\TokenService()
-  );
+    $requestData = $request->getParsedBody();
 
-  $tokenData = $authService->validateForgotLink($requestData['token']);
+    $authService = new AuthService(
+      new \App\DB\Database(),
+      new \App\Services\TokenService()
+    );
 
-  $authService->setNewPassword($requestData['password'], $tokenData);
+    $tokenData = $authService->validateForgotLink($requestData['token']);
 
-  $apiResponse = ApiResponseFormatter::formatResponse(
-    HTTPStatus::OK,
-    "success",
-    "Senha redefinida com sucesso",
-    NULL
-  );
+    $authService->setNewPassword($requestData['password'], $tokenData);
 
-  $response->getBody()->write(json_encode($apiResponse));
+    $apiResponse = ApiResponseFormatter::formatResponse(
+      HTTPStatus::OK,
+      "success",
+      "Senha redefinida com sucesso",
+      NULL
+    );
 
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($apiResponse['code']);
+    $response->getBody()->write(json_encode($apiResponse));
+
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($apiResponse['code']);
+
+  });
+
+  $group->get('/token', function (Request $request, Response $response) {
+
+    $jwt = TokenService::generatePublicToken();
+
+    $apiResponse = ApiResponseFormatter::formatResponse(
+      HTTPStatus::OK,
+      "success",
+      "Token público gerado com sucesso",
+      [
+        "token"      => $jwt,
+        "type"       => "Bearer",
+        "expires_in" => 3600
+      ]
+    );
+
+    $response->getBody()->write(json_encode($apiResponse));
+
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($apiResponse['code']);
+      
+  });
 
 });
