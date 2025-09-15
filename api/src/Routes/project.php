@@ -32,30 +32,30 @@ $app->get('/projects', function (Request $request, Response $response) {
     ->withHeader('content-type', 'application/json')
     ->withStatus($responseBody['code']);
 
-});
-
-$app->get('/projects/{id}', function (Request $request, Response $response, array $args) {
-
-  $id = $args['id'];
-
-  $project = Project::get($id);
-
-  $responseBody = ApiResponseFormatter::formatResponse(
-    HTTPStatus::OK,
-    "success",
-    "Detalhes do Projeto",
-    $project
-  );
-
-  $response->getBody()->write(json_encode($responseBody));
-
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($responseBody['code']);
-
-});
+})->add(new RoleMiddleware(['public', 'user', 'editor', 'admin']));
 
 $app->group('/projects', function ($group) {
+
+  $group->get('/{id}', function (Request $request, Response $response, array $args) {
+
+    $id = $args['id'];
+
+    $project = Project::get($id);
+
+    $responseBody = ApiResponseFormatter::formatResponse(
+      HTTPStatus::OK,
+      "success",
+      "Detalhes do Projeto",
+      $project
+    );
+
+    $response->getBody()->write(json_encode($responseBody));
+
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($responseBody['code']);
+
+  });
 
   $group->post('', function (Request $request, Response $response) {
 

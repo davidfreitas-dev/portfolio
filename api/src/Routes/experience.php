@@ -32,30 +32,30 @@ $app->get('/experiences', function (Request $request, Response $response) {
     ->withHeader('content-type', 'application/json')
     ->withStatus($responseBody['code']);
 
-});
-
-$app->get('/experiences/{id}', function (Request $request, Response $response, array $args) {
-
-  $id = $args['id'];
-
-  $experience = Experience::get($id);
-
-  $responseBody = ApiResponseFormatter::formatResponse(
-    HTTPStatus::OK,
-    "success",
-    "Detalhes da experiência",
-    $experience
-  );
-
-  $response->getBody()->write(json_encode($responseBody));
-
-  return $response
-    ->withHeader('content-type', 'application/json')
-    ->withStatus($responseBody['code']);
-
-});
+})->add(new RoleMiddleware(['public', 'user', 'editor', 'admin']));
 
 $app->group('/experiences', function ($group) {
+
+  $group->get('/{id}', function (Request $request, Response $response, array $args) {
+
+    $id = $args['id'];
+
+    $experience = Experience::get($id);
+
+    $responseBody = ApiResponseFormatter::formatResponse(
+      HTTPStatus::OK,
+      "success",
+      "Detalhes da experiência",
+      $experience
+    );
+
+    $response->getBody()->write(json_encode($responseBody));
+
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus($responseBody['code']);
+
+  });
 
   $group->post('', function (Request $request, Response $response) {
 
@@ -130,4 +130,4 @@ $app->group('/experiences', function ($group) {
 
   });
 
-})->add(new RoleMiddleware("admin"));
+})->add(new RoleMiddleware('admin'));
