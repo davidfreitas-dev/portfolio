@@ -1,17 +1,31 @@
-<?php 
+<?php
 
-namespace App\Models;
+namespace App\Services;
 
-use App\DB\Database;
 use App\Models\User;
+use App\DB\Database;
 use App\Utils\PasswordHelper;
-use App\Services\TokenService;
 use App\Utils\AESCryptographer;
+use App\Services\TokenService;
 use App\Enums\HttpStatus as HTTPStatus;
 
-class Auth {
+class AuthService
+{
 
-  public static function signup($data) 
+  private $db;
+  
+  private $tokenService;
+
+  public function __construct(Database $db, TokenService $tokenService)
+  {
+      
+    $this->db = $db;
+      
+    $this->tokenService = $tokenService;
+
+  }
+
+  public function signup(array $data): array
 	{
 
 		$requiredFields = ["name", "email", "password", "cpfcnpj"];
@@ -32,7 +46,7 @@ class Auth {
 
     $data = $user->create();
 
-    $jwt = TokenService::generatePrivateToken($data);
+    $jwt = $this->tokenService->generatePrivateToken($data);
 
     return [
       "token"      => $jwt,
@@ -42,7 +56,7 @@ class Auth {
 
 	}
         
-  public static function signin($login, $password)
+  public function signin(string $login, string $password): array
   {
 
     $login = trim($login);
@@ -52,10 +66,8 @@ class Auth {
       $login = strtolower($login);
     
     }
-    
-    $db = new Database();
 
-    $results = $db->select(
+    $results = $this->db->select(
       "SELECT u.id, p.name, u.password
       FROM users u
       INNER JOIN persons p ON u.id = p.id
@@ -79,7 +91,7 @@ class Auth {
     
     }
 
-    $user['roles'] = $db->select(
+    $user['roles'] = $this->db->select(
       "SELECT r.id, r.name
       FROM roles r
       INNER JOIN user_roles ur ON ur.role_id = r.id
@@ -89,7 +101,7 @@ class Auth {
       )
     );
 
-    $jwt = TokenService::generatePrivateToken($user);
+    $jwt = $this->tokenService->generatePrivateToken($user);
 
     return [
       "token"      => $jwt,
@@ -99,7 +111,7 @@ class Auth {
   
   }
 
-  public static function getForgotLink(string $email)
+  public function getForgotLink(string $email): array
   {
     
     $sql = "SELECT u.id, p.name, p.email
@@ -108,9 +120,7 @@ class Auth {
             WHERE p.email = :email
             LIMIT 1";
     
-    $db = new Database();
-    
-    $results = $db->select($sql, array(
+    $results = $this->db->select($sql, array(
       ":email" => strtolower(trim($email))
     ));
 
@@ -122,7 +132,7 @@ class Auth {
 
     $user = $results[0];
 
-    $recoveryId = $db->insert(
+    $recoveryId = $this->db->insert(
       "INSERT INTO password_resets (user_id, ip_address, created_at, updated_at) 
       VALUES (:user_id, :ip_address, NOW(), NOW())",
       [
@@ -144,7 +154,7 @@ class Auth {
 
   }
 
-  public static function validateForgotLink(string $code)
+  public function validateForgotLink(string $code)
   {
     
     $decryptedData = AESCryptographer::decrypt($code);
@@ -165,9 +175,7 @@ class Auth {
               AND pr.used_at IS NULL
               AND DATE_ADD(pr.created_at, INTERVAL 1 HOUR) >= NOW()";
 
-    $db = new Database();
-    
-    $results = $db->select($sql, array(
+    $results = $this->db->select($sql, array(
       ":id" => $recoveryId
     ));
 
@@ -184,16 +192,14 @@ class Auth {
   
   }
 
-  public static function setNewPassword(string $password, array $data)
+  public function setNewPassword(string $password, array $data)
   {
     
     PasswordHelper::checkPasswordStrength($password);
 
     $sql = "UPDATE users SET password = :password WHERE id = :user_id";
     
-    $db = new Database();
-    
-    $db->query($sql, [
+    $this->db->query($sql, [
       ":password" => PasswordHelper::hashPassword($password),
       ":user_id"  => $data["user_id"]
     ]);
@@ -204,16 +210,14 @@ class Auth {
   
   }
 
-  private static function setForgotUsed(int $recoveryId)
+  private function setForgotUsed(int $recoveryId)
   {
     
     $sql = "UPDATE password_resets 
             SET used_at = NOW() 
             WHERE id = :id";
     
-    $db = new Database();
-    
-    $db->query($sql, array(
+    $this->db->query($sql, array(
       ":id" => $recoveryId
     ));
   

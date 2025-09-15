@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Auth;
 use App\Mail\Mailer;
 use App\Services\MailService;
+use App\Services\AuthService;
 use App\Utils\ApiResponseFormatter;
 use App\Enums\HttpStatus as HTTPStatus;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -12,7 +12,12 @@ $app->post('/signup', function (Request $request, Response $response) {
 
   $requestData = $request->getParsedBody();
 
-  $jwt = Auth::signup($requestData);
+  $authService = new AuthService(
+    new \App\DB\Database(),
+    new \App\Services\TokenService()
+  );
+
+  $jwt = $authService->signup($requestData);
 
   $apiResponse = ApiResponseFormatter::formatResponse(
     HTTPStatus::OK,
@@ -33,7 +38,12 @@ $app->post('/signin', function (Request $request, Response $response) {
 
   $requestData = $request->getParsedBody();
 
-  $jwt = Auth::signin($requestData['login'], $requestData['password']);
+  $authService = new AuthService(
+    new \App\DB\Database(),
+    new \App\Services\TokenService()
+  );
+
+  $jwt = $authService->signin($requestData['login'], $requestData['password']);
 
   $apiResponse = ApiResponseFormatter::formatResponse(
     HTTPStatus::OK,
@@ -54,7 +64,12 @@ $app->post('/forgot', function (Request $request, Response $response) {
 
   $requestData = $request->getParsedBody();
 
-  $recovery = Auth::getForgotLink($requestData['email']);
+  $authService = new AuthService(
+    new \App\DB\Database(),
+    new \App\Services\TokenService()
+  );
+
+  $recovery = $authService->getForgotLink($requestData['email']);
 
   $emailService = new MailService(new Mailer());
 
@@ -83,7 +98,12 @@ $app->post('/forgot/token', function (Request $request, Response $response) {
 
   $requestData = $request->getParsedBody();
 
-  $tokenData = Auth::validateForgotLink($requestData['token']);
+  $authService = new AuthService(
+    new \App\DB\Database(),
+    new \App\Services\TokenService()
+  );
+
+  $tokenData = $authService->validateForgotLink($requestData['token']);
 
   $apiResponse = ApiResponseFormatter::formatResponse(
     HTTPStatus::OK,
@@ -104,9 +124,14 @@ $app->post('/forgot/reset', function (Request $request, Response $response) {
 
   $requestData = $request->getParsedBody();
 
-  $tokenData = Auth::validateForgotLink($requestData['token']);
+  $authService = new AuthService(
+    new \App\DB\Database(),
+    new \App\Services\TokenService()
+  );
 
-  Auth::setNewPassword($requestData['password'], $tokenData);
+  $tokenData = $authService->validateForgotLink($requestData['token']);
+
+  $authService->setNewPassword($requestData['password'], $tokenData);
 
   $apiResponse = ApiResponseFormatter::formatResponse(
     HTTPStatus::OK,
