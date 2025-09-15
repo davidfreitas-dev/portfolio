@@ -1,10 +1,12 @@
 <?php
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Models\Auth;
+use App\Mail\Mailer;
+use App\Services\MailService;
 use App\Utils\ApiResponseFormatter;
 use App\Enums\HttpStatus as HTTPStatus;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->post('/signup', function (Request $request, Response $response) {
 
@@ -54,17 +56,12 @@ $app->post('/forgot', function (Request $request, Response $response) {
 
   $recovery = Auth::getForgotLink($requestData['email']);
 
-  $mailer = new \App\Mail\Mailer(); 
-  
-  $subject = "Redefinição de senha"; 
-  
-  $content = "<p>Olá <strong>{$recovery['user']['name']}</strong>,</p> <p>Recebemos uma solicitação para redefinir sua senha. Para continuar, clique no botão abaixo:</p> <div style='text-align: center; margin: 30px 0;'><a href=\"{$recovery['link']}\" style=\"display: inline-block; padding: 12px 28px; background-color: #038de7; color: #ffffff; text-decoration: none; border-radius: 12px;font-weight: bold;\">Redefinir Senha</a></div> <p>Se você não solicitou essa alteração, ignore este e-mail.</p>";
+  $emailService = new MailService(new Mailer());
 
-  $mailer->sendEmail(
+  $emailService->sendPasswordReset(
     $recovery['user']['email'],
     $recovery['user']['name'],
-    $subject,
-    $content
+    $recovery['link']
   );
 
   $apiResponse = ApiResponseFormatter::formatResponse( 

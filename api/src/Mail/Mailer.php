@@ -2,110 +2,89 @@
 
 namespace App\Mail;
 
-use App\Enums\HttpStatus as HTTPStatus;
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-
-require_once __DIR__ . '/../../vendor/autoload.php';
+use App\Enums\HttpStatus as HTTPStatus;
 
 class Mailer {
 
-	private $mail;
+	private PHPMailer $mail;
 
-  public function __construct()
+  public function __construct(array $config = [])
   {
-    
-    $this->mail = new PHPMailer(true);
-    
-    $this->mail->isSMTP();
-    
-    $this->mail->SMTPDebug = 0;
-    
-    $this->mail->Host = 'smtp.gmail.com';
-    
-    $this->mail->Port = 587;
-    
-    $this->mail->SMTPAuth = true;
-    
-    $this->mail->Username = $_ENV['MAILER_USERNAME'];
-    
-    $this->mail->Password = $_ENV['MAILER_PASSWORD'];
-    
-    $this->mail->SMTPSecure = 'tls';
-    
-    $this->mail->SMTPOptions = [      
-      'ssl' => [
-        'verify_peer' => false,
-        'verify_peer_name' => false,
-        'allow_self_signed' => true
-      ]    
-    ];
-    
-    $this->mail->setFrom($_ENV['MAILER_USERNAME'], 'Loja Exemplo');
-    
-    $this->mail->isHTML(true);
-    
-    $this->mail->CharSet = 'UTF-8';
+
+    $cfg = array_merge([
+      'host'        => $_ENV['MAILER_HOST'],
+      'port'        => $_ENV['MAILER_PORT'],
+      'username'    => $_ENV['MAILER_USERNAME'],
+      'password'    => $_ENV['MAILER_PASSWORD'],
+      'from_name'   => $_ENV['MAILER_FROM_NAME'],
+      'from_email'  => $_ENV['MAILER_FROM_EMAIL'],
+      'smtp_secure' => $_ENV['MAILER_SMTP_SECURE']
+    ], $config);
+
+    $this->mail = $this->setupMailer($cfg);
   
   }
 
-	public function send($toAddress, $toName, $subject, $body)
-  {    
+  private function setupMailer(array $config): PHPMailer
+  {
+    
+    $mail = new PHPMailer(true);
 
+    $mail->isSMTP();
+    $mail->SMTPDebug  = 0;
+    $mail->Host       = $config['host'];
+    $mail->Port       = $config['port'];
+    $mail->SMTPAuth   = true;
+    $mail->Username   = $config['username'];
+    $mail->Password   = $config['password'];
+    $mail->SMTPSecure = $config['smtp_secure'];
+
+    $mail->setFrom($config['from_email'], $config['from_name']);
+    $mail->isHTML(true);
+    $mail->CharSet = 'UTF-8';
+
+    $mail->SMTPOptions = [
+      'ssl' => [
+        'verify_peer'       => false,
+        'verify_peer_name'  => false,
+        'allow_self_signed' => true,
+      ],
+    ];
+
+    return $mail;
+
+  }
+
+	public function send(string $toEmail, string $toName, string $subject, string $contentHtml): bool
+  {
+    
     try {
-      
+    
       $this->mail->clearAddresses();
-      
-      $this->mail->addAddress($toAddress, $toName);
-      
+      $this->mail->addAddress($toEmail, $toName);
       $this->mail->Subject = $subject;
-      
-      $this->mail->Body = $body;
-      
+      $this->mail->Body    = $this->renderTemplate($subject, $contentHtml);
+
       return $this->mail->send();
     
     } catch (Exception $e) {
-      
-      throw new Exception("O e-mail não pôde ser enviado: {$this->mail->ErrorInfo}", HTTPStatus::SERVICE_UNAVAILABLE);
+    
+      throw new Exception("Erro ao enviar e-mail: {$this->mail->ErrorInfo}", HTTPStatus::SERVICE_UNAVAILABLE);
     
     }
   
   }
 
-  public function sendEmail($toAddress, $toName, $subject, $content)
+  private function renderTemplate(string $subject, string $contentHtml): string
   {
-      
-    $body = '<html>
-              <head>
-                <style>
-                  body { font-family: Arial, sans-serif; background-color: #ffffff; color: #3c3c3c; padding: 20px; }
-                  .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; border: 1px solid #dddddd; border-radius: 8px; }
-                  .logo { text-align: center; margin-bottom: 20px; }
-                  .logo img { max-width: 150px; }
-                  .header { text-align: center; padding-bottom: 20px; }
-                  .header h1 { color: #038de7; margin: 0; }
-                  .content { font-size: 16px; line-height: 1.6; }
-                  .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #999999; }
-                </style>
-              </head>
-              <body>
-                <div class="container">
-                  <div class="logo">
-                    <img src="' . $_ENV['SITE_URL'] . '/img/logo.png" alt="Logo Loja Exemplo">
-                  </div>
-                  <div class="header">
-                    <h1>' . $subject . '</h1>
-                  </div>
-                  <div class="content">' . $content . '</div>
-                  <div class="footer">
-                    <p>© ' . date('Y') . ' Loja Exemplo. Todos os direitos reservados.</p>
-                  </div>
-                </div>
-              </body>
-            </html>';
-              
-    return $this->send($toAddress, $toName, $subject, $body);
+
+    ob_start();
+        
+    include __DIR__ . '/templates/default.php';
+        
+    return ob_get_clean();
 
   }
 
