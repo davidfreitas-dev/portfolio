@@ -43,42 +43,97 @@ The HOSTNAME in .env file should be the same of docker-compose file db:container
 
 The API uses JWT (JSON Web Token) for authentication. Below are the steps to authenticate and authorize requests:
 
-1. **Obtaining the JWT Token:**
+### 1. **Obtaining the Token**
 
-   * To access the protected resources of the API, you need to obtain a JWT token. This is done by sending a `POST` request to the `/signin` endpoint with the user’s credentials (e.g., email and password).
+#### Public Routes
 
-2. **Including the Token in Requests:**
+* To access **public resources**, you need a **public token**.
+* Send a `GET` request to the `/auth/token` endpoint to generate a token with the `public` role.
 
-   * After obtaining the JWT token, it must be included in the `Authorization` header in all subsequent requests to access protected resources.
+**Example Request:**
 
-   **Header Format:**
+```http
+GET /auth/token
+```
 
-   ```
-   Authorization: Bearer <token>
-   ```
+**Example Response:**
 
-   **Example of an Authenticated Request:**
+```json
+{
+  "status": "success",
+  "message": "Public token generated successfully",
+  "data": {
+    "token": "<public-token>",
+    "type": "Bearer",
+    "expires_in": 3600
+  }
+}
+```
 
-   ```http
-   GET /users
-   Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-   ```
+---
 
-3. **Token Expiration:**
+#### Authenticated Routes
 
-   * The JWT token has an expiration time. After this period, you will need to obtain a new token through the authentication process.
-   * If the token is expired or invalid, the API will return a `401 Unauthorized` error.
+* To access **protected or sensitive resources**, you must authenticate as a registered user.
+* Send a `POST` request to the `/auth/signin` endpoint with your credentials (e.g., email and password) to obtain a JWT token.
 
-4. **Protected Routes:**
+**Example Request:**
 
-   * All routes that require authentication are protected. Attempting to access these routes without a valid token will result in a `401 Unauthorized` error.
+```http
+POST /auth/signin
+Content-Type: application/json
 
-5. **Logout (Optional):**
+{
+  "login": "user@example.com",
+  "password": "your_password"
+}
+```
 
-   * The API may implement a logout endpoint that invalidates the JWT token, ensuring it can no longer be used. This step is optional and depends on the specific implementation of the API.
+---
+
+### 2. **Including the Token in Requests**
+
+* After obtaining a JWT token (public or authenticated), include it in the `Authorization` header for all requests.
+
+**Header Format:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Example of a Request to a Protected Route:**
+
+```http
+GET /users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+---
+
+### 3. **Token Expiration**
+
+* JWT tokens have an expiration time. After this period, a new token must be generated.
+* If the token is expired or invalid, the API will return a `401 Unauthorized` error.
+
+---
+
+### 4. **Access Control and Permissions**
+
+The API uses **role-based access control (RBAC)**. Each route specifies which roles can access it:
+
+| Role     | Description                      | Permissions                                                                          |
+| -------- | -------------------------------- | ------------------------------------------------------------------------------------ |
+| `public` | Unauthenticated or visitor users | Access only public resources (e.g., portfolio, public blog posts)                    |
+| `user`   | Registered users                 | Access protected resources, create own content, comment, update own profile          |
+| `editor` | Content editors                  | Approve, edit, and publish content created by `user`; moderate comments              |
+| `admin`  | Administrators                   | Full access to all routes and resources; manage users, roles, and sensitive settings |
+
+* Routes marked as **public** require at least a **public token**.
+* Routes marked as **protected** or **sensitive** require authentication with appropriate roles (`user`, `editor`, `admin`).
 
 ## API Documentation
 
+- [Public Token](#public-token)
 - [Users Registration](#users-registration)
 - [Users Authentication](#users-authentication)
 - [Users Password Recovery Token](#users-password-recovery-token)
@@ -100,10 +155,20 @@ The API uses JWT (JSON Web Token) for authentication. Below are the steps to aut
 - [Projects Save](#projects-save)
 - [Projects Delete](#projects-delete)
 
+#### Public Token
+
+```http
+  GET /auth/token
+```
+
+**Note:** No parameters needed
+
+**Response:** Public token
+
 #### Users Registration
 
 ```http
-  POST /signup
+  POST /auth/signup
 ```
 
 | Parameter  | Type     | Description                          |
@@ -121,7 +186,7 @@ The API uses JWT (JSON Web Token) for authentication. Below are the steps to aut
 #### Users Authentication
 
 ```http
-  POST /signin
+  POST /auth/signin
 ```
 
 | Parameter  | Type     | Description                                             |
@@ -136,7 +201,7 @@ The API uses JWT (JSON Web Token) for authentication. Below are the steps to aut
 #### Users Password Recovery Token
 
 ```http
-  POST /forgot
+  POST /auth/forgot
 ```
 
 | Parameter | Type     | Description                                               |
@@ -150,7 +215,7 @@ The API uses JWT (JSON Web Token) for authentication. Below are the steps to aut
 #### Users Validate Token
 
 ```http
-  POST /forgot/token
+  POST /auth/verify
 ```
 
 | Parameter | Type     | Description                                                |
@@ -164,7 +229,7 @@ The API uses JWT (JSON Web Token) for authentication. Below are the steps to aut
 #### Users Password Reset
 
 ```http
-  POST /forgot/reset
+  POST /auth/reset
 ```
 
 | Parameter  | Type     | Description                                            |

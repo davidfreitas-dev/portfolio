@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->group('/users/me', function ($group) {
 
-  $group->get('/users/me', function (Request $request, Response $response) {
+  $group->get('', function (Request $request, Response $response) {
 
     $jwt  = $request->getAttribute("jwt");
 
@@ -32,7 +32,7 @@ $app->group('/users/me', function ($group) {
 
   });
 
-  $group->put('/users/me', function (Request $request, Response $response) {
+  $group->put('', function (Request $request, Response $response) {
 
     $jwt  = $request->getAttribute("jwt");
     
@@ -61,7 +61,7 @@ $app->group('/users/me', function ($group) {
       
   });
 
-  $group->delete('/users/me', function (Request $request, Response $response) {
+  $group->delete('', function (Request $request, Response $response) {
 
     $jwt = $request->getAttribute("jwt");
 

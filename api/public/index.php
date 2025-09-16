@@ -5,6 +5,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Selective\BasePath\BasePathMiddleware;
 use Slim\Factory\AppFactory;
+use Tuupola\Middleware\CorsMiddleware;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -19,6 +20,15 @@ $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 
 $app->add(new BasePathMiddleware($app));
+
+$app->add(new CorsMiddleware([
+  "origin" => [$_ENV['SITE_URL']],
+  "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  "headers.allow" => ["Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"],
+  "headers.expose" => [],
+  "credentials" => true,
+  "cache" => 0,
+]));
 
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
