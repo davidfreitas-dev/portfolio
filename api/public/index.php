@@ -27,7 +27,7 @@ $app->add(new CorsMiddleware([
   "headers.allow" => ["Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"],
   "headers.expose" => [],
   "credentials" => true,
-  "cache" => 0,
+  "cache" => 0
 ]));
 
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);

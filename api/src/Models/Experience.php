@@ -23,7 +23,7 @@ class Experience extends Model
 				":title"       => $this->getTitle(),
         ":description" => $this->getDescription(),
         ":start_date"  => $this->getStartDate(),
-        ":end_date"    => $this->getEndDate()
+        ":end_date"    => $this->getEndDate() ?? NULL
 			));
 
       $this->setId($experienceId);
@@ -114,7 +114,11 @@ class Experience extends Model
 
       if (empty($results)) {
           
-        throw new \Exception("Nenhuma experiência encontrada", HTTPStatus::NO_CONTENT);
+        return [
+          "experiences" => [],
+          "total" => 0,
+          "pages" => 0
+        ];
       
       }
 
@@ -136,11 +140,7 @@ class Experience extends Model
         
       throw new \Exception("Erro ao obter lista de experiências", HTTPStatus::INTERNAL_SERVER_ERROR);
       
-    } catch (\Exception $e) {
-        
-      throw new \Exception($e->getMessage(), $e->getCode());
-      
-    }    
+    }
 
   }
 
