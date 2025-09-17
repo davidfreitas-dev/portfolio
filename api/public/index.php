@@ -5,7 +5,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Selective\BasePath\BasePathMiddleware;
 use Slim\Factory\AppFactory;
-use Tuupola\Middleware\CorsMiddleware;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -21,7 +20,7 @@ $app->addRoutingMiddleware();
 
 $app->add(new BasePathMiddleware($app));
 
-$app->add(new CorsMiddleware([
+$app->add(new Tuupola\Middleware\CorsMiddleware([
   "origin" => [$_ENV['SITE_URL']],
   "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   "headers.allow" => ["Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"],
@@ -30,34 +29,25 @@ $app->add(new CorsMiddleware([
   "cache" => 0
 ]));
 
-$errorMiddleware = $app->addErrorMiddleware(true, true, true);
-
-$errorMiddleware->setDefaultErrorHandler(new ErrorHandler());
-
 $app->add(new Tuupola\Middleware\JwtAuthentication([
   "path" => "/",
-  "ignore" => [
-    "/images", 
-    "/auth/signin", 
-    "/auth/signup", 
-    "/auth/forgot", 
-    "/auth/verify", 
-    "/auth/reset",
-    "/auth/token",
-    "/($|/)"
-  ],
+  "ignore" => ["/($|/)", "/images", "/auth/signin", "/auth/signup", "/auth/forgot", "/auth/verify", "/auth/reset", "/auth/token"],
   "secure" => true,
   "relaxed" => ["localhost"],
   "secret" => $_ENV['JWT_SECRET_KEY'],
   "algorithm" => "HS256",
   "attribute" => "jwt",
   "error" => function ($response, $arguments) {
-    $data["status"] = "error";
+    $data["status"]  = "error";
     $data["message"] = $arguments["message"];
     $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     return $response->withHeader('content-type', 'application/json');
   }
 ]));
+
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+
+$errorMiddleware->setDefaultErrorHandler(new ErrorHandler());
 
 $app->get('/', function (Request $request, Response $response) {
   

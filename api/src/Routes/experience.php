@@ -95,7 +95,7 @@ $app->group('/experiences', function ($group) {
     $result = $experience->update();
 
     $responseBody = ApiResponseFormatter::formatResponse(
-      HTTPStatus::CREATED,
+      HTTPStatus::OK,
       "success",
       "Experiência atualizada com sucesso",
       $result

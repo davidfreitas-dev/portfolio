@@ -12,6 +12,8 @@ class Experience extends Model
   public function create()
   {
 
+    $this->verifiyDateInterval($this->getStartDate(), $this->getEndDate());
+
     $sql = "INSERT INTO experiences (title, description, start_date, end_date)
             VALUES (:title, :description, :start_date, :end_date)";
 
@@ -23,7 +25,7 @@ class Experience extends Model
 				":title"       => $this->getTitle(),
         ":description" => $this->getDescription(),
         ":start_date"  => $this->getStartDate(),
-        ":end_date"    => $this->getEndDate() ?? NULL
+        ":end_date"    => $this->getEndDate() ?: NULL
 			));
 
       $this->setId($experienceId);
@@ -41,6 +43,8 @@ class Experience extends Model
   public function update() 
 	{
 
+    $this->verifiyDateInterval($this->getStartDate(), $this->getEndDate());
+
     $sql = "UPDATE experiences
             SET title = :title, description = :description, start_date = :start_date, end_date = :end_date
             WHERE id = :id";
@@ -54,7 +58,7 @@ class Experience extends Model
         ":title"       => $this->getTitle(),
         ":description" => $this->getDescription(),
         ":start_date"  => $this->getStartDate(),
-        ":end_date"    => $this->getEndDate()
+        ":end_date"    => $this->getEndDate() ?: NULL
       ));
 
       return $this->getAttributes();
@@ -196,6 +200,29 @@ class Experience extends Model
         
       throw new \Exception("Erro ao excluir experiência", HTTPStatus::INTERNAL_SERVER_ERROR);
       
+    }
+
+  }
+
+  private function verifiyDateInterval(string $startDate, ?string $endDate): void
+  {
+    
+    try {
+        
+      $start = new \DateTime($startDate);
+        
+      $end = $endDate ? new \DateTime($endDate) : NULL;
+        
+    } catch (\Exception $e) {
+        
+      throw new \Exception("Formato de data inválido.", HTTPStatus::BAD_REQUEST);
+      
+    }
+
+    if ($end && $start > $end) {
+      
+      throw new \Exception("A data de início não pode ser maior que a data final.", HTTPStatus::BAD_REQUEST);
+    
     }
 
   }
