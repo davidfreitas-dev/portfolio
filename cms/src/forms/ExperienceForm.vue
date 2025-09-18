@@ -46,10 +46,17 @@ const rules = computed(() => ({
   title: { required, minLength: minLength(3) },
   description: { required },
   start_date: { required },
-  end_date: {} 
+  end_date: {}
 }));
 
-const v$ = useVuelidate(rules, formData);
+const state = computed(() => ({
+  title: formData.value.title,
+  description: formData.value.description,
+  start_date: formData.value.start_date,
+  end_date: formData.value.end_date
+}));
+
+const v$ = useVuelidate(rules, state);
 
 const submitForm = async () => {
   const isValid = await v$.value.$validate();

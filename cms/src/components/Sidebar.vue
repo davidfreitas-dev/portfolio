@@ -12,6 +12,7 @@ interface MenuItemData {
 const menuItems: MenuItemData[] = [
   { to: '/', icon: 'home', text: 'Início' },
   { to: '/experiences', icon: 'hub', text: 'Experiências' },
+  { to: '/technologies', icon: 'code', text: 'Tecnologias' },
   { to: '/settings', icon: 'settings', text: 'Configurações' }
 ];
 

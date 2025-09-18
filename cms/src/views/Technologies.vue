@@ -3,7 +3,7 @@ import { ref, computed, onMounted, type VNode, watch } from 'vue';
 import { debounce } from 'vue-debounce';
 import { useLoading } from '@/composables/useLoading';
 import { useToast } from '@/composables/useToast';
-import { useExperiencesStore } from '@/stores/experiencesStore';
+import { useTechnologiesStore } from '@/stores/technologiesStore';
 import Container from '@/components/Container.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
 import Icon from '@/components/Icon.vue';
@@ -11,12 +11,12 @@ import Button from '@/components/Button.vue';
 import InputSearch from '@/components/InputSearch.vue';
 import Table from '@/components/Table.vue';
 import Loader from '@/components/Loader.vue';
-import ExperienceForm, { type ExperienceFormData } from '@/forms/ExperienceForm.vue';
+import TechnologyForm, { type TechnologyFormData } from '@/forms/TechnologyForm.vue';
 import Modal, { type ModalExpose } from '@/components/Modal.vue';
 import Dialog from '@/components/Dialog.vue';
 import Pagination from '@/components/Pagination.vue';
 
-const experiencesStore = useExperiencesStore();
+const technologiesStore = useTechnologiesStore();
 const { showToast } = useToast();
 const { isLoading, withLoading } = useLoading();
 
@@ -25,105 +25,115 @@ const itemsPerPage = 5;
 const search = ref('');
 const normalizedSearch = computed(() => search.value.trim().toLowerCase());
 
-const loadExperiences = async () => {
+const loadTechnologies = async () => {
   await withLoading(() =>
-    experiencesStore.fetchExperiences(page.value, itemsPerPage, normalizedSearch.value)
+    technologiesStore.fetchTechnologies(page.value, itemsPerPage, normalizedSearch.value)
   );
 };
 
-const debouncedLoadExperiences = debounce(loadExperiences, '500ms');
+const debouncedLoadTechnologies = debounce(loadTechnologies, '500ms');
 
 watch(search, () => {
   page.value = 1;
-  debouncedLoadExperiences();
+  debouncedLoadTechnologies();
 });
 
 watch(page, () => {
-  loadExperiences();
+  loadTechnologies();
 });
 
 onMounted(() => {
-  loadExperiences();
+  loadTechnologies();
 });
 
-const experiences = computed(() => experiencesStore.experiences);
+const technologies = computed(() => technologiesStore.technologies);
 const tableHead = computed<(string | VNode)[]>(() => [
-  'Título',
-  'Descrição',
-  'Período',
+  'Imagem',
+  'Tecnologia',
   'Ações',
 ]);
 
 const isEditing = ref(false);
-const experienceModal = ref<ModalExpose | null>(null);
-const experienceBeingEdited = ref<ExperienceFormData | null>(null);
+const technologyModal = ref<ModalExpose | null>(null);
+const technologyBeingEdited = ref<TechnologyFormData | null>(null);
 
 const openCreateModal = () => {
   isEditing.value = false;
-  experienceBeingEdited.value = null;
-  experienceModal.value?.openModal();
+  technologyBeingEdited.value = null;
+  technologyModal.value?.openModal();
 };
 
-const openEditModal = (exp: ExperienceFormData) => {
+const openEditModal = (tech: TechnologyFormData) => {
   isEditing.value = true;
-  experienceBeingEdited.value = { ...exp };
-  experienceModal.value?.openModal();
+  technologyBeingEdited.value = { ...tech };
+  technologyModal.value?.openModal();
 };
 
-const handleSubmit = async (payload: ExperienceFormData) => {
+const handleSubmit = async (payload: TechnologyFormData) => {
   try {
-    if (isEditing.value && experienceBeingEdited.value?.id) {
-      await experiencesStore.updateExperience(experienceBeingEdited.value.id, payload);
-      showToast('success', 'Experiência atualizada com sucesso!');
-    } else {
-      await experiencesStore.createExperience(payload);
-      showToast('success', 'Experiência adicionada com sucesso!');
-    }
-    experienceModal.value?.closeModal();
-    await loadExperiences();
-  } catch(err) {
+    await technologiesStore.saveTechnology({
+      id: isEditing.value ? technologyBeingEdited.value?.id : undefined,
+      name: payload.name,
+      image: payload.image ?? undefined,
+    });
+
+    showToast(
+      'success',
+      isEditing.value
+        ? 'Tecnologia atualizada com sucesso!'
+        : 'Tecnologia adicionada com sucesso!'
+    );
+
+    technologyModal.value?.closeModal();
+    await loadTechnologies();
+  } catch (err) {
     console.error(err);
   }
 };
 
 const handleModalClose = () => {
   isEditing.value = false;
-  experienceBeingEdited.value = null;
+  technologyBeingEdited.value = null;
 };
 
 const dialogRef = ref<InstanceType<typeof Dialog> | null>(null);
-const experienceToDelete = ref<number | null>(null);
 
-const handleDeleteExperience = (id: number) => {
-  experienceToDelete.value = id;
+const technologyToDelete = ref<number | null>(null);
+
+const handleDeleteTechnology = (id: number) => {
+  technologyToDelete.value = id;
   dialogRef.value?.openModal();
 };
 
-const deleteExperience = async () => {
-  if (!experienceToDelete.value) return;
-  await experiencesStore.deleteExperience(experienceToDelete.value);
-  showToast('success', 'Experiência deletada com sucesso!');
-  await loadExperiences();
+const deleteTechnology = async () => {
+  if (!technologyToDelete.value) return;
+  await technologiesStore.deleteTechnology(technologyToDelete.value);
+  showToast('success', 'Tecnologia deletada com sucesso!');
+  await loadTechnologies();
 };
+
+const apiUrl = import.meta.env.VITE_API_URL;
+
+const getTechImage = (image: string) => `${apiUrl}/images/technologies/${image}`;
 </script>
 
 <template>
   <Container>
     <div class="header flex justify-between items-center flex-wrap gap-4">
-      <Breadcrumb title="Experiências" description="Gerencie suas experiências aqui." />
+      <Breadcrumb title="Tecnologias" description="Gerencie suas tecnologias aqui." />
       <div class="flex gap-2 ml-auto">
         <Button class="h-fit" @click="openCreateModal">
           <Icon name="add" class="md:mr-2" />
-          <span class="hidden md:block">Nova Experiência</span>
+          <span class="hidden md:block">Nova Tecnologia</span>
         </Button>
       </div>
     </div>
-    
+
     <div class="relative rounded-3xl border border-neutral dark:border-neutral-dark my-8">
       <div class="filters grid grid-cols-1 md:grid-cols-2 gap-4 w-full border-b border-neutral dark:border-neutral-dark p-5">
         <InputSearch
           v-model="search"
-          label="Buscar por título"
+          label="Buscar por nome"
           floating-label
         />
       </div>
@@ -136,31 +146,33 @@ const deleteExperience = async () => {
 
       <div class="rounded-2xl overflow-auto">
         <Table
-          v-if="!isLoading && experiences.length"
+          v-if="!isLoading && technologies.length"
           :headers="tableHead"
-          :items="experiences"
+          :items="technologies"
         >
-          <template #row="{ item: exp }">
-            <td class="px-6 py-4 max-w-[200px] truncate text-font dark:text-white">
-              {{ exp.title }}
+          <template #row="{ item: tech }">
+            <td class="px-6 py-4 w-[15%] max-w-[150px]">
+              <img
+                v-if="tech.image && typeof tech.image === 'string'"
+                :src="getTechImage(tech.image)"
+                alt="Technology logo"
+                class="w-10 h-10 object-contain rounded"
+              >
             </td>
-            <td class="px-6 py-4 max-w-[300px] truncate text-font dark:text-white">
-              {{ exp.description }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-font dark:text-white">
-              {{ $filters.formatPeriod([exp.start_date, exp.end_date]) }}
+            <td class="px-6 py-4 truncate text-font dark:text-white">
+              {{ tech.name }}
             </td>
             <td class="px-6 py-4 w-[5%] min-w-[50px]">
               <div class="flex item-center gap-3">
                 <button
                   class="p-2 h-10 w-10 bg-primary-accent dark:bg-primary-accent-dark text-primary dark:text-primary-dark rounded-full cursor-pointer"
-                  @click="openEditModal(exp)"
+                  @click="openEditModal(tech)"
                 >
                   <Icon name="edit" />
                 </button>
                 <button
                   class="p-2 h-10 w-10 bg-danger-accent dark:bg-danger-accent-dark text-danger dark:text-danger-dark rounded-full cursor-pointer"
-                  @click="handleDeleteExperience(exp.id!)"
+                  @click="handleDeleteTechnology(tech.id!)"
                 >
                   <Icon name="delete" />
                 </button>
@@ -171,38 +183,38 @@ const deleteExperience = async () => {
       </div>
 
       <div
-        v-if="!isLoading && !experiences.length"
+        v-if="!isLoading && !technologies.length"
         class="text-secondary dark:text-gray-400 text-center my-10"
       >
-        Nenhuma experiência encontrada.
+        Nenhuma tecnologia encontrada.
       </div>
     </div>
 
     <Pagination
-      v-if="!isLoading && experiences.length"
+      v-if="!isLoading && technologies.length"
       v-model="page"
-      :total-items="experiencesStore.totalItems"
+      :total-items="technologiesStore.totalItems"
       :items-per-page="itemsPerPage"
     />
-    
+
     <Modal
-      ref="experienceModal"
-      :title="isEditing ? 'Editar Experiência' : 'Nova Experiência'"
+      ref="technologyModal"
+      :title="isEditing ? 'Editar Tecnologia' : 'Nova Tecnologia'"
       @on-modal-close="handleModalClose"
     >
-      <ExperienceForm
+      <TechnologyForm
         :mode="isEditing ? 'edit' : 'create'"
-        :initial-data="experienceBeingEdited"
+        :initial-data="technologyBeingEdited"
         @submit="handleSubmit"
-        @cancel="experienceModal?.closeModal()"
+        @cancel="technologyModal?.closeModal()"
       />
     </Modal>
-    
+
     <Dialog
       ref="dialogRef"
-      header="Tem certeza que deseja deletar esta experiência?"
+      header="Tem certeza que deseja deletar esta tecnologia?"
       message="Se confirmada essa ação não poderá ser desfeita."
-      @confirm-action="deleteExperience"
+      @confirm-action="deleteTechnology"
     />
   </Container>
 </template>
