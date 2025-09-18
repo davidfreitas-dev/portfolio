@@ -210,19 +210,39 @@ class Technology extends Model
   }
 
   public static function delete($id) 
-	{
-
-    $sql = "DELETE FROM technologies WHERE id = :id";		
+	{	
 		
 		try {
 
-      self::get($id);
-
 			$db = new Database();
+
+      $result = $db->select(
+        "SELECT COUNT(*) AS total FROM technologies t
+        LEFT JOIN project_technologies pt ON t.id = pt.technology_id
+        WHERE t.id = :id",
+        array(
+          ":id" => $id
+        )
+      );
+
+      if (empty($result)) {
+          
+        throw new \Exception("Tecnologia não encontrada", HTTPStatus::NOT_FOUND);
+        
+      }
+
+      if ($result[0]['total'] > 0) {
+          
+        throw new \Exception("Não é possível excluir esta tecnologia pois está associada a projetos.", HTTPStatus::CONFLICT);
+        
+      }
 			
-			$db->query($sql, array(
-				":id" => $id
-			));
+			$db->query(
+        "DELETE FROM technologies WHERE id = :id", 
+        array(
+          ":id" => $id
+        )
+      );
 
       UploadHandler::deletePhoto($id, "technologies");
 			

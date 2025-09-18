@@ -68,6 +68,7 @@ const handleCancel = () => {
     <InputFile
       v-model="formData.image"
       label="Imagem"
+      image-path="technologies"
     />
 
     <Input

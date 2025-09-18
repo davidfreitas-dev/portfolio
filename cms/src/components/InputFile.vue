@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits, computed } from 'vue';
+import { ref, watch, computed, defineEmits } from 'vue';
 
-interface Props {
+interface InputFileProps {
   label?: string;
   modelValue?: File | string | null;
   previewSize?: string;
+  imagePath?: string;
 }
 
-const props = defineProps<Props>();
+const { label, modelValue, previewSize: previewSizeProp, imagePath } = defineProps<InputFileProps>();
 const emit = defineEmits<{
   (e: 'update:modelValue', value: File | string | null): void;
 }>();
@@ -23,14 +24,16 @@ const handleFileChange = (event: Event) => {
 };
 
 watch(
-  () => props.modelValue,
+  () => modelValue,
   (val) => {
     if (val instanceof File) {
       const reader = new FileReader();
       reader.onload = (e) => (preview.value = e.target?.result as string);
       reader.readAsDataURL(val);
     } else if (typeof val === 'string') {
-      preview.value = `${API_URL}/images/technologies/${val}`;
+      preview.value = imagePath
+        ? `${API_URL}/images/${imagePath}/${val}`
+        : `${API_URL}/images/${val}`;
     } else {
       preview.value = undefined;
     }
@@ -38,11 +41,11 @@ watch(
   { immediate: true }
 );
 
-const previewSize = computed(() => props.previewSize ?? 'h-44 w-44');
+const previewSize = computed(() => previewSizeProp ?? 'h-44 w-44');
 </script>
 
 <template>
-  <label class="font-semibold mb-1 block">{{ props.label }}</label>
+  <label class="text-font dark:text-font-dark font-semibold">{{ label }}</label>
 
   <div v-if="preview" :class="`${previewSize} mt-2`">
     <img
@@ -77,6 +80,6 @@ input[type=file]::file-selector-button {
 }
 
 input[type=file]::file-selector-button:hover {
-  background: #038de7;
+  background: #01c38d;
 }
 </style>

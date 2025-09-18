@@ -46,12 +46,12 @@ const goToPage = (page: number) => {
 
 <template>
   <div v-if="totalItems" class="flex flex-col md:flex-row items-center justify-between h-16 my-5 md:m-0">
-    <span class="text-sm text-gray-400">
+    <span class="text-sm text-secondary dark:text-secondary-dark">
       Exibindo {{ itemRange }} de {{ totalItems }} itens
     </span>
 
     <nav>
-      <ul class="flex items-center gap-1.5 md:gap-3 text-sm text-gray-400">
+      <ul class="flex items-center gap-1.5 md:gap-3 text-sm text-secondary dark:text-secondary-dark">
         <li>
           <a
             class="bg-white dark:bg-background-dark hover:bg-primary-hover hover:text-white border border-neutral dark:border-neutral-dark hover:border-primary transition-colors rounded-md md:rounded-lg cursor-pointer select-none py-1 px-2.5 md:py-2.5 md:px-4"

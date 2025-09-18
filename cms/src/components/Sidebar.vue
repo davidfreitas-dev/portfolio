@@ -13,6 +13,7 @@ const menuItems: MenuItemData[] = [
   { to: '/', icon: 'home', text: 'Início' },
   { to: '/experiences', icon: 'hub', text: 'Experiências' },
   { to: '/technologies', icon: 'code', text: 'Tecnologias' },
+  { to: '/projects', icon: 'handyman', text: 'Projetos' },
   { to: '/settings', icon: 'settings', text: 'Configurações' }
 ];
 

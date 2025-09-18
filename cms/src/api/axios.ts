@@ -25,12 +25,16 @@ instance.interceptors.request.use(
 );
 
 instance.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response.data;
-  },
+  (response: AxiosResponse) => response.data,
   (error) => {
-    console.error('Erro na resposta da API:', error);
-    return Promise.reject(error.response);
+    const authStore = useAuthStore();
+
+    if (error?.status === 401 || error?.response?.status === 401) {
+      authStore.logOut();
+      window.location.href = '/login';
+    }
+
+    return Promise.reject(error);
   }
 );
 

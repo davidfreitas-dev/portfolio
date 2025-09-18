@@ -3,49 +3,49 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #038de7;
-  --color-primary-hover: #1a9ef0;
-  --color-primary-focus: #027acc;
-  --color-primary-pressed: #026bb3;
-  --color-primary-accent: #e7ecf8;
+  --color-primary: #02d49f;
+  --color-primary-hover: #33d9b1;
+  --color-primary-focus: #019f87;
+  --color-primary-pressed: #017a68;
+  --color-primary-accent: #e0f7f3;
 
-  --color-success: #50a97b;
-  --color-success-hover: #64bb8d;
-  --color-success-focus: #449b6e;
-  --color-success-pressed: #357c59;
-  --color-success-accent: #e5f2ec;
+  --color-success: #5fc79f;
+  --color-success-hover: #82d3b5;
+  --color-success-focus: #45aa73;
+  --color-success-pressed: #378e5f;
+  --color-success-accent: #e6f9f1;
 
-  --color-warning: #e5b44a;
-  --color-warning-hover: #edc060;
-  --color-warning-focus: #d8a93a;
-  --color-warning-pressed: #b78b26;
-  --color-warning-accent: #fdf5e6;
+  --color-warning: #f3d486;
+  --color-warning-hover: #f6dd9e;
+  --color-warning-focus: #d9a840;
+  --color-warning-pressed: #b78b2f;
+  --color-warning-accent: #fef7ec;
 
-  --color-danger: #d35c5c;
-  --color-danger-hover: #df7373;
-  --color-danger-focus: #c54f4f;
-  --color-danger-pressed: #a73e3e;
-  --color-danger-accent: #f9eaea;
+  --color-danger: #eb7a7a;
+  --color-danger-hover: #f08e8e;
+  --color-danger-focus: #c14f4f;
+  --color-danger-pressed: #9e3f3f;
+  --color-danger-accent: #fdeaea;
 
   --color-font: #3c3c3c;
-  --color-secondary: #777777;
-  --color-disabled: #bbbbbb;
-  --color-neutral: #eaeaea;
-  --color-accent: #f1f1f1;
+  --color-secondary: #666666;
+  --color-disabled: #cccccc;
+  --color-neutral: #f2f2f2;
+  --color-accent: #fafafa;
   --color-background: #ffffff;
 
-  --color-primary-dark: #4285f4;
-  --color-primary-hover-dark: #5a9dfc;
-  --color-primary-focus-dark: #3a76d4;
-  --color-primary-pressed-dark: #2f64b5;
-  --color-primary-accent-dark: #2a3244;
+  --color-primary-dark: #01c38d;
+  --color-primary-hover-dark: #33d9a5;
+  --color-primary-focus-dark: #00aa76;
+  --color-primary-pressed-dark: #008f63;
+  --color-primary-accent-dark: #20332e;
 
   --color-success-dark: #4caf75;
   --color-success-hover-dark: #5fbe88;
   --color-success-focus-dark: #3c8f66;
   --color-success-pressed-dark: #2f6e4f;
   --color-success-accent-dark: #22342A;
- 
+
   --color-warning-dark: #F4B740;
   --color-warning-hover-dark: #f7c960;
   --color-warning-focus-dark: #e2a832;
