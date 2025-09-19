@@ -144,7 +144,11 @@ class Technology extends Model
 
       if (empty($results)) {
           
-        throw new \Exception("Nenhuma tecnologia encontrada", HTTPStatus::NO_CONTENT);
+        return [
+          "technologies" => [],
+          "total" => 0,
+          "pages" => 0
+        ];
         
       }
 

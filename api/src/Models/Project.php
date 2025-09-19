@@ -160,7 +160,11 @@ class Project extends Model
 
       if (empty($results)) {
         
-        throw new \Exception("Nenhum projeto encontrado", HTTPStatus::NO_CONTENT);
+        return [
+          "projects" => [],
+          "total" => 0,
+          "pages" => 0
+        ];
         
       }
 
