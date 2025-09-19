@@ -33,8 +33,6 @@ const submitForm = async () => {
 
   showToast('success', 'Enviamos um link de recuperação para o seu e-mail');
 };
-
-const logoPath = new URL('@/assets/logo.png', import.meta.url).href;
 </script>
 
 <template>
@@ -42,13 +40,8 @@ const logoPath = new URL('@/assets/logo.png', import.meta.url).href;
     <div class="md:bg-background dark:md:bg-accent-dark md:shadow-lg md:rounded-xl md:px-8 px-4 py-4 w-full max-w-lg">
       <div class="flex flex-col items-center my-3">
         <div class="flex items-center">
-          <img
-            :src="logoPath"
-            alt="Logo Time Freela"
-            class="h-12"
-          >
           <h3 class="text-font dark:text-font-dark text-4xl font-extrabold">
-            Time<span class="text-primary ml-0.5">Freela</span>
+            Dave<span class="text-primary ml-0.5">Dev</span>
           </h3>
         </div>
         <span class="font-sans text-sm text-secondary mt-1">
@@ -61,7 +54,7 @@ const logoPath = new URL('@/assets/logo.png', import.meta.url).href;
           v-model="formData.email"
           type="email"
           label="Endereço de e-mail"
-          placeholder="joaodasilva@email.com"
+          placeholder="exemplo@email.com"
           :error="v$.email.$dirty && v$.email.$error ? 'Informe um endereço de e-mail válido' : ''"
           @blur="v$.email.$touch"
         />

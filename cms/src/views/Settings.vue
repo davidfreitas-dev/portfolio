@@ -165,7 +165,7 @@ const isDark = useDark({
             v-model="formData.email"
             type="email"
             label="Endereço de e-mail"
-            placeholder="joaodasilva@email.com"
+            placeholder="exemplo@email.com"
             :error="v$.email.$dirty && v$.email.$error ? 'Informe um endereço de e-mail válido' : ''"
             @blur="v$.email.$touch"
           />
