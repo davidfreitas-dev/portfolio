@@ -217,19 +217,11 @@ class Technology extends Model
 			$db = new Database();
 
       $result = $db->select(
-        "SELECT COUNT(*) AS total FROM technologies t
-        LEFT JOIN project_technologies pt ON t.id = pt.technology_id
-        WHERE t.id = :id",
+        "SELECT COUNT(*) AS total FROM project_technologies WHERE technology_id = :id",
         array(
           ":id" => $id
         )
       );
-
-      if (empty($result)) {
-          
-        throw new \Exception("Tecnologia não encontrada", HTTPStatus::NOT_FOUND);
-        
-      }
 
       if ($result[0]['total'] > 0) {
           

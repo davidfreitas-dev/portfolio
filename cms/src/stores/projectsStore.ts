@@ -3,14 +3,20 @@ import { ref, type Ref } from 'vue';
 import { useLoading } from '@/composables/useLoading';
 import axios from '@/api/axios';
 
+export interface Technology {
+  id: number;
+  name: string;
+  image: string;
+}
+
 export interface Project {
   id?: number;
   title: string;
   description: string;
   link?: string;
-  image?: File | string; // string = URL já existente, File = upload novo
+  image?: File | string;
   is_active?: number;
-  technologies: number[]; // lista de IDs de tecnologias relacionadas
+  technologies: Technology[];
 }
 
 export const useProjectsStore = defineStore('projects', () => {
@@ -22,7 +28,7 @@ export const useProjectsStore = defineStore('projects', () => {
 
   const fetchProjects = async (page = 1, limit = 10, search = '') => {
     await withLoading(async () => {
-      const response = await axios.get('/projects', {
+      const response = await axios.get<{ projects: Project[]; total: number; pages: number }>('/projects', {
         params: { page, limit, search }
       });
       projects.value = response.data.projects;
@@ -48,7 +54,7 @@ export const useProjectsStore = defineStore('projects', () => {
       if (payload.link) formData.append('link', payload.link);
       if (payload.image instanceof File) formData.append('image', payload.image);
       if (payload.is_active !== undefined) formData.append('is_active', String(payload.is_active));
-      formData.append('technologies', payload.technologies.join(','));
+      formData.append('technologies', payload.technologies.map(t => t.id).join(','));
 
       await axios.post('/projects', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }

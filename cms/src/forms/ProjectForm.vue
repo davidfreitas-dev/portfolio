@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
-import { required, minLength } from '@vuelidate/validators';
+import { required, minLength, url } from '@vuelidate/validators';
 import Input from '@/components/Input.vue';
 import Button from '@/components/Button.vue';
 import InputFile from '@/components/InputFile.vue';
 import Textarea from '@/components/Textarea.vue';
 import Select from '@/components/Select.vue';
+import MultiSelect from '@/components/MultiSelect.vue';
+
+export interface Technology {
+  id: number;
+  name: string;
+  image: string;
+}
 
 export interface ProjectFormData {
   id?: number;
@@ -15,7 +22,7 @@ export interface ProjectFormData {
   link?: string;
   image?: File | string | null;
   is_active?: number;
-  technologies: number[];
+  technologies: Technology[];
 }
 
 const props = defineProps<{
@@ -41,6 +48,7 @@ const emptyForm: ProjectFormData = {
 
 const formData = ref<ProjectFormData>({ ...emptyForm });
 
+// Inicializa o formulário com dados existentes (edição)
 watch(
   () => props.initialData,
   (newVal) => {
@@ -49,13 +57,14 @@ watch(
   { immediate: true }
 );
 
+// Validações
 const rules = computed(() => ({
   title: { required, minLength: minLength(3) },
   description: { required, minLength: minLength(5) },
-  link: {},
-  image: {},
-  is_active: {},
-  technologies: {}
+  link: { url },
+  technologies: { required },
+  is_active: { required },
+  image: {}
 }));
 
 const state = computed(() => ({
@@ -69,34 +78,38 @@ const state = computed(() => ({
 
 const v$ = useVuelidate(rules, state);
 
-const selectedStatus = ref<{ label: string; value: number } | null>(
+// Status do projeto
+const selectedStatus = ref<{ label: string; value: number }>(
   formData.value.is_active !== undefined
-    ? { label: formData.value.is_active ? 'Ativo' : 'Inativo', value: formData.value.is_active ? 1 : 0 }
-    : null
+    ? { label: formData.value.is_active ? 'Ativo' : 'Inativo', value: formData.value.is_active }
+    : { label: 'Inativo', value: 0 }
 );
 
 watch(selectedStatus, (newVal) => {
-  formData.value.is_active = newVal?.value ?? 0;
+  formData.value.is_active = newVal.value;
 });
 
 watch(
   () => formData.value.is_active,
   (newVal) => {
     selectedStatus.value = newVal !== undefined
-      ? { label: newVal ? 'Ativo' : 'Inativo', value: newVal ? 1 : 0 }
-      : null;
+      ? { label: newVal ? 'Ativo' : 'Inativo', value: newVal }
+      : { label: 'Inativo', value: 0 };
   }
 );
 
+// Submissão do formulário
 const submitForm = async () => {
   const isValid = await v$.value.$validate();
   if (!isValid) return;
   emit('submit', formData.value);
 };
 
+// Cancelar e resetar
 const handleCancel = () => {
   emit('cancel');
   formData.value = { ...emptyForm };
+  selectedStatus.value = { label: 'Ativo', value: 1 };
   v$.value.$reset();
 };
 </script>
@@ -129,6 +142,14 @@ const handleCancel = () => {
       v-model="formData.link"
       label="Link do Projeto"
       placeholder="https://meuprojeto.com"
+      :error="v$.link.$dirty && v$.link.$error ? 'Informe um link válido' : ''"
+      @blur="v$.link.$touch"
+    />
+
+    <MultiSelect
+      v-model="formData.technologies"
+      :options="technologiesOptions"
+      label="Tecnologias"
     />
 
     <Select
