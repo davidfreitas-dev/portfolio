@@ -118,7 +118,7 @@ onBeforeUnmount(() => {
         v-for="(option, index) in formattedOptions"
         :key="option.id"
         class="flex items-center gap-2 p-4 text-secondary dark:text-secondary-dark"
-        :class="{'border-b border-neutral dark:border-neutral-dark': index !== formattedOptions.length - 1, 'bg-gray-50': isOptionSelected(option)}"
+        :class="{'border-b border-neutral dark:border-neutral-dark': index !== formattedOptions.length - 1, 'bg-background dark:bg-background-dark': isOptionSelected(option)}"
         @click="selectOption(option)"
       >
         <span class="material-icons text-primary">

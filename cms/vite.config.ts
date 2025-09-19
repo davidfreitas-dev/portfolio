@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // Alias sem usar path ou __dirname
 export default defineConfig({
-  base: '/',
+  base: '/cms/',
   plugins: [
     vue(),
     tailwindcss()
