@@ -10,63 +10,49 @@ class UploadHandler
   public static function uploadPhoto($id, $file, $directory)
 	{
 
-		if (isset($file['name'])) {
+		if (!isset($file['name'])) {
 
-      $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+      return false;
       
-      $image = null;
-
-      switch ($extension) {
-
-        case "jpg":
-        case "jpeg":
-        $image = imagecreatefromjpeg($file["tmp_name"]);
-        break;
-  
-        case "gif":
-        $image = imagecreatefromgif($file["tmp_name"]);
-        break;
-  
-        case "png":
-        $image = imagecreatefrompng($file["tmp_name"]);
-        break;
-
-        default:
-        throw new \Exception("Extensão de arquivo inválida: $extension. São permitidas apenas as extensões: jpg, jpeg, png e gif", HTTPStatus::BAD_REQUEST);
-  
-      }
-
-      if (!$image) {
-
-        throw new \Exception("Não foi possível criar a imagem.", HTTPStatus::INTERNAL_SERVER_ERROR);
-      
-      }
-
-      $dist = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . $directory;
-
-      if (!is_dir($dist) && !mkdir($dist, 0777, true)) {
-        
-        throw new \Exception("Falha ao criar o diretório: $dist", HTTPStatus::INTERNAL_SERVER_ERROR);
-    
-      }
-
-      self::deletePhoto($id, $directory);
-
-      $timestamp = date('YmdHis');
-
-      $imageName = $directory . "_" . $timestamp . $id;
-
-      $dist = $dist . DIRECTORY_SEPARATOR . $imageName . ".jpg";
-
-      imagejpeg($image, $dist);
-
-      imagedestroy($image);
-
-      return $imageName;
-
     }
 
-    return false;
+    $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    self::validateExtension($extension);
+    
+    self::validateSize($file['size']);
+    
+    self::validateResolution($file['tmp_name']);
+    
+    $image = self::createImage($file["tmp_name"], $extension);
+
+    if (!$image) {
+
+      throw new \Exception("Não foi possível criar a imagem.", HTTPStatus::INTERNAL_SERVER_ERROR);
+    
+    }
+
+    $dist = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . $directory;
+
+    if (!is_dir($dist) && !mkdir($dist, 0777, true)) {
+      
+      throw new \Exception("Falha ao criar o diretório: $dist", HTTPStatus::INTERNAL_SERVER_ERROR);
+  
+    }
+
+    self::deletePhoto($id, $directory);
+
+    $timestamp = date('YmdHis');
+    
+    $imageName = $directory . "_" . $timestamp . $id;
+    
+    $fullPath = $dist . DIRECTORY_SEPARATOR . $imageName . ".jpg";
+
+    imagejpeg($image, $fullPath, 85);
+
+    imagedestroy($image);
+
+    return $imageName;
 
 	}
 
@@ -116,6 +102,69 @@ class UploadHandler
 
     return null; 
 
+  }
+
+  private static function validateExtension($extension)
+  {
+    
+    $allowed = ['jpg', 'jpeg', 'png'];
+    
+    if (!in_array($extension, $allowed)) {
+      
+      throw new \Exception("Extensão inválida: $extension. Permitido apenas jpg, jpeg e png", HTTPStatus::BAD_REQUEST);
+      
+    }
+
+  }
+
+  private static function validateSize($size)
+  {
+    
+    $maxSizeMB = 5;
+    
+    if ($size > $maxSizeMB * 1024 * 1024) {
+        
+      throw new \Exception("Arquivo muito grande. Máximo permitido: {$maxSizeMB}MB", HTTPStatus::BAD_REQUEST);
+      
+    }
+
+  }
+
+  private static function validateResolution($tmpFile)
+  {
+    
+    list($width, $height) = getimagesize($tmpFile);
+    
+    $max = 800;
+    $min = 200;
+
+    if ($width > $max || $height > $max) {
+        
+      throw new \Exception("Resolução muito grande. Máximo permitido: {$max}x{$max}px", HTTPStatus::BAD_REQUEST);
+      
+    }
+
+    if ($width < $min || $height < $min) {
+        
+      throw new \Exception("Resolução muito pequena. Mínimo permitido: {$min}x{$min}px", HTTPStatus::BAD_REQUEST);
+      
+    }
+
+  }
+
+  private static function createImage($tmpFile, $extension)
+  {
+    
+    switch ($extension) {
+      case 'jpg':
+      case 'jpeg':
+        return imagecreatefromjpeg($tmpFile);
+      case 'png':
+        return imagecreatefrompng($tmpFile);
+      default:
+        throw new \Exception("Erro ao criar a imagem.", HTTPStatus::BAD_REQUEST);
+    }
+    
   }
 
 }

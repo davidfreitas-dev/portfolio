@@ -156,7 +156,7 @@ const getTechImage = (image: string) => `${apiUrl}/images/technologies/${image}`
                 v-if="tech.image && typeof tech.image === 'string'"
                 :src="getTechImage(tech.image)"
                 alt="Technology logo"
-                class="w-10 h-10 object-contain rounded"
+                class="w-10 h-10 object-cover rounded"
               >
             </td>
             <td class="px-6 py-4 truncate text-font dark:text-white">

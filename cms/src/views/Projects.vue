@@ -177,7 +177,7 @@ const getProjectImage = (image: string) => `${apiUrl}/images/projects/${image}`;
                 v-if="proj.image && typeof proj.image === 'string'"
                 :src="getProjectImage(proj.image)"
                 alt="Project cover"
-                class="w-14 h-14 object-cover rounded-lg"
+                class="w-10 h-10 object-cover rounded-lg"
               >
             </td>
             <td class="px-6 py-4 truncate text-font dark:text-white">
