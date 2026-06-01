@@ -1,4 +1,25 @@
+# Git
+.git
 .gitignore
-.env.example
-/vendor
-README.md
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Environment files - NEVER commit or include .env in the image
+.env
+
+# Dependencies - Install them in the Dockerfile
+vendor/
+node_modules/
+
+# OS-specific
+.DS_Store
+
+# IDE configuration
+.idea/
+.vscode/
+
+# Logs and temporary files
+*.log
