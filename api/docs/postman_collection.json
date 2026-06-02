@@ -401,7 +401,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/experiences?page=1&limit=10",
+              "raw": "{{baseUrl}}/experiences?page=1&limit=10&search=",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -416,6 +416,10 @@
                 {
                   "key": "limit",
                   "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
                 }
               ]
             }
@@ -542,7 +546,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/projects?page=1&limit=10",
+              "raw": "{{baseUrl}}/projects?page=1&limit=10&search=",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -557,6 +561,10 @@
                 {
                   "key": "limit",
                   "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
                 }
               ]
             }
@@ -609,8 +617,38 @@
                   "type": "text"
                 },
                 {
+                  "key": "slug",
+                  "value": "novo-projeto",
+                  "type": "text"
+                },
+                {
+                  "key": "summary",
+                  "value": "Resumo do projeto",
+                  "type": "text"
+                },
+                {
                   "key": "description",
                   "value": "Descrição do projeto",
+                  "type": "text"
+                },
+                {
+                  "key": "link",
+                  "value": "https://example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "github_link",
+                  "value": "https://github.com/user/repo",
+                  "type": "text"
+                },
+                {
+                  "key": "sort_order",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "is_active",
+                  "value": "1",
                   "type": "text"
                 },
                 {
@@ -679,7 +717,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/technologies?page=1&limit=10",
+              "raw": "{{baseUrl}}/technologies?page=1&limit=10&search=",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -694,6 +732,10 @@
                 {
                   "key": "limit",
                   "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
                 }
               ]
             }
@@ -743,6 +785,16 @@
                 {
                   "key": "name",
                   "value": "Nova Tecnologia",
+                  "type": "text"
+                },
+                {
+                  "key": "slug",
+                  "value": "nova-tecnologia",
+                  "type": "text"
+                },
+                {
+                  "key": "sort_order",
+                  "value": "0",
                   "type": "text"
                 },
                 {

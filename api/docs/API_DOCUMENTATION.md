@@ -172,6 +172,11 @@ Requer permissões apropriadas (pública para listagem, admin para gestão).
 GET /experiences?page=1&limit=10&search=
 ```
 
+**Query Parameters:**
+- `page`: int (opcional, padrão: 1)
+- `limit`: int (opcional, padrão: 10)
+- `search`: string (opcional)
+
 #### Obter detalhes da Experiência
 ```http
 GET /experiences/{id}
@@ -189,10 +194,9 @@ POST /experiences
   "description": "Descrição das atividades",
   "start_date": "2023-01-01",
   "end_date": "2023-12-31",
-  "sort_order": 1
+  "sort_order": 0
 }
 ```
-
 #### Atualizar Experiência (Admin)
 ```http
 PUT /experiences/{id}
@@ -205,10 +209,9 @@ PUT /experiences/{id}
   "description": "Descrição atualizada",
   "start_date": "2023-01-01",
   "end_date": null,
-  "sort_order": 1
+  "sort_order": 0
 }
 ```
-
 #### Deletar Experiência (Admin)
 ```http
 DELETE /experiences/{id}
@@ -225,6 +228,11 @@ Requer permissões apropriadas (pública para listagem, admin para gestão).
 ```http
 GET /projects?page=1&limit=10&search=
 ```
+
+**Query Parameters:**
+- `page`: int (opcional, padrão: 1)
+- `limit`: int (opcional, padrão: 10)
+- `search`: string (opcional)
 
 #### Obter detalhes do Projeto
 ```http
@@ -245,8 +253,8 @@ POST /projects
 - `summary`: string (opcional)
 - `link`: string (opcional)
 - `github_link`: string (opcional)
-- `sort_order`: int (opcional)
-- `is_active`: bool (opcional)
+- `sort_order`: int (opcional, padrão: 0)
+- `is_active`: bool (opcional, padrão: true)
 - `image`: file (opcional)
 - `technology_ids[]`: array of int (opcional) - Ex: `technology_ids[0]=1&technology_ids[1]=2`
 
@@ -267,6 +275,11 @@ Requer permissões apropriadas (pública para listagem, admin para gestão).
 GET /technologies?page=1&limit=10&search=
 ```
 
+**Query Parameters:**
+- `page`: int (opcional, padrão: 1)
+- `limit`: int (opcional, padrão: 10)
+- `search`: string (opcional)
+
 #### Obter detalhes da Tecnologia
 ```http
 GET /technologies/{id}
@@ -282,7 +295,7 @@ POST /technologies
 - `id`: int (opcional - enviar apenas para atualizar)
 - `name`: string (obrigatório)
 - `slug`: string (opcional)
-- `sort_order`: int (opcional)
+- `sort_order`: int (opcional, padrão: 0)
 - `image`: file (opcional)
 
 #### Deletar Tecnologia (Admin)
