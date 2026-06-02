@@ -231,12 +231,14 @@ GET /projects?page=1&limit=10&search=
 GET /projects/{id}
 ```
 
-#### Criar Projeto (Admin)
+#### Salvar Projeto (Criar/Atualizar) (Admin)
+Utilize esta rota para criar ou atualizar um projeto. Se o campo `id` for enviado no corpo da requisição, o projeto será atualizado. Esta rota utiliza `multipart/form-data` para suportar upload de imagens.
 ```http
 POST /projects
 ```
 
 **Body (Multipart/form-data):**
+- `id`: int (opcional - enviar apenas para atualizar)
 - `title`: string (obrigatório)
 - `description`: string (obrigatório)
 - `slug`: string (opcional)
@@ -246,15 +248,7 @@ POST /projects
 - `sort_order`: int (opcional)
 - `is_active`: bool (opcional)
 - `image`: file (opcional)
-
-#### Atualizar Projeto (Admin)
-```http
-PUT /projects/{id}
-```
-
-**Body (Multipart/form-data ou x-www-form-urlencoded):**
-- Mesmos campos do **Criar Projeto**.
-- Nota: Para manter a imagem atual, não envie o campo `image`.
+- `technology_ids[]`: array of int (opcional) - Ex: `technology_ids[0]=1&technology_ids[1]=2`
 
 #### Deletar Projeto (Admin)
 ```http
@@ -278,24 +272,18 @@ GET /technologies?page=1&limit=10&search=
 GET /technologies/{id}
 ```
 
-#### Criar Tecnologia (Admin)
+#### Salvar Tecnologia (Criar/Atualizar) (Admin)
+Utilize esta rota para criar ou atualizar uma tecnologia. Se o campo `id` for enviado no corpo da requisição, a tecnologia será atualizada. Esta rota utiliza `multipart/form-data` para suportar upload de imagens.
 ```http
 POST /technologies
 ```
 
 **Body (Multipart/form-data):**
+- `id`: int (opcional - enviar apenas para atualizar)
 - `name`: string (obrigatório)
 - `slug`: string (opcional)
 - `sort_order`: int (opcional)
 - `image`: file (opcional)
-
-#### Atualizar Tecnologia (Admin)
-```http
-PUT /technologies/{id}
-```
-
-**Body (Multipart/form-data ou x-www-form-urlencoded):**
-Mesmos campos do POST.
 
 #### Deletar Tecnologia (Admin)
 ```http

@@ -50,11 +50,11 @@ class JwtAuthMiddleware implements MiddlewareInterface
         try {
             $decoded = $this->jwtService->decodeToken($token);
             $request = $request->withAttribute('jwt', $decoded);
-
-            return $handler->handle($request);
         } catch (\Exception $e) {
             return $this->unauthorized('Token inválido ou expirado: ' . $e->getMessage());
         }
+
+        return $handler->handle($request);
     }
 
     private function unauthorized(string $message): Response

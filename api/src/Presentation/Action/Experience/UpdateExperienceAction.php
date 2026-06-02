@@ -7,6 +7,7 @@ namespace App\Presentation\Action\Experience;
 use App\Application\DTO\Experience\ExperienceRequestDTO;
 use App\Application\Service\ExperienceService;
 use App\Presentation\Responder\JsonResponder;
+use App\Shared\Enum\HttpStatus as HTTPStatus;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -33,6 +34,6 @@ class UpdateExperienceAction
 
         $experience = $this->experienceService->updateExperience($id, $dto);
 
-        return $this->responder->success($response, 'Experiência atualizada com sucesso.', $experience);
+        return $this->responder->success($response, 'Experiência atualizada com sucesso.', $experience, HTTPStatus::OK);
     }
 }

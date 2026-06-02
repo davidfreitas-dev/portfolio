@@ -75,6 +75,7 @@ $containerBuilder->addDefinitions([
     ProjectService::class => fn (ContainerInterface $c) => new ProjectService(
         $c->get(ProjectRepositoryInterface::class),
         $c->get(ValidatorInterface::class),
+        $c->get(FileUploaderService::class),
     ),
 
     ExperienceRepositoryInterface::class => fn (ContainerInterface $c) => new ExperienceRepository($c->get(Database::class)),

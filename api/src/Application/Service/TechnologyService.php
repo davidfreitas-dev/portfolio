@@ -47,7 +47,7 @@ class TechnologyService
 
         $imageName = null;
         if ($dto->image) {
-            $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'technologies';
+            $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'technologies';
             $imageName = $this->fileUploader->upload($dto->image, $uploadPath, 'tech');
         }
 
@@ -72,7 +72,7 @@ class TechnologyService
 
         $imageName = $existingTechnology->image;
         if ($dto->image) {
-            $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'technologies';
+            $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'technologies';
 
             // Delete old image
             if ($imageName) {
@@ -103,7 +103,7 @@ class TechnologyService
 
         // Optional: delete image from disk
         if ($existingTechnology->image) {
-            $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'technologies';
+            $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'technologies';
             $this->fileUploader->delete($existingTechnology->image, $uploadPath);
         }
 

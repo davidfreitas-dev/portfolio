@@ -47,7 +47,7 @@ class FileUploaderService
         }
 
         // 3. Validate MIME type (Server-side check)
-        $tempFile = 	empnam(\sys_get_temp_dir(), 'upload_');
+        $tempFile = \tempnam(\sys_get_temp_dir(), 'upload_');
         $file->getStream()->rewind();
         \file_put_contents($tempFile, $file->getStream()->getContents());
 
@@ -63,9 +63,9 @@ class FileUploaderService
         $filename = \sprintf(
             '%s%s-%s.%s',
             $prefix !== '' && $prefix !== '0' ? $prefix . '-' : '',
-            ime(),
+            \time(),
             \bin2hex(
-                andom_bytes(8),
+                \random_bytes(8),
             ),
             $extension,
         );

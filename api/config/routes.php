@@ -17,16 +17,14 @@ use App\Presentation\Action\Experience\DeleteExperienceAction;
 use App\Presentation\Action\Experience\GetExperienceAction;
 use App\Presentation\Action\Experience\ListExperiencesAction;
 use App\Presentation\Action\Experience\UpdateExperienceAction;
-use App\Presentation\Action\Project\CreateProjectAction;
 use App\Presentation\Action\Project\DeleteProjectAction;
 use App\Presentation\Action\Project\GetProjectAction;
 use App\Presentation\Action\Project\ListProjectsAction;
-use App\Presentation\Action\Project\UpdateProjectAction;
-use App\Presentation\Action\Technology\CreateTechnologyAction;
+use App\Presentation\Action\Project\SaveProjectAction;
 use App\Presentation\Action\Technology\DeleteTechnologyAction;
 use App\Presentation\Action\Technology\GetTechnologyAction;
 use App\Presentation\Action\Technology\ListTechnologiesAction;
-use App\Presentation\Action\Technology\UpdateTechnologyAction;
+use App\Presentation\Action\Technology\SaveTechnologyAction;
 use App\Presentation\Action\User\ChangePasswordAction;
 use App\Presentation\Action\User\DeleteMeAction;
 use App\Presentation\Action\User\GetMeAction;
@@ -35,6 +33,8 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
+
+use App\Presentation\Action\Image\GetImageAction;
 
 return function (App $app): void {
     /**
@@ -95,8 +95,7 @@ return function (App $app): void {
     $app->group('/projects', function (RouteCollectorProxy $group): void {
         $group->get('', ListProjectsAction::class);
         $group->get('/{id}', GetProjectAction::class);
-        $group->post('', CreateProjectAction::class);
-        $group->put('/{id}', UpdateProjectAction::class);
+        $group->post('', SaveProjectAction::class);
         $group->delete('/{id}', DeleteProjectAction::class);
     })->add(new RoleMiddleware(['public', 'user', 'editor', 'admin']));
 
@@ -107,25 +106,12 @@ return function (App $app): void {
     $app->group('/technologies', function (RouteCollectorProxy $group): void {
         $group->get('', ListTechnologiesAction::class);
         $group->get('/{id}', GetTechnologyAction::class);
-        $group->post('', CreateTechnologyAction::class)->add(new RoleMiddleware('admin'));
-        $group->put('/{id}', UpdateTechnologyAction::class)->add(new RoleMiddleware('admin'));
+        $group->post('', SaveTechnologyAction::class)->add(new RoleMiddleware('admin'));
         $group->delete('/{id}', DeleteTechnologyAction::class)->add(new RoleMiddleware('admin'));
     })->add(new RoleMiddleware(['public', 'user', 'editor', 'admin']));
 
     /**
      * Image Routes
      */
-    $app->get('/images/{folder}/{image}', function (Request $request, Response $response, array $args) {
-        $imageDirectoryPath = __DIR__ . '/../storage/';
-        $defaultImage = 'no-image.png';
-        $imagePath = $imageDirectoryPath . $args['folder'] . '/' . $args['image'];
-
-        if (!file_exists($imagePath)) {
-            $imagePath = $imageDirectoryPath . $defaultImage;
-        }
-
-        $image = file_get_contents($imagePath);
-        $response->getBody()->write($image);
-        return $response->withHeader('Content-Type', 'image/jpeg');
-    });
+    $app->get('/images/{folder}/{image}', GetImageAction::class);
 };

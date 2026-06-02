@@ -585,7 +585,7 @@
           }
         },
         {
-          "name": "Create Project",
+          "name": "Save Project (Create/Update)",
           "request": {
             "method": "POST",
             "header": [
@@ -597,6 +597,12 @@
             "body": {
               "mode": "formdata",
               "formdata": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Enviar apenas para atualizar",
+                  "type": "text"
+                },
                 {
                   "key": "title",
                   "value": "Novo Projeto",
@@ -611,6 +617,16 @@
                   "key": "image",
                   "type": "file",
                   "src": ""
+                },
+                {
+                  "key": "technology_ids[0]",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "technology_ids[1]",
+                  "value": "2",
+                  "type": "text"
                 }
               ]
             },
@@ -621,48 +637,6 @@
               ],
               "path": [
                 "projects"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Update Project",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "title",
-                  "value": "Projeto Atualizado",
-                  "type": "text"
-                },
-                {
-                  "key": "description",
-                  "value": "Descrição atualizada",
-                  "type": "text"
-                },
-                {
-                  "key": "image",
-                  "type": "file",
-                  "src": ""
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/projects/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "projects",
-                "1"
               ]
             }
           }
@@ -748,7 +722,7 @@
           }
         },
         {
-          "name": "Create Technology",
+          "name": "Save Technology (Create/Update)",
           "request": {
             "method": "POST",
             "header": [
@@ -760,6 +734,12 @@
             "body": {
               "mode": "formdata",
               "formdata": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Enviar apenas para atualizar",
+                  "type": "text"
+                },
                 {
                   "key": "name",
                   "value": "Nova Tecnologia",
@@ -779,43 +759,6 @@
               ],
               "path": [
                 "technologies"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Update Technology",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "name",
-                  "value": "Tecnologia Atualizada",
-                  "type": "text"
-                },
-                {
-                  "key": "image",
-                  "type": "file",
-                  "src": ""
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/technologies/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "technologies",
-                "1"
               ]
             }
           }

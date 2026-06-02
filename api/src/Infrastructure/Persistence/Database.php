@@ -43,7 +43,7 @@ class Database
 
             $this->conn->commit();
 
-            return $lastInsertId;
+            return (int)$lastInsertId;
 
         } catch (\PDOException $e) {
 

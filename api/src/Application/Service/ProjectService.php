@@ -14,6 +14,7 @@ class ProjectService
     public function __construct(
         private ProjectRepositoryInterface $repository,
         private ValidatorInterface $validator,
+        private FileUploaderService $fileUploader,
     ) {
     }
 
@@ -43,16 +44,23 @@ class ProjectService
     {
         $dto->validate($this->validator);
 
+        $imageName = null;
+        if ($dto->image) {
+            $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'projects';
+            $imageName = $this->fileUploader->upload($dto->image, $uploadPath, 'project');
+        }
+
         $project = new Project(
             title: $dto->title,
             description: $dto->description,
             slug: $dto->slug,
             summary: $dto->summary,
-            image: null, // Image handling would be here or in a specialized service
+            image: $imageName,
             link: $dto->link,
             githubLink: $dto->github_link,
             sortOrder: $dto->sort_order,
             isActive: $dto->is_active,
+            technologies: $dto->technology_ids,
         );
 
         return $this->repository->save($project);
@@ -62,18 +70,54 @@ class ProjectService
     {
         $dto->validate($this->validator);
 
-        $project = $this->repository->findById($id);
-        if (!$project) {
+        $existingProject = $this->repository->findById($id);
+        if (!$existingProject) {
             throw new \App\Domain\Exception\ProjectNotFoundException($id);
         }
 
-        // Logic to update the entity would go here
+        $imageName = $existingProject->image;
+        if ($dto->image) {
+            $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'projects';
+
+            // Delete old image
+            if ($imageName) {
+                $this->fileUploader->delete($imageName, $uploadPath);
+            }
+
+            $imageName = $this->fileUploader->upload($dto->image, $uploadPath, 'project-' . $id);
+        }
+
+        $project = new Project(
+            title: $dto->title,
+            description: $dto->description,
+            slug: $dto->slug ?? $existingProject->slug,
+            summary: $dto->summary ?? $existingProject->summary,
+            image: $imageName,
+            link: $dto->link ?? $existingProject->link,
+            githubLink: $dto->github_link ?? $existingProject->githubLink,
+            sortOrder: $dto->sort_order,
+            isActive: $dto->is_active,
+            technologies: $dto->technology_ids,
+            id: $id,
+            createdAt: $existingProject->createdAt,
+        );
 
         return $this->repository->save($project);
     }
 
     public function deleteProject(int $id): bool
     {
+        $existingProject = $this->repository->findById($id);
+        if (!$existingProject) {
+            throw new \App\Domain\Exception\ProjectNotFoundException($id);
+        }
+
+        // Delete image from disk
+        if ($existingProject->image) {
+            $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'projects';
+            $this->fileUploader->delete($existingProject->image, $uploadPath);
+        }
+
         return $this->repository->delete($id);
     }
 }
