@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Http\Middleware;
 
 use App\Presentation\Responder\JsonResponder;
+use ErrorException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface;
@@ -22,11 +23,25 @@ class ErrorMiddleware implements MiddlewareInterface
     ) {
     }
 
+    #[\Override]
     public function process(Request $request, RequestHandler $handler): Response
     {
+        // Capturar erros do PHP (como avisos e depreciações) e transformá-los em exceções
+        set_error_handler(function ($severity, $message, $file, $line) {
+            if (!(error_reporting() & $severity)) {
+                return;
+            }
+            throw new ErrorException($message, 0, $severity, $file, $line);
+        });
+
         try {
-            return $handler->handle($request);
+            $response = $handler->handle($request);
+            restore_error_handler();
+
+            return $response;
         } catch (Throwable $e) {
+            restore_error_handler();
+
             return $this->handleException($e, $request);
         }
     }
@@ -34,21 +49,32 @@ class ErrorMiddleware implements MiddlewareInterface
     private function handleException(Throwable $e, Request $request): Response
     {
         $statusCode = $this->normalizeStatusCode($e->getCode());
+        $isCritical = $statusCode >= 500;
 
-        // Log the error with details
-        $this->logger->error($e->getMessage(), [
-            'exception' => get_class($e),
+        // Contexto para o log
+        $context = [
+            'exception' => $e::class,
             'file' => $e->getFile(),
             'line' => $e->getLine(),
             'path' => $request->getUri()->getPath(),
             'method' => $request->getMethod(),
-            'trace' => $this->displayErrorDetails ? $e->getTraceAsString() : 'Hidden',
-        ]);
+        ];
+
+        if ($this->displayErrorDetails) {
+            $context['trace'] = $e->getTraceAsString();
+        }
+
+        // Registrar o erro no log
+        if ($isCritical) {
+            $this->logger->critical($e->getMessage(), $context);
+        } else {
+            $this->logger->error($e->getMessage(), $context);
+        }
 
         $message = $e->getMessage();
 
-        // Hide implementation details for 500 errors in production
-        if ($statusCode >= 500 && !$this->displayErrorDetails) {
+        // Em produção, ocultar detalhes de erros 500
+        if ($isCritical && !$this->displayErrorDetails) {
             $message = 'Ocorreu um erro interno no servidor.';
         }
 

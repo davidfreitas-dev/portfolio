@@ -6,7 +6,7 @@ namespace App\Domain\Model;
 
 abstract class Model
 {
-    private $attributes = [];
+    private array $attributes = [];
 
     public function __construct($attributes = [])
     {
@@ -15,19 +15,19 @@ abstract class Model
 
     public function __call($name, $args)
     {
-        $method = substr($name, 0, 3);
-        $fieldName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', substr($name, 3)));
+        $method = substr((string) $name, 0, 3);
+        $fieldName = strtolower((string) preg_replace('/([a-z])([A-Z])/', '$1_$2', substr((string) $name, 3)));
         switch ($method) {
             case 'get':
-                return (isset($this->attributes[$fieldName])) ? $this->attributes[$fieldName] : null;
-                break;
+                return $this->attributes[$fieldName] ?? null;
             case 'set':
                 $this->attributes[$fieldName] = $args[0];
                 break;
         }
+        return null;
     }
 
-    public function setAttributes($attributes)
+    public function setAttributes($attributes): void
     {
         $this->attributes = $attributes;
         foreach ($attributes as $key => $value) {

@@ -10,23 +10,18 @@ use RuntimeException;
 
 class FileUploaderService
 {
-    private const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-    private const ALLOWED_MIME_TYPES = [
+    private const array ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    private const array ALLOWED_MIME_TYPES = [
         'image/jpeg',
         'image/png',
         'image/webp',
         'image/gif',
     ];
-    private const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-
-    public function __construct()
-    {
-    }
+    private const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     /**
      * Uploads and validates a file.
      *
-     * @param UploadedFileInterface $file
      * @param string $uploadPath Destination directory
      * @param string $prefix Prefix for the filename
      * @return string The generated filename
@@ -67,7 +62,7 @@ class FileUploaderService
         // 4. Generate secure filename
         $filename = \sprintf(
             '%s%s-%s.%s',
-            $prefix ? $prefix . '-' : '',
+            $prefix !== '' && $prefix !== '0' ? $prefix . '-' : '',
             ime(),
             \bin2hex(
                 andom_bytes(8),
@@ -78,10 +73,8 @@ class FileUploaderService
         $destinationPath = $uploadPath . DIRECTORY_SEPARATOR . $filename;
 
         // Ensure directory exists
-        if (!\is_dir($uploadPath)) {
-            if (!\mkdir($uploadPath, 0o775, true) && !\is_dir($uploadPath)) {
-                throw new RuntimeException(\sprintf('Diretório "%s" não pôde ser criado', $uploadPath));
-            }
+        if (!\is_dir($uploadPath) && (!\mkdir($uploadPath, 0o775, true) && !\is_dir($uploadPath))) {
+            throw new RuntimeException(\sprintf('Diretório "%s" não pôde ser criado', $uploadPath));
         }
 
         // 5. Move file
@@ -97,7 +90,6 @@ class FileUploaderService
     /**
      * Deletes a file from the upload path.
      *
-     * @param string|null $filename
      * @param string $uploadPath Directory where the file is located
      */
     public function delete(?string $filename, string $uploadPath): void

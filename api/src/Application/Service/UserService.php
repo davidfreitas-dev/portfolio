@@ -40,7 +40,7 @@ class UserService
 
         $userWithPass = $this->userRepository->findByEmail($user['email']);
 
-        if (!password_verify($currentPassword, $userWithPass['password'])) {
+        if (!password_verify($currentPassword, (string) $userWithPass['password'])) {
             throw new \Exception("A senha atual está incorreta.", HTTPStatus::UNAUTHORIZED);
         }
 

@@ -8,11 +8,8 @@ use Exception;
 
 class ProjectValidationException extends Exception
 {
-    private array $errors;
-
-    public function __construct(array $errors)
+    public function __construct(private readonly array $errors)
     {
-        $this->errors = $errors;
         parent::__construct("Erro de validação nos dados do projeto.", 422);
     }
 

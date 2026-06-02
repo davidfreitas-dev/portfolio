@@ -6,7 +6,7 @@ namespace App\Infrastructure\Persistence;
 
 class Database
 {
-    private $conn;
+    private readonly \PDO $conn;
 
     public function __construct()
     {
@@ -111,7 +111,7 @@ class Database
 
     }
 
-    private function setParams($statement, $parameters = [])
+    private function setParams($statement, $parameters = []): void
     {
 
         foreach ($parameters as $key => $value) {
@@ -122,7 +122,7 @@ class Database
 
     }
 
-    private function bindParam($statement, $key, $value)
+    private function bindParam($statement, $key, $value): void
     {
 
         $statement->bindParam($key, $value);

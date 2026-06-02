@@ -16,6 +16,7 @@ class CorsMiddleware implements MiddlewareInterface
     {
     }
 
+    #[\Override]
     public function process(
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,

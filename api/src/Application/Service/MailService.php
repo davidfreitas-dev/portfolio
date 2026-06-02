@@ -8,13 +8,8 @@ use App\Domain\Contract\MailerInterface;
 
 class MailService
 {
-    private MailerInterface $mailer;
-
-    public function __construct(MailerInterface $mailer)
+    public function __construct(private readonly MailerInterface $mailer)
     {
-
-        $this->mailer = $mailer;
-
     }
 
     public function sendPasswordReset(string $toEmail, string $toName, string $resetLink): bool

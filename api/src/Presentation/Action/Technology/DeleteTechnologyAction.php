@@ -12,8 +12,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class DeleteTechnologyAction
 {
     public function __construct(
-        private TechnologyService $service,
-        private JsonResponder $responder,
+        private readonly TechnologyService $service,
+        private readonly JsonResponder $responder,
     ) {
     }
 

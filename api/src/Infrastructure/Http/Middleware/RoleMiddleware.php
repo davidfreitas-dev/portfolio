@@ -12,7 +12,7 @@ use Slim\Psr7\Response as SlimResponse;
 
 class RoleMiddleware
 {
-    private array $requiredRoles;
+    private readonly array $requiredRoles;
 
     /**
      * Construtor que recebe um ou mais roles permitidos.

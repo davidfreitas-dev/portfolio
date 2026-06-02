@@ -36,7 +36,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 
-return function (App $app) {
+return function (App $app): void {
     /**
      * Base Routes
      */
@@ -59,7 +59,7 @@ return function (App $app) {
     /**
      * Authentication Routes
      */
-    $app->group('/auth', function (RouteCollectorProxy $group) {
+    $app->group('/auth', function (RouteCollectorProxy $group): void {
         $group->post('/request-login', RequestLoginOtpAction::class);
         $group->post('/login', LoginAction::class);
         $group->post('/logout', LogoutAction::class);
@@ -71,7 +71,7 @@ return function (App $app) {
     /**
      * User Routes
      */
-    $app->group('/users/me', function (RouteCollectorProxy $group) {
+    $app->group('/users/me', function (RouteCollectorProxy $group): void {
         $group->get('', GetMeAction::class);
         $group->put('', UpdateMeAction::class);
         $group->patch('/change-password', ChangePasswordAction::class);
@@ -81,7 +81,7 @@ return function (App $app) {
     /**
      * Experience Routes
      */
-    $app->group('/experiences', function (RouteCollectorProxy $group) {
+    $app->group('/experiences', function (RouteCollectorProxy $group): void {
         $group->get('', ListExperiencesAction::class);
         $group->get('/{id}', GetExperienceAction::class);
         $group->post('', CreateExperienceAction::class)->add(new RoleMiddleware('admin'));
@@ -92,7 +92,7 @@ return function (App $app) {
     /**
      * Project Routes
      */
-    $app->group('/projects', function (RouteCollectorProxy $group) {
+    $app->group('/projects', function (RouteCollectorProxy $group): void {
         $group->get('', ListProjectsAction::class);
         $group->get('/{id}', GetProjectAction::class);
         $group->post('', CreateProjectAction::class);
@@ -104,7 +104,7 @@ return function (App $app) {
     /**
      * Technology Routes
      */
-    $app->group('/technologies', function (RouteCollectorProxy $group) {
+    $app->group('/technologies', function (RouteCollectorProxy $group): void {
         $group->get('', ListTechnologiesAction::class);
         $group->get('/{id}', GetTechnologyAction::class);
         $group->post('', CreateTechnologyAction::class)->add(new RoleMiddleware('admin'));

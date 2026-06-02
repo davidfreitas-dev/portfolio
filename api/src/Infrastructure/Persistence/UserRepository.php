@@ -12,6 +12,7 @@ class UserRepository implements UserRepositoryInterface
     {
     }
 
+    #[\Override]
     public function findById(int $id): ?array
     {
         $sql = "SELECT u.id, u.name, u.email, u.phone, u.role_id, r.name as role_name, u.is_active
@@ -24,6 +25,7 @@ class UserRepository implements UserRepositoryInterface
         return $results[0] ?? null;
     }
 
+    #[\Override]
     public function findByEmail(string $email): ?array
     {
         $sql = "SELECT u.id, u.name, u.email, u.password, u.role_id, r.name as role_name, u.is_active
@@ -36,6 +38,7 @@ class UserRepository implements UserRepositoryInterface
         return $results[0] ?? null;
     }
 
+    #[\Override]
     public function updatePassword(int $userId, string $hashedPassword): bool
     {
         $sql = "UPDATE users SET password = :password WHERE id = :id";
@@ -48,6 +51,7 @@ class UserRepository implements UserRepositoryInterface
         return true;
     }
 
+    #[\Override]
     public function update(int $userId, array $data): bool
     {
         $fields = [];
@@ -65,6 +69,7 @@ class UserRepository implements UserRepositoryInterface
         return true;
     }
 
+    #[\Override]
     public function delete(int $userId): bool
     {
         $sql = "UPDATE users SET deleted_at = NOW() WHERE id = :id";

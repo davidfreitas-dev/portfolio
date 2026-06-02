@@ -23,10 +23,9 @@ class DatabaseErrorLogHandler extends AbstractProcessingHandler
     /**
      * Writes the record down to the database.
      *
-     * @param LogRecord $record
      *
-     * @return void
      */
+    #[\Override]
     protected function write(LogRecord $record): void
     {
         // Monolog's $record->level->getName() maps directly to our 'severity'

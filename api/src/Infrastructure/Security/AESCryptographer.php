@@ -6,7 +6,7 @@ namespace App\Infrastructure\Security;
 
 class AESCryptographer
 {
-    public static function encrypt($data)
+    public static function encrypt($data): string
     {
 
         if (is_array($data)) {
@@ -30,7 +30,7 @@ class AESCryptographer
     public static function decrypt($code)
     {
 
-        $data = base64_decode($code, true);
+        $data = base64_decode((string) $code, true);
 
         $decrypted = openssl_decrypt(
             $data,
@@ -42,7 +42,7 @@ class AESCryptographer
 
         $decoded = json_decode($decrypted, true);
 
-        return $decoded !== null ? $decoded : $decrypted;
+        return $decoded ?? $decrypted;
 
     }
 }

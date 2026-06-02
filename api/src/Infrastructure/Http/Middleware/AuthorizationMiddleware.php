@@ -23,6 +23,7 @@ class AuthorizationMiddleware implements MiddlewareInterface
     ) {
     }
 
+    #[\Override]
     public function process(Request $request, RequestHandler $handler): Response
     {
         $userRole = $request->getAttribute('user_role'); // Role name from JwtAuthMiddleware

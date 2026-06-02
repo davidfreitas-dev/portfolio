@@ -9,17 +9,19 @@ use App\Infrastructure\Persistence\Redis\RedisCache;
 
 class OtpRepository implements OtpRepositoryInterface
 {
-    private const PREFIX = 'otp:';
+    private const string PREFIX = 'otp:';
 
     public function __construct(private readonly RedisCache $redis)
     {
     }
 
+    #[\Override]
     public function create(string $email, string $otp, int $ttl): bool
     {
         return $this->redis->set(self::PREFIX . $email, $otp, $ttl);
     }
 
+    #[\Override]
     public function verify(string $email, string $otp): bool
     {
         $storedOtp = $this->redis->get(self::PREFIX . $email);
@@ -32,6 +34,7 @@ class OtpRepository implements OtpRepositoryInterface
         return false;
     }
 
+    #[\Override]
     public function invalidate(string $email): bool
     {
         return $this->redis->delete(self::PREFIX . $email);

@@ -13,7 +13,7 @@ use Throwable;
 
 class PHPMailerService implements MailerInterface
 {
-    private PHPMailer $mailer;
+    private readonly PHPMailer $mailer;
 
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -23,6 +23,7 @@ class PHPMailerService implements MailerInterface
         $this->configureMailer();
     }
 
+    #[\Override]
     public function send(string $toEmail, string $toName, string $subject, string $contentHtml): bool
     {
         try {
@@ -36,12 +37,12 @@ class PHPMailerService implements MailerInterface
             $this->logger->info(sprintf("E-mail '%s' enviado com sucesso para %s", $subject, $toEmail));
 
             return true;
-        } catch (PHPMailerException $e) {
+        } catch (PHPMailerException) {
             $this->logger->error(sprintf("Falha ao enviar e-mail '%s' para %s: %s", $subject, $toEmail, $this->mailer->ErrorInfo));
             throw new \Exception("Erro ao enviar e-mail: " . $this->mailer->ErrorInfo, HTTPStatus::SERVICE_UNAVAILABLE);
         } catch (Throwable $e) {
             $this->logger->error(sprintf("Erro inesperado ao enviar e-mail '%s' para %s: %s", $subject, $toEmail, $e->getMessage()));
-            throw new \Exception("Ocorreu um erro inesperado ao enviar e-mail.", HTTPStatus::INTERNAL_SERVER_ERROR);
+            throw new \Exception("Ocorreu um erro inesperado ao enviar e-mail.", HTTPStatus::INTERNAL_SERVER_ERROR, $e);
         }
     }
 
@@ -74,7 +75,7 @@ class PHPMailerService implements MailerInterface
             ];
         } catch (PHPMailerException $e) {
             $this->logger->error('Falha ao configurar PHPMailer: ' . $e->getMessage());
-            throw new \Exception("Erro de configuração do Mailer: " . $e->getMessage(), HTTPStatus::INTERNAL_SERVER_ERROR);
+            throw new \Exception("Erro de configuração do Mailer: " . $e->getMessage(), HTTPStatus::INTERNAL_SERVER_ERROR, $e);
         }
     }
 

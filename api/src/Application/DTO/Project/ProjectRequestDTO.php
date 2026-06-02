@@ -14,10 +14,10 @@ readonly class ProjectRequestDTO
     public function __construct(
         #[Assert\NotBlank(message: "O título é obrigatório.")]
         public string $title,
-        public ?string $slug = null,
-        public ?string $summary = null,
         #[Assert\NotBlank(message: "A descrição é obrigatória.")]
         public string $description,
+        public ?string $slug = null,
+        public ?string $summary = null,
         public ?string $link = null,
         public ?string $github_link = null,
         public int $sort_order = 0,
