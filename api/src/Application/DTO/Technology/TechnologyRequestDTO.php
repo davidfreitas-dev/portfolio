@@ -17,11 +17,6 @@ readonly class TechnologyRequestDTO
         public string $name,
         public ?string $slug = null,
         public int $sort_order = 0,
-        #[Assert\File(
-            maxSize: "2M",
-            mimeTypes: ["image/jpeg", "image/png", "image/svg+xml"],
-            mimeTypesMessage: "Por favor, envie uma imagem válida (JPG, PNG ou SVG).",
-        )]
         public ?UploadedFileInterface $image = null,
     ) {
     }

@@ -50,8 +50,25 @@ class UserService
         return $this->userRepository->updatePassword($userId, $hashedPassword);
     }
 
-    public function deleteAccount(int $userId): bool
+    public function deleteAccount(int $userIdToDelete, array $requestingUser): bool
     {
-        return $this->userRepository->delete($userId);
+        // 1. Regra de Auto-exclusão:
+        // Apenas admins são proibidos de se deletar. Usuários comuns podem.
+        if ($userIdToDelete === (int)$requestingUser['id'] && $requestingUser['role_name'] === 'admin') {
+            throw new \Exception("Administradores não podem deletar suas próprias contas.", 403);
+        }
+
+        $userToDelete = $this->userRepository->findById($userIdToDelete);
+        
+        if (!$userToDelete) {
+            throw new \Exception("Usuário não encontrado.", 404);
+        }
+
+        // 2. Regra: Admin só pode ser deletado por outro Admin
+        if ($userToDelete['role_name'] === 'admin' && $requestingUser['role_name'] !== 'admin') {
+            throw new \Exception("Apenas administradores podem deletar outros administradores.", 403);
+        }
+
+        return $this->userRepository->delete($userIdToDelete);
     }
 }

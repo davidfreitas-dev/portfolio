@@ -20,9 +20,14 @@ class DeleteMeAction
     public function __invoke(Request $request, Response $response): Response
     {
         $jwt = $request->getAttribute("jwt");
-        $userId = (int)$jwt['user']['id'];
+        $requestingUser = $jwt['user'];
+        $userId = (int)$requestingUser['id'];
 
-        $this->userService->deleteAccount($userId);
+        if ($requestingUser['role_name'] === 'admin') {
+             return $this->responder->error($response, 'Administradores não podem deletar suas próprias contas.', 403);
+        }
+
+        $this->userService->deleteAccount($userId, $requestingUser);
 
         return $this->responder->success($response, 'Conta deletada com sucesso.');
     }

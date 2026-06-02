@@ -12,6 +12,7 @@
         "selective/basepath": "^2.2",
         "slim/psr7": "^1.6",
         "slim/slim": "^4.13",
+        "symfony/expression-language": "^8.0",
         "symfony/validator": "^7.0",
         "tuupola/cors-middleware": "^1.5",
         "vlucas/phpdotenv": "^5.6"

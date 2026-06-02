@@ -26,12 +26,22 @@ Esta API serve como o backend para o portfólio, incluindo autenticação com JW
 - **Arquitetura Robusta**: Separação de camadas (Presentation, Application, Domain, Infrastructure).
 - **Ambiente Docker**: Ambiente containerizado com Nginx, PHP e MySQL.
 
+### 🔐 Autenticação
+
+A autenticação é baseada em **JWT (JSON Web Tokens)**.
+
+- **Fluxo**: Após a validação de credenciais (Senha ou OTP), o serviço `JwtService` emite um token assinado (algoritmo `HS256`) contendo os dados do usuário e uma expiração de **1 hora**.
+- **Requisições**: O token deve ser enviado no cabeçalho: `Authorization: Bearer <seu-token-jwt>`.
+- **Logout**: A autenticação é *stateless*. O logout é tratado no lado do cliente (o cliente descarta o token). O token emitido permanece válido para acesso até o fim do tempo de expiração (1 hora) ou até que a expiração ocorra naturalmente.
+
+---
+
 ## 🚀 Tecnologias
 
-- **PHP 8.4+**
 - **Slim Framework 4**
 - **PHP-DI** (Injeção de Dependência)
 - **MySQL 8.0**
+- **Redis**: Utilizado para *Rate Limiting* e armazenamento temporário de códigos OTP.
 - **JWT (Firebase)**
 - **Monolog**
 - **Docker & Docker Compose**

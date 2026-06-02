@@ -76,7 +76,7 @@ class AuthService
 
     public function validateOtp(string $email, string $code): bool
     {
-        if (!$this->otpRepository->verify($email, $code)) {
+        if (!$this->otpRepository->check($email, $code)) {
             throw new \Exception("Código inválido ou expirado.", HTTPStatus::UNAUTHORIZED);
         }
 
@@ -85,7 +85,10 @@ class AuthService
 
     public function resetPassword(string $email, string $code, string $password): bool
     {
-        $this->validateOtp($email, $code);
+        // Use verify to check AND consume the code during reset
+        if (!$this->otpRepository->verify($email, $code)) {
+            throw new \Exception("Código inválido ou expirado.", HTTPStatus::UNAUTHORIZED);
+        }
 
         $user = $this->userRepository->findByEmail($email);
 

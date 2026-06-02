@@ -35,6 +35,14 @@ class OtpRepository implements OtpRepositoryInterface
     }
 
     #[\Override]
+    public function check(string $email, string $otp): bool
+    {
+        $storedOtp = $this->redis->get(self::PREFIX . $email);
+
+        return $storedOtp === $otp;
+    }
+
+    #[\Override]
     public function invalidate(string $email): bool
     {
         return $this->redis->delete(self::PREFIX . $email);

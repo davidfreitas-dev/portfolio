@@ -19,14 +19,14 @@ class JwtService
     /**
      * Gera um token JWT para um usuário.
      */
-    public function createToken(array $userData, string $subject = 'user-client', int $expiryDays = 1): string
+    public function createToken(array $userData, string $subject = 'user-client', int $expiryTime = 3600): string
     {
         $now = new DateTimeImmutable();
         $payload = [
             'iss'  => 'portfolio-api', // Issuer
             'sub'  => $subject,        // Subject
             'iat'  => $now->getTimestamp(),
-            'exp'  => $now->modify("+{$expiryDays} day")->getTimestamp(),
+            'exp'  => $now->modify("+{$expiryTime} seconds")->getTimestamp(),
             'user' => $userData,
         ];
 
@@ -67,7 +67,6 @@ class JwtService
     {
         return $this->createToken([
             'id'        => $data['id'],
-            'name'      => $data['name'],
             'role_name' => $data['role_name'] ?? 'user',
         ], 'user-client');
     }

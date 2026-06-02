@@ -10,5 +10,7 @@ interface OtpRepositoryInterface
 
     public function verify(string $email, string $otp): bool;
 
+    public function check(string $email, string $otp): bool;
+
     public function invalidate(string $email): bool;
 }

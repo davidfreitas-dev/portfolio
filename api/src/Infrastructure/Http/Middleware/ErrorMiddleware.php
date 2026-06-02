@@ -72,13 +72,29 @@ class ErrorMiddleware implements MiddlewareInterface
         }
 
         $message = $e->getMessage();
+        $errors = null;
+
+        // Check if exception has getErrors() method (standard for validation exceptions)
+        if (method_exists($e, 'getErrors')) {
+            $errors = $e->getErrors();
+        }
 
         // Em produção, ocultar detalhes de erros 500
         if ($isCritical && !$this->displayErrorDetails) {
             $message = 'Ocorreu um erro interno no servidor.';
         }
 
-        return $this->responder->error(new SlimResponse(), $message, $statusCode);
+        $payload = [
+            'code' => $statusCode,
+            'status' => 'error',
+            'message' => $message,
+        ];
+
+        if ($errors) {
+            $payload['errors'] = $errors;
+        }
+
+        return $this->responder->respond(new SlimResponse(), $payload, $statusCode);
     }
 
     private function normalizeStatusCode(mixed $code): int

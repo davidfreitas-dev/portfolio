@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Action\Auth;
 
-use App\Application\DTO\Auth\ForgotPasswordRequestDTO;
+use App\Application\DTO\Auth\PasswordResetRequestDTO;
 use App\Application\Service\AuthService;
 use App\Presentation\Responder\JsonResponder;
 use App\Shared\Enum\HttpStatus as HTTPStatus;
@@ -25,7 +25,7 @@ class RequestPasswordResetAction
     {
         $data = $request->getParsedBody();
 
-        $dto = new ForgotPasswordRequestDTO();
+        $dto = new PasswordResetRequestDTO();
         $dto->email = $data['email'] ?? '';
 
         $errors = $this->validator->validate($dto);
