@@ -59,9 +59,18 @@ $containerBuilder->addDefinitions([
     Redis::class => function (ContainerInterface $c) {
         $settings = $c->get('settings')['redis'];
         $redis = new Redis();
-        $redis->connect($settings['host'], (int)$settings['port']);
-        if (!empty($settings['password'])) {
-            $redis->auth($settings['password']);
+        try {
+            $redis->connect($settings['host'], (int)$settings['port'], 2.0);
+            if (!empty($settings['password'])) {
+                $redis->auth($settings['password']);
+            }
+        } catch (\Exception $e) {
+            throw new \RuntimeException(
+                sprintf("FALHA NA CONEXÃO COM REDIS: %s. Verifique se o servidor Redis está rodando e se as configurações em .env (REDIS_HOST=%s, REDIS_PORT=%s) estão corretas.", 
+                $e->getMessage(), 
+                $settings['host'], 
+                $settings['port'])
+            );
         }
         return $redis;
     },

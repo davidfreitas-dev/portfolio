@@ -14,6 +14,7 @@ use App\Presentation\Action\Experience\DeleteExperienceAction;
 use App\Presentation\Action\Experience\GetExperienceAction;
 use App\Presentation\Action\Experience\ListExperiencesAction;
 use App\Presentation\Action\Experience\UpdateExperienceAction;
+use App\Presentation\Action\Health\HealthAction;
 use App\Presentation\Action\Image\GetImageAction;
 use App\Presentation\Action\Project\DeleteProjectAction;
 use App\Presentation\Action\Project\GetProjectAction;
@@ -43,14 +44,7 @@ return function (App $app): void {
         return $response->withHeader('Content-Type', 'application/json');
     });
 
-    $app->get('/health', function (Request $request, Response $response) {
-        $response->getBody()->write(json_encode([
-            'status' => 'success',
-            'message' => 'API is healthy',
-            'timestamp' => date('Y-m-d H:i:s'),
-        ]));
-        return $response->withHeader('Content-Type', 'application/json');
-    });
+    $app->get('/health', HealthAction::class);
 
     /**
      * Authentication Routes
