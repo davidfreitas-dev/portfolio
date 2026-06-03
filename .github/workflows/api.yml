@@ -21,7 +21,7 @@ jobs:
           SOURCE: "api/"
           TARGET: "/var/www/portfolio/api/"          
           ARGS: "-rlzvc -i --delete"
-          EXCLUDE: "/.git/, .gitignore, .env.example, .dockerignore, docker-compose.yml, Dockerfile, README.md, nginx/"
+          EXCLUDE: "README.md, /.git/, .gitignore, .env.example, .dockerignore, docker-compose.yml, Dockerfile, /.docker/, /docs, /tools, "
           SCRIPT_AFTER: |
             cd /var/www/portfolio/api
             composer install --no-dev --optimize-autoloader --no-interaction
