@@ -26,7 +26,7 @@ jobs:
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
           SOURCE: "site/"
           TARGET: "/var/www/portfolio/site/"
-          ARGS: "-rlzvc -i --delete"
+          ARGS: "-rlgoDzvc -i"
           EXCLUDE: "/.git/, .gitignore, README.md"
           SCRIPT_AFTER: |
             sudo chown -R www-data:www-data /var/www/portfolio/site
