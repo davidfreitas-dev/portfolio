@@ -157,7 +157,7 @@ $containerBuilder->addDefinitions([
 
     JwtAuthMiddleware::class => fn (ContainerInterface $c) => new JwtAuthMiddleware(
         $c->get(JwtService::class),
-        ['/', '/images', '/auth/login', '/auth/request-login', '/auth/forgot', '/auth/validate-reset-code', '/auth/reset'],
+        ['/', '/health', '/images', '/auth/login', '/auth/request-login', '/auth/forgot', '/auth/validate-reset-code', '/auth/reset'],
     ),
 
     RateLimitMiddleware::class => fn (ContainerInterface $c) => new RateLimitMiddleware(
