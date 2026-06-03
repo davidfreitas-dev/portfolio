@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Contract;
 
-use App\Domain\Model\Project;
+use App\Domain\Entity\Project;
 
 interface ProjectRepositoryInterface
 {

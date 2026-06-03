@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use App\Domain\Contract\ExperienceRepositoryInterface;
-use App\Domain\Model\Experience;
+use App\Domain\Entity\Experience;
 use DateTimeImmutable;
 
 class ExperienceRepository implements ExperienceRepositoryInterface

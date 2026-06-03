@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Contract;
 
-use App\Domain\Model\Experience;
+use App\Domain\Entity\Experience;
 
 interface ExperienceRepositoryInterface
 {

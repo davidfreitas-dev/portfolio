@@ -6,7 +6,7 @@ namespace App\Application\Service;
 
 use App\Application\DTO\Project\ProjectRequestDTO;
 use App\Domain\Contract\ProjectRepositoryInterface;
-use App\Domain\Model\Project;
+use App\Domain\Entity\Project;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProjectService

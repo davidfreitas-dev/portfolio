@@ -6,8 +6,8 @@ namespace App\Application\Service;
 
 use App\Application\DTO\Technology\TechnologyRequestDTO;
 use App\Domain\Contract\TechnologyRepositoryInterface;
+use App\Domain\Entity\Technology;
 use App\Domain\Exception\TechnologyNotFoundException;
-use App\Domain\Model\Technology;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class TechnologyService

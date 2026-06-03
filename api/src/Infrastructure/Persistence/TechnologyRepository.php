@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use App\Domain\Contract\TechnologyRepositoryInterface;
-use App\Domain\Model\Technology;
+use App\Domain\Entity\Technology;
 use DateTimeImmutable;
 
 class TechnologyRepository implements TechnologyRepositoryInterface

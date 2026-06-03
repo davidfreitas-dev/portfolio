@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use App\Domain\Contract\ProjectRepositoryInterface;
-use App\Domain\Model\Project;
+use App\Domain\Entity\Project;
 use DateTimeImmutable;
 
 class ProjectRepository implements ProjectRepositoryInterface
@@ -86,6 +86,13 @@ class ProjectRepository implements ProjectRepositoryInterface
         return $this->findById($id);
     }
 
+    public function delete(int $id): bool
+    {
+        $sql = "UPDATE projects SET deleted_at = NOW() WHERE id = :id";
+        $this->db->query($sql, [':id' => $id]);
+        return true;
+    }
+
     private function syncTechnologies(int $projectId, array $technologyIds): void
     {
         // Remove existing associations
@@ -105,18 +112,16 @@ class ProjectRepository implements ProjectRepositoryInterface
         $sql = "SELECT t.* FROM technologies t 
                 JOIN project_technologies pt ON t.id = pt.technology_id 
                 WHERE pt.project_id = :project_id AND t.deleted_at IS NULL";
-        
+
         $results = $this->db->select($sql, [':project_id' => $project->id]);
 
         // Map technologies to array (could use a Technology model if needed, but for now array/DTO style)
-        $technologies = array_map(function ($row) {
-            return [
+        $technologies = array_map(fn ($row) => [
                 'id' => (int)$row['id'],
                 'name' => $row['name'],
                 'slug' => $row['slug'],
                 'image' => $row['image'],
-            ];
-        }, $results);
+            ], $results);
 
         // We need to use reflection or a setter if the property is private(set)
         // But Project model has technologies as public private(set) array $technologies;
@@ -124,9 +129,9 @@ class ProjectRepository implements ProjectRepositoryInterface
         // Wait, Project.php uses: public private(set) array $technologies;
         // This is PHP 8.4 syntax. I should check if I can set it here.
         // If it's private(set), I can't set it from Repository unless I use a constructor or reflection.
-        
+
         // Let's re-read Project.php
-        
+
         return new Project(
             title: $project->title,
             description: $project->description,
@@ -142,13 +147,6 @@ class ProjectRepository implements ProjectRepositoryInterface
             createdAt: $project->createdAt,
             updatedAt: $project->updatedAt,
         );
-    }
-
-    public function delete(int $id): bool
-    {
-        $sql = "UPDATE projects SET deleted_at = NOW() WHERE id = :id";
-        $this->db->query($sql, [':id' => $id]);
-        return true;
     }
 
     private function mapRowToProject(array $row): Project

@@ -6,8 +6,8 @@ namespace App\Application\Service;
 
 use App\Application\DTO\Experience\ExperienceRequestDTO;
 use App\Domain\Contract\ExperienceRepositoryInterface;
+use App\Domain\Entity\Experience;
 use App\Domain\Exception\ExperienceNotFoundException;
-use App\Domain\Model\Experience;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ExperienceService

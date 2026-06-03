@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Domain\Model\Experience;
-use App\Domain\Model\Project;
-use App\Domain\Model\Technology;
 use App\Infrastructure\Http\Middleware\RoleMiddleware;
 use App\Presentation\Action\Auth\LoginAction;
 use App\Presentation\Action\Auth\LogoutAction;
@@ -17,6 +14,7 @@ use App\Presentation\Action\Experience\DeleteExperienceAction;
 use App\Presentation\Action\Experience\GetExperienceAction;
 use App\Presentation\Action\Experience\ListExperiencesAction;
 use App\Presentation\Action\Experience\UpdateExperienceAction;
+use App\Presentation\Action\Image\GetImageAction;
 use App\Presentation\Action\Project\DeleteProjectAction;
 use App\Presentation\Action\Project\GetProjectAction;
 use App\Presentation\Action\Project\ListProjectsAction;
@@ -33,8 +31,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
-
-use App\Presentation\Action\Image\GetImageAction;
 
 return function (App $app): void {
     /**

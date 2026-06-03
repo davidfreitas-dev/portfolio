@@ -24,7 +24,7 @@ class DeleteMeAction
         $userId = (int)$requestingUser['id'];
 
         if ($requestingUser['role_name'] === 'admin') {
-             return $this->responder->error($response, 'Administradores não podem deletar suas próprias contas.', 403);
+            return $this->responder->error($response, 'Administradores não podem deletar suas próprias contas.', 403);
         }
 
         $this->userService->deleteAccount($userId, $requestingUser);

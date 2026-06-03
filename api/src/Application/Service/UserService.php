@@ -59,7 +59,7 @@ class UserService
         }
 
         $userToDelete = $this->userRepository->findById($userIdToDelete);
-        
+
         if (!$userToDelete) {
             throw new \Exception("Usuário não encontrado.", 404);
         }

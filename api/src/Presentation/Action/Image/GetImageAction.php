@@ -26,7 +26,7 @@ class GetImageAction
 
         $storagePath = $_ENV['STORAGE_PATH'] ?? (defined('APP_ROOT') ? APP_ROOT . '/storage' : __DIR__ . '/../../../../storage');
         $imagePath = $storagePath . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $imageName;
-        
+
         $isDefault = false;
         if (!\file_exists($imagePath) || !\is_file($imagePath)) {
             $imagePath = $storagePath . DIRECTORY_SEPARATOR . 'no-image.png';
@@ -45,15 +45,15 @@ class GetImageAction
         $lastModified = \filemtime($imagePath);
         $etag = \md5($imagePath . $lastModified . \filesize($imagePath));
 
-        if ($request->getHeaderLine('If-None-Match') === $etag || 
+        if ($request->getHeaderLine('If-None-Match') === $etag ||
            ($request->getHeaderLine('If-Modified-Since') && \strtotime($request->getHeaderLine('If-Modified-Since')) === $lastModified)) {
             return $response->withStatus(304);
         }
 
         // 5. Profissional: X-Accel-Redirect
         // O caminho deve ser o PATH INTERNO definido no Nginx
-        $internalRedirectPath = $isDefault 
-            ? '/internal_static/no-image.png' 
+        $internalRedirectPath = $isDefault
+            ? '/internal_static/no-image.png'
             : '/internal_uploads/' . $folder . '/' . $imageName;
 
         return $response

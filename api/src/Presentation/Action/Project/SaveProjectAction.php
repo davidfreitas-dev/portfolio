@@ -24,7 +24,7 @@ class SaveProjectAction
         $data = $request->getParsedBody() ?? [];
         $files = $request->getUploadedFiles();
         $image = $files['image'] ?? null;
-        
+
         $id = isset($data['id']) ? (int)$data['id'] : null;
 
         $dto = new ProjectRequestDTO(
