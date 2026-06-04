@@ -8,21 +8,52 @@ on:
       - "site/**"
   workflow_dispatch:
 
-# Impede que múltiplos deploys rodem simultaneamente
 concurrency:
   group: deploy-site
-  cancel-in-progress: true
+  cancel-in-progress: false  # aguarda deploy anterior terminar
 
 jobs:
+  # Etapa 1: validação
+  validate:
+    name: Validate Static Files
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+          cache-dependency-path: site/package-lock.json
+
+      # Adapte (ou remova) os passos abaixo conforme sua stack
+      - name: Install dev tools
+        run: npm ci
+
+      - name: Lint HTML
+        run: npx htmlhint "**/*.html"
+
+      - name: Lint CSS
+        run: npx stylelint "**/*.css"
+
+  # Etapa 2: deploy
   deploy:
     name: Deploy Site to Production
+    needs: validate
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Deploy Site to Server
-        uses: easingthemes/ssh-deploy@main
+        uses: easingthemes/ssh-deploy@v5.1.0  # versão fixada
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
@@ -30,9 +61,16 @@ jobs:
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
           SOURCE: "site/"
           TARGET: "/var/www/portfolio/site/"
-          ARGS: "-rlgoDzvc -i --delete"
-          EXCLUDE: "/.git/, .gitignore, README.md"
+          ARGS: "-rlgoDz --delete"  # removido -i e -c
+          EXCLUDE: ".git/, .gitignore, README.md, package.json,
+                    package-lock.json, node_modules/, .htmlhintrc,
+                    .stylelintrc"
+          # Permissões só se realmente necessário ajustar no servidor.
+          # Prefira configurar uma vez direto na VPS e remover daqui.
           SCRIPT_AFTER: |
-            sudo chown -R www-data:www-data /var/www/portfolio/site
-            sudo find /var/www/portfolio/site -type d -exec chmod 775 {} +
-            sudo find /var/www/portfolio/site -type f -exec chmod 664 {} +
+            set -e
+            echo "Deploy concluído: $(date)"
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "::error::Deploy do site falhou! Verifique os logs."

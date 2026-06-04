@@ -1,4 +1,4 @@
-# API REST com Slim Framework e Arquitetura Limpa
+# Portfolio API REST com Slim Framework e Arquitetura Limpa
 
 API REST moderna construída com Slim Framework 4, PHP 8.4, e inspirada em princípios de Arquitetura Limpa (Clean Architecture) e Domain-Driven Design (DDD).
 

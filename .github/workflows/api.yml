@@ -5,26 +5,95 @@ on:
     paths:
       - 'api/**'
     branches: [main]
-  
   workflow_dispatch:
 
+# Garante que apenas um deploy rode por vez
+concurrency:
+  group: deploy-api
+  cancel-in-progress: false  # aguarda o anterior terminar
+
 jobs:
-  deploy:
+  # Etapa 1: validação
+  validate:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: api/vendor
+          key: composer-${{ hashFiles('api/composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Check syntax (lint)
+        run: find src -name "*.php" -print0 | xargs -0 php -l
+
+      # Descomente quando tiver testes
+      # - name: Run tests
+      #   run: composer test
+
+  # Etapa 2: deploy (só roda se validate passar)
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Restore Composer cache
+        uses: actions/cache@v4
+        with:
+          path: api/vendor
+          key: composer-${{ hashFiles('api/composer.lock') }}
+
+      - name: Install dependencies
+        working-directory: api
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
       - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@main
+        uses: easingthemes/ssh-deploy@v5.1.0  # versão fixada
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
           SOURCE: "api/"
-          TARGET: "/var/www/portfolio/api/"          
-          ARGS: "-rlgoDzvc -i"
-          EXCLUDE: "README.md, .git/, .gitignore, .env.example, .dockerignore, docker-compose.yml, Dockerfile, .docker/, docs/, tools/, vendor/, logs/, .env"
+          TARGET: "/var/www/portfolio/api/"
+          ARGS: "-rlgoDz --delete"
+          EXCLUDE: "README.md, .git/, .gitignore, .env.example, .dockerignore,
+                    docker-compose.yml, Dockerfile, .docker/, docs/, tools/,
+                    logs/, .env"
           SCRIPT_AFTER: |
+            set -e  # falha imediatamente se qualquer comando falhar
             cd /var/www/portfolio/api
-            composer install --no-dev --optimize-autoloader --no-interaction
             sudo systemctl reload php8.4-fpm
+            echo "Deploy concluído: $(date)"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Deploy falhou! Verifique os logs acima."
+          # Aqui você pode adicionar integração com Slack, Discord, e-mail, etc.
