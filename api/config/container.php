@@ -45,9 +45,9 @@ $containerBuilder->addDefinitions(require __DIR__ . '/settings.php');
 
 // Add service and middleware definitions
 $containerBuilder->addDefinitions([
-    Database::class => fn (ContainerInterface $c) => new Database(),
+    Database::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\Database => new Database(),
 
-    LoggerInterface::class => function (ContainerInterface $c) {
+    LoggerInterface::class => function (ContainerInterface $c): \Monolog\Logger {
         $logger = new Logger('app');
         $processor = new UidProcessor();
         $logger->pushProcessor($processor);
@@ -56,7 +56,7 @@ $containerBuilder->addDefinitions([
         return $logger;
     },
 
-    Redis::class => function (ContainerInterface $c) {
+    Redis::class => function (ContainerInterface $c): \Redis {
         $settings = $c->get('settings')['redis'];
         $redis = new Redis();
         try {
@@ -65,46 +65,46 @@ $containerBuilder->addDefinitions([
                 $redis->auth($settings['password']);
             }
         } catch (\Exception $e) {
-            throw new \RuntimeException(
-                sprintf("FALHA NA CONEXÃO COM REDIS: %s. Verifique se o servidor Redis está rodando e se as configurações em .env (REDIS_HOST=%s, REDIS_PORT=%s) estão corretas.", 
-                $e->getMessage(), 
-                $settings['host'], 
-                $settings['port'])
-            );
+            throw new \RuntimeException(sprintf(
+                "FALHA NA CONEXÃO COM REDIS: %s. Verifique se o servidor Redis está rodando e se as configurações em .env (REDIS_HOST=%s, REDIS_PORT=%s) estão corretas.",
+                $e->getMessage(),
+                $settings['host'],
+                $settings['port'],
+            ), $e->getCode(), $e);
         }
         return $redis;
     },
 
-    RedisCache::class => fn (ContainerInterface $c) => new RedisCache($c->get(Redis::class)),
+    RedisCache::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\Redis\RedisCache => new RedisCache($c->get(Redis::class)),
 
-    UserRepositoryInterface::class => fn (ContainerInterface $c) => new UserRepository($c->get(Database::class)),
+    UserRepositoryInterface::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\UserRepository => new UserRepository($c->get(Database::class)),
 
-    ProjectRepositoryInterface::class => fn (ContainerInterface $c) => new ProjectRepository($c->get(Database::class)),
+    ProjectRepositoryInterface::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\ProjectRepository => new ProjectRepository($c->get(Database::class)),
 
-    ProjectService::class => fn (ContainerInterface $c) => new ProjectService(
+    ProjectService::class => fn (ContainerInterface $c): \App\Application\Service\ProjectService => new ProjectService(
         $c->get(ProjectRepositoryInterface::class),
         $c->get(ValidatorInterface::class),
         $c->get(FileUploaderService::class),
     ),
 
-    ExperienceRepositoryInterface::class => fn (ContainerInterface $c) => new ExperienceRepository($c->get(Database::class)),
+    ExperienceRepositoryInterface::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\ExperienceRepository => new ExperienceRepository($c->get(Database::class)),
 
-    ExperienceService::class => fn (ContainerInterface $c) => new ExperienceService(
+    ExperienceService::class => fn (ContainerInterface $c): \App\Application\Service\ExperienceService => new ExperienceService(
         $c->get(ExperienceRepositoryInterface::class),
         $c->get(ValidatorInterface::class),
     ),
 
-    TechnologyRepositoryInterface::class => fn (ContainerInterface $c) => new TechnologyRepository($c->get(Database::class)),
+    TechnologyRepositoryInterface::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\TechnologyRepository => new TechnologyRepository($c->get(Database::class)),
 
-    TechnologyService::class => fn (ContainerInterface $c) => new TechnologyService(
+    TechnologyService::class => fn (ContainerInterface $c): \App\Application\Service\TechnologyService => new TechnologyService(
         $c->get(TechnologyRepositoryInterface::class),
         $c->get(ValidatorInterface::class),
         $c->get(FileUploaderService::class),
     ),
 
-    OtpRepositoryInterface::class => fn (ContainerInterface $c) => new OtpRepository($c->get(RedisCache::class)),
+    OtpRepositoryInterface::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\OtpRepository => new OtpRepository($c->get(RedisCache::class)),
 
-    MailerInterface::class => function (ContainerInterface $c) {
+    MailerInterface::class => function (ContainerInterface $c): \App\Infrastructure\Mailer\PHPMailerService {
         $settings = $c->get('settings')['mailer'];
         return new PHPMailerService(
             $c->get(LoggerInterface::class),
@@ -120,9 +120,9 @@ $containerBuilder->addDefinitions([
         );
     },
 
-    MailService::class => fn (ContainerInterface $c) => new MailService($c->get(MailerInterface::class)),
+    MailService::class => fn (ContainerInterface $c): \App\Application\Service\MailService => new MailService($c->get(MailerInterface::class)),
 
-    JwtService::class => function (ContainerInterface $c) {
+    JwtService::class => function (ContainerInterface $c): \App\Application\Service\JwtService {
         $settings = $c->get('settings')['jwt'];
         return new JwtService(
             $settings['secret'],
@@ -130,37 +130,37 @@ $containerBuilder->addDefinitions([
         );
     },
 
-    AuthService::class => fn (ContainerInterface $c) => new AuthService(
+    AuthService::class => fn (ContainerInterface $c): \App\Application\Service\AuthService => new AuthService(
         $c->get(UserRepositoryInterface::class),
         $c->get(OtpRepositoryInterface::class),
         $c->get(JwtService::class),
         $c->get(MailService::class),
     ),
 
-    UserService::class => fn (ContainerInterface $c) => new UserService(
+    UserService::class => fn (ContainerInterface $c): \App\Application\Service\UserService => new UserService(
         $c->get(UserRepositoryInterface::class),
     ),
 
-    ValidatorInterface::class => fn () => Validation::createValidatorBuilder()
+    ValidatorInterface::class => fn (): \Symfony\Component\Validator\Validator\ValidatorInterface => Validation::createValidatorBuilder()
             ->enableAttributeMapping()
             ->getValidator(),
 
-    JsonResponder::class => fn () => new JsonResponder(),
+    JsonResponder::class => fn (): \App\Presentation\Responder\JsonResponder => new JsonResponder(),
 
-    ErrorMiddleware::class => fn (ContainerInterface $c) => new ErrorMiddleware(
+    ErrorMiddleware::class => fn (ContainerInterface $c): \App\Infrastructure\Http\Middleware\ErrorMiddleware => new ErrorMiddleware(
         $c->get(JsonResponder::class),
         $c->get(LoggerInterface::class),
         (bool)$c->get('settings')['displayErrorDetails'],
     ),
 
-    CorsMiddleware::class => fn (ContainerInterface $c) => new CorsMiddleware($c->get('settings')['cors']),
+    CorsMiddleware::class => fn (ContainerInterface $c): \App\Infrastructure\Http\Middleware\CorsMiddleware => new CorsMiddleware($c->get('settings')['cors']),
 
-    JwtAuthMiddleware::class => fn (ContainerInterface $c) => new JwtAuthMiddleware(
+    JwtAuthMiddleware::class => fn (ContainerInterface $c): \App\Infrastructure\Http\Middleware\JwtAuthMiddleware => new JwtAuthMiddleware(
         $c->get(JwtService::class),
         ['/', '/health', '/images', '/auth/login', '/auth/request-login', '/auth/forgot', '/auth/validate-reset-code', '/auth/reset'],
     ),
 
-    RateLimitMiddleware::class => fn (ContainerInterface $c) => new RateLimitMiddleware(
+    RateLimitMiddleware::class => fn (ContainerInterface $c): \App\Infrastructure\Http\Middleware\RateLimitMiddleware => new RateLimitMiddleware(
         $c->get(RedisCache::class),
         $c->get(JwtService::class),
         $c->get('settings')['rate_limit'] ?? [],

@@ -20,7 +20,7 @@ class ProjectRepository implements ProjectRepositoryInterface
         $where = ["deleted_at IS NULL"];
         $search = trim($search);
 
-        if (!empty($search)) {
+        if ($search !== '' && $search !== '0') {
             $where[] = "(title LIKE :search OR summary LIKE :search OR description LIKE :search)";
             $params[":search"] = "%$search%";
         }
@@ -44,7 +44,7 @@ class ProjectRepository implements ProjectRepositoryInterface
         $sql = "SELECT * FROM projects WHERE id = :id AND deleted_at IS NULL";
         $results = $this->db->select($sql, [':id' => $id]);
 
-        if (!$results) {
+        if ($results === []) {
             return null;
         }
 
@@ -80,7 +80,7 @@ class ProjectRepository implements ProjectRepositoryInterface
 
         $sql = "INSERT INTO projects (title, slug, summary, description, image, link, github_link, sort_order, is_active) 
                 VALUES (:title, :slug, :summary, :description, :image, :link, :github_link, :sort_order, :is_active)";
-        $id = (int)$this->db->insert($sql, $params);
+        $id = $this->db->insert($sql, $params);
         $this->syncTechnologies($id, $project->technologies);
 
         return $this->findById($id);
@@ -116,7 +116,7 @@ class ProjectRepository implements ProjectRepositoryInterface
         $results = $this->db->select($sql, [':project_id' => $project->id]);
 
         // Map technologies to array (could use a Technology model if needed, but for now array/DTO style)
-        $technologies = array_map(fn ($row) => [
+        $technologies = array_map(fn (array $row): array => [
                 'id' => (int)$row['id'],
                 'name' => $row['name'],
                 'slug' => $row['slug'],

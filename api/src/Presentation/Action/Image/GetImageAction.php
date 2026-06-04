@@ -22,7 +22,7 @@ class GetImageAction
         }
 
         // 2. Segurança: Sanitizar nome do arquivo
-        $imageName = \basename($imageName);
+        $imageName = \basename((string) $imageName);
 
         $storagePath = $_ENV['STORAGE_PATH'] ?? (defined('APP_ROOT') ? APP_ROOT . '/storage' : __DIR__ . '/../../../../storage');
         $imagePath = $storagePath . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $imageName;

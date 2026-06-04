@@ -14,8 +14,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class CreateExperienceAction
 {
     public function __construct(
-        private ExperienceService $experienceService,
-        private JsonResponder $responder,
+        private readonly ExperienceService $experienceService,
+        private readonly JsonResponder $responder,
     ) {
     }
 

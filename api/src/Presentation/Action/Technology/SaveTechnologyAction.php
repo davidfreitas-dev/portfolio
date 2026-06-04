@@ -14,8 +14,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class SaveTechnologyAction
 {
     public function __construct(
-        private TechnologyService $technologyService,
-        private JsonResponder $responder,
+        private readonly TechnologyService $technologyService,
+        private readonly JsonResponder $responder,
     ) {
     }
 

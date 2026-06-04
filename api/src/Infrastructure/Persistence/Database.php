@@ -20,7 +20,7 @@ class Database
 
     }
 
-    public function getConnection()
+    public function getConnection(): \PDO
     {
 
         return $this->conn;

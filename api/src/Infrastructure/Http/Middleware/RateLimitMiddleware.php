@@ -108,7 +108,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         }
 
         foreach ($trustedProxies as $trustedProxy) {
-            if (\str_contains($trustedProxy, '/')) {
+            if (\str_contains((string) $trustedProxy, '/')) {
                 if ($this->ipInCidr($ip, $trustedProxy)) {
                     return true;
                 }

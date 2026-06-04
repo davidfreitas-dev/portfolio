@@ -12,9 +12,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ProjectService
 {
     public function __construct(
-        private ProjectRepositoryInterface $repository,
-        private ValidatorInterface $validator,
-        private FileUploaderService $fileUploader,
+        private readonly ProjectRepositoryInterface $repository,
+        private readonly ValidatorInterface $validator,
+        private readonly FileUploaderService $fileUploader,
     ) {
     }
 
@@ -34,7 +34,7 @@ class ProjectService
     public function getProject(int $id): Project
     {
         $project = $this->repository->findById($id);
-        if (!$project) {
+        if (!$project instanceof \App\Domain\Entity\Project) {
             throw new \App\Domain\Exception\ProjectNotFoundException($id);
         }
         return $project;
@@ -45,7 +45,7 @@ class ProjectService
         $dto->validate($this->validator);
 
         $imageName = null;
-        if ($dto->image) {
+        if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface) {
             $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'projects';
             $imageName = $this->fileUploader->upload($dto->image, $uploadPath, 'project');
         }
@@ -71,12 +71,12 @@ class ProjectService
         $dto->validate($this->validator);
 
         $existingProject = $this->repository->findById($id);
-        if (!$existingProject) {
+        if (!$existingProject instanceof \App\Domain\Entity\Project) {
             throw new \App\Domain\Exception\ProjectNotFoundException($id);
         }
 
         $imageName = $existingProject->image;
-        if ($dto->image) {
+        if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface) {
             $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'projects';
 
             // Delete old image
@@ -108,7 +108,7 @@ class ProjectService
     public function deleteProject(int $id): bool
     {
         $existingProject = $this->repository->findById($id);
-        if (!$existingProject) {
+        if (!$existingProject instanceof \App\Domain\Entity\Project) {
             throw new \App\Domain\Exception\ProjectNotFoundException($id);
         }
 

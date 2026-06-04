@@ -37,7 +37,7 @@ readonly class ExperienceRequestDTO
         }
 
         // Custom validation for date interval
-        if ($this->start_date !== '' && $this->start_date !== '0' && ($this->end_date !== null && $this->end_date !== '' && $this->end_date !== '0')) {
+        if ($this->start_date !== '' && $this->start_date !== '0' && (!in_array($this->end_date, [null, '', '0'], true))) {
             $start = \DateTimeImmutable::createFromFormat('Y-m-d', $this->start_date);
             $end = \DateTimeImmutable::createFromFormat('Y-m-d', $this->end_date);
 

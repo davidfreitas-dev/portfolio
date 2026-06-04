@@ -27,8 +27,8 @@ class ErrorMiddleware implements MiddlewareInterface
     public function process(Request $request, RequestHandler $handler): Response
     {
         // Capturar erros do PHP (como avisos e depreciações) e transformá-los em exceções
-        set_error_handler(function ($severity, $message, $file, $line) {
-            if (!(error_reporting() & $severity)) {
+        set_error_handler(function ($severity, $message, $file, $line): void {
+            if ((error_reporting() & $severity) === 0) {
                 return;
             }
             throw new ErrorException($message, 0, $severity, $file, $line);

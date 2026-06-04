@@ -12,8 +12,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class GetProjectAction
 {
     public function __construct(
-        private ProjectService $projectService,
-        private JsonResponder $responder,
+        private readonly ProjectService $projectService,
+        private readonly JsonResponder $responder,
     ) {
     }
 

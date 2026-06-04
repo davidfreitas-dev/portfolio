@@ -20,7 +20,7 @@ class TechnologyRepository implements TechnologyRepositoryInterface
         $where = ["deleted_at IS NULL"];
         $search = trim($search);
 
-        if (!empty($search)) {
+        if ($search !== '' && $search !== '0') {
             $where[] = "(name LIKE :search OR slug LIKE :search)";
             $params[":search"] = "%$search%";
         }
@@ -34,7 +34,7 @@ class TechnologyRepository implements TechnologyRepositoryInterface
         $results = $this->db->select($sql, $params);
         $total = $this->db->select("SELECT FOUND_ROWS() as total")[0]['total'];
 
-        $technologies = array_map(fn ($row) => $this->mapRowToTechnology($row), $results);
+        $technologies = array_map($this->mapRowToTechnology(...), $results);
 
         return ['technologies' => $technologies, 'total' => (int)$total];
     }
@@ -44,7 +44,7 @@ class TechnologyRepository implements TechnologyRepositoryInterface
         $sql = "SELECT * FROM technologies WHERE id = :id AND deleted_at IS NULL";
         $results = $this->db->select($sql, [':id' => $id]);
 
-        return $results ? $this->mapRowToTechnology($results[0]) : null;
+        return $results !== [] ? $this->mapRowToTechnology($results[0]) : null;
     }
 
     public function findBySlug(string $slug): ?Technology
@@ -52,7 +52,7 @@ class TechnologyRepository implements TechnologyRepositoryInterface
         $sql = "SELECT * FROM technologies WHERE slug = :slug AND deleted_at IS NULL";
         $results = $this->db->select($sql, [':slug' => $slug]);
 
-        return $results ? $this->mapRowToTechnology($results[0]) : null;
+        return $results !== [] ? $this->mapRowToTechnology($results[0]) : null;
     }
 
     public function save(Technology $technology): Technology

@@ -13,13 +13,8 @@ use Slim\Psr7\Response as SlimResponse;
 
 class JwtAuthMiddleware implements MiddlewareInterface
 {
-    private array $ignore;
-
-    public function __construct(
-        private JwtService $jwtService,
-        array $ignore = [],
-    ) {
-        $this->ignore = $ignore;
+    public function __construct(private readonly JwtService $jwtService, private readonly array $ignore = [])
+    {
     }
 
     public function process(Request $request, RequestHandler $handler): Response

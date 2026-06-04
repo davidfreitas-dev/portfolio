@@ -20,7 +20,7 @@ class ExperienceRepository implements ExperienceRepositoryInterface
         $where = ["deleted_at IS NULL"];
         $search = trim($search);
 
-        if (!empty($search)) {
+        if ($search !== '' && $search !== '0') {
             $where[] = "(title LIKE :search OR description LIKE :search)";
             $params[":search"] = "%$search%";
         }
@@ -34,7 +34,7 @@ class ExperienceRepository implements ExperienceRepositoryInterface
         $results = $this->db->select($sql, $params);
         $total = $this->db->select("SELECT FOUND_ROWS() as total")[0]['total'];
 
-        $experiences = array_map(fn ($row) => $this->mapRowToExperience($row), $results);
+        $experiences = array_map($this->mapRowToExperience(...), $results);
 
         return ['experiences' => $experiences, 'total' => (int)$total];
     }
@@ -44,7 +44,7 @@ class ExperienceRepository implements ExperienceRepositoryInterface
         $sql = "SELECT * FROM experiences WHERE id = :id AND deleted_at IS NULL";
         $results = $this->db->select($sql, [':id' => $id]);
 
-        return $results ? $this->mapRowToExperience($results[0]) : null;
+        return $results !== [] ? $this->mapRowToExperience($results[0]) : null;
     }
 
     public function save(Experience $experience): Experience

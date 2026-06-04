@@ -53,7 +53,7 @@ class AuthService
     {
         $user = $this->userRepository->findByEmail($email);
 
-        if (!$user || !password_verify($password, $user['password'])) {
+        if (!$user || !password_verify($password, (string) $user['password'])) {
             throw new \Exception("E-mail ou senha inválidos.", HTTPStatus::UNAUTHORIZED);
         }
 

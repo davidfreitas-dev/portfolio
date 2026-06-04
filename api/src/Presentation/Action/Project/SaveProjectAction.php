@@ -14,8 +14,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class SaveProjectAction
 {
     public function __construct(
-        private ProjectService $projectService,
-        private JsonResponder $responder,
+        private readonly ProjectService $projectService,
+        private readonly JsonResponder $responder,
     ) {
     }
 
@@ -29,9 +29,9 @@ class SaveProjectAction
 
         $dto = new ProjectRequestDTO(
             title: $data['title'] ?? '',
+            description: $data['description'] ?? '',
             slug: $data['slug'] ?? null,
             summary: $data['summary'] ?? null,
-            description: $data['description'] ?? '',
             link: $data['link'] ?? null,
             github_link: $data['github_link'] ?? null,
             sort_order: (int)($data['sort_order'] ?? 0),

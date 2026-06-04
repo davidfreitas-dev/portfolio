@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\SetList;
-use Rector\Php84\Rector\Param\ExplicitNullableParamTypeRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -18,7 +17,4 @@ return RectorConfig::configure()
         SetList::DEAD_CODE,
         SetList::EARLY_RETURN,
         SetList::TYPE_DECLARATION,
-    ])
-    ->withRules([
-        ExplicitNullableParamTypeRector::class,
     ]);

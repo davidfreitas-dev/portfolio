@@ -12,7 +12,7 @@ class StringHelper
         $text = preg_replace('~[^\pL\d]+~u', '-', (string) $text);
 
         // Transliterate
-        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+        $text = iconv('utf-8', 'us-ascii//TRANSLIT', (string) $text);
 
         // Remove unwanted characters
         $text = preg_replace('~[^\-\w]+~', '', $text);

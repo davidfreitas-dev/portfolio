@@ -10,34 +10,22 @@ use JsonSerializable;
 
 class Technology implements JsonSerializable
 {
-    public private(set) ?int $id;
-    public string $name {
-        set => trim($value);
-    }
     public string $slug {
-        set => $value ? StringHelper::slugify($value) : StringHelper::slugify($this->name);
+        set => $value !== '' && $value !== '0' ? StringHelper::slugify($value) : StringHelper::slugify($this->name);
     }
-    public private(set) ?string $image;
-    public private(set) int $sortOrder;
-    public private(set) ?DateTimeImmutable $createdAt;
-    public private(set) ?DateTimeImmutable $updatedAt;
 
     public function __construct(
-        string $name,
+        public string $name {
+            set => trim($value);
+        },
         ?string $slug = null,
-        ?string $image = null,
-        int $sortOrder = 0,
-        ?int $id = null,
-        ?DateTimeImmutable $createdAt = null,
-        ?DateTimeImmutable $updatedAt = null,
+        public private(set) ?string $image = null,
+        public private(set) int $sortOrder = 0,
+        public private(set) ?int $id = null,
+        public private(set) ?DateTimeImmutable $createdAt = null,
+        public private(set) ?DateTimeImmutable $updatedAt = null,
     ) {
-        $this->id = $id;
-        $this->name = $name;
-        $this->slug = $slug ?? $name;
-        $this->image = $image;
-        $this->sortOrder = $sortOrder;
-        $this->createdAt = $createdAt;
-        $this->updatedAt = $updatedAt;
+        $this->slug = $slug ?? $this->name;
     }
 
     public function jsonSerialize(): array

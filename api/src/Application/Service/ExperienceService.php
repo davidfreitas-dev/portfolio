@@ -13,8 +13,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ExperienceService
 {
     public function __construct(
-        private ExperienceRepositoryInterface $repository,
-        private ValidatorInterface $validator,
+        private readonly ExperienceRepositoryInterface $repository,
+        private readonly ValidatorInterface $validator,
     ) {
     }
 
@@ -34,7 +34,7 @@ class ExperienceService
     public function getExperience(int $id): Experience
     {
         $experience = $this->repository->findById($id);
-        if (!$experience) {
+        if (!$experience instanceof \App\Domain\Entity\Experience) {
             throw new ExperienceNotFoundException($id);
         }
         return $experience;
@@ -60,7 +60,7 @@ class ExperienceService
         $dto->validate($this->validator);
 
         $existingExperience = $this->repository->findById($id);
-        if (!$existingExperience) {
+        if (!$existingExperience instanceof \App\Domain\Entity\Experience) {
             throw new ExperienceNotFoundException($id);
         }
 
@@ -80,7 +80,7 @@ class ExperienceService
     public function deleteExperience(int $id): bool
     {
         $existingExperience = $this->repository->findById($id);
-        if (!$existingExperience) {
+        if (!$existingExperience instanceof \App\Domain\Entity\Experience) {
             throw new ExperienceNotFoundException($id);
         }
 
