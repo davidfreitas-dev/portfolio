@@ -6,7 +6,9 @@ use Dotenv\Dotenv;
 use Selective\BasePath\BasePathMiddleware;
 use Slim\Factory\AppFactory;
 
-define('APP_ROOT', dirname(__DIR__));
+if (!defined('APP_ROOT')) {
+    define('APP_ROOT', dirname(__DIR__));
+}
 
 require APP_ROOT . '/vendor/autoload.php';
 

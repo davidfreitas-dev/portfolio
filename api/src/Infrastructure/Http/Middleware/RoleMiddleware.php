@@ -26,6 +26,11 @@ class RoleMiddleware
     {
         $jwt = $request->getAttribute('jwt');
 
+        // Se 'public' estiver nos roles permitidos, permitir acesso mesmo sem JWT
+        if (in_array('public', $this->requiredRoles, true) && (!$jwt || !isset($jwt['user']['role_name']))) {
+            return $handler->handle($request);
+        }
+
         if (!$jwt || !isset($jwt['user']['role_name'])) {
             return $this->deny('Acesso negado. Nenhuma permissão encontrada.');
         }

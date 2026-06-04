@@ -8,7 +8,12 @@ return [
         'logError'            => true,
         'logErrorDetails'     => true,
 
-        'db' => [
+        'db' => ($_ENV['APP_ENV'] ?? '') === 'testing' ? [
+            'host' => $_ENV['DB_TEST_HOST'] ?? 'localhost',
+            'database' => $_ENV['DB_TEST_NAME'] ?? 'portfolio_test',
+            'username' => $_ENV['DB_TEST_USER'] ?? 'root',
+            'password' => $_ENV['DB_TEST_PASS'] ?? '',
+        ] : [
             'host' => $_ENV['DB_HOST'] ?? 'localhost',
             'database' => $_ENV['DB_NAME'] ?? 'portfolio',
             'username' => $_ENV['DB_USER'] ?? 'root',

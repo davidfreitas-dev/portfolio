@@ -9,6 +9,7 @@ Esta API serve como o backend para o portfólio, incluindo autenticação com JW
 - [✨ Features](#-features)
 - [🚀 Tecnologias](#-tecnologias)
 - [🔧 Instalação e Execução (Docker)](#-instalação-e-execução-docker)
+- [✅ Testes Automatizados](#-testes-automatizados)
 - [🌱 Seeders](#-seeders)
 - [🏗️ Arquitetura](#️-arquitetura)
 - [📡 Documentação da API](#-documentação-da-api)
@@ -68,6 +69,45 @@ docker compose up -d --build
 #### 4. Instale as dependências
 ```bash
 docker compose exec api composer install
+```
+
+---
+
+## ✅ Testes Automatizados
+
+A API utiliza o **Pest PHP** para testes automatizados, integrando testes unitários (Service Layer) e testes de integração/feature (Actions e fluxos de API).
+
+### 🧪 Tipos de Testes
+
+- **Unitários:** Localizados em `tests/Unit`, focam na lógica de negócio isolada usando Mocks (Mockery).
+- **Feature (Integração):** Localizados em `tests/Feature`, testam o ciclo completo da requisição até o banco de dados.
+
+### ⚙️ Configuração do Ambiente de Testes
+
+1. **Banco de Dados:** O ambiente Docker já provê um container `database_test` (MySQL na porta `3307`).
+2. **Variáveis de Ambiente:** Certifique-se de que as variáveis `DB_TEST_*` no seu `.env` estão apontando para o container de teste.
+3. **Preparação do Banco:**
+```bash
+# Entre no container do banco de teste e execute o schema/seed
+docker exec -i api-database_test-1 mysql -u<user> -p<pass> <database> < database/schema.sql
+docker exec -i api-database_test-1 mysql -u<user> -p<pass> <database> < database/seed.sql
+```
+
+### 🏃 Executando os Testes
+
+Para rodar todos os testes:
+```bash
+docker compose exec api ./vendor/bin/pest
+```
+
+Para rodar um teste específico:
+```bash
+docker compose exec api ./vendor/bin/pest tests/Feature/ExperienceTest.php
+```
+
+Para rodar com cobertura de código (requer Xdebug):
+```bash
+docker compose exec api ./vendor/bin/pest --coverage
 ```
 
 ---

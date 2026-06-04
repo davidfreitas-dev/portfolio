@@ -26,13 +26,15 @@ class ExperienceRepository implements ExperienceRepositoryInterface
         }
 
         $offset = ($page - 1) * $limit;
-        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM experiences 
-                WHERE " . implode(" AND ", $where) . " 
+        $whereClause = implode(" AND ", $where);
+
+        $sql = "SELECT * FROM experiences 
+                WHERE $whereClause 
                 ORDER BY sort_order ASC, start_date DESC 
                 LIMIT $offset, $limit";
 
         $results = $this->db->select($sql, $params);
-        $total = $this->db->select("SELECT FOUND_ROWS() as total")[0]['total'];
+        $total = $this->db->select("SELECT COUNT(*) as total FROM experiences WHERE $whereClause", $params)[0]['total'];
 
         $experiences = array_map($this->mapRowToExperience(...), $results);
 

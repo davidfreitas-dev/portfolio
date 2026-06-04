@@ -33,7 +33,7 @@ class JwtAuthMiddleware implements MiddlewareInterface
         $authorization = $request->getHeaderLine('Authorization');
 
         if (empty($authorization)) {
-            return $this->unauthorized('Token não fornecido.');
+            return $handler->handle($request);
         }
 
         if (!preg_match('/Bearer\s+(.*)$/i', $authorization, $matches)) {

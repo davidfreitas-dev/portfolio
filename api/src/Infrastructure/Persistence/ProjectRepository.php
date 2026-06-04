@@ -25,10 +25,16 @@ class ProjectRepository implements ProjectRepositoryInterface
             $params[":search"] = "%$search%";
         }
 
-        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM projects WHERE " . implode(" AND ", $where) . " ORDER BY sort_order ASC, created_at DESC LIMIT " . (($page - 1) * $limit) . ", $limit";
+        $whereClause = implode(" AND ", $where);
+        $offset = ($page - 1) * $limit;
+
+        $sql = "SELECT * FROM projects 
+                WHERE $whereClause 
+                ORDER BY sort_order ASC, created_at DESC 
+                LIMIT $offset, $limit";
 
         $results = $this->db->select($sql, $params);
-        $total = $this->db->select("SELECT FOUND_ROWS() as total")[0]['total'];
+        $total = $this->db->select("SELECT COUNT(*) as total FROM projects WHERE $whereClause", $params)[0]['total'];
 
         $projects = [];
         foreach ($results as $row) {
