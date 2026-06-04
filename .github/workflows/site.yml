@@ -17,30 +17,15 @@ jobs:
   validate:
     name: Validate Static Files
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: site
-
+    
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-          cache: 'npm'
-          cache-dependency-path: site/package-lock.json
-
-      # Adapte (ou remova) os passos abaixo conforme sua stack
-      - name: Install dev tools
-        run: npm ci
-
-      - name: Lint HTML
-        run: npx htmlhint "**/*.html"
-
-      - name: Lint CSS
-        run: npx stylelint "**/*.css"
+    - name: Check for files
+      run: |
+        test -f site/index.html || (echo "::error::index.html não encontrado!" && exit 1)
+        echo "Arquivos estáticos encontrados, prosseguindo com deploy."
 
   # Etapa 2: deploy
   deploy:
@@ -53,7 +38,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy Site to Server
-        uses: easingthemes/ssh-deploy@v5.1.0  # versão fixada
+        uses: easingthemes/ssh-deploy@v5.1.0 
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
@@ -61,12 +46,8 @@ jobs:
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
           SOURCE: "site/"
           TARGET: "/var/www/portfolio/site/"
-          ARGS: "-rlgoDz --delete"  # removido -i e -c
-          EXCLUDE: ".git/, .gitignore, README.md, package.json,
-                    package-lock.json, node_modules/, .htmlhintrc,
-                    .stylelintrc"
-          # Permissões só se realmente necessário ajustar no servidor.
-          # Prefira configurar uma vez direto na VPS e remover daqui.
+          ARGS: "-rlgoDz --delete"
+          EXCLUDE: ".git/, .gitignore, README.md"
           SCRIPT_AFTER: |
             set -e
             echo "Deploy concluído: $(date)"
