@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Action\Experience;
+namespace App\Presentation\Action\Experience\Admin;
 
 use App\Application\Service\ExperienceService;
 use App\Presentation\Responder\JsonResponder;
+use App\Presentation\Transformer\ExperienceTransformer;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class DeleteExperienceAction
+class GetExperienceAction
 {
     public function __construct(
         private readonly ExperienceService $experienceService,
+        private readonly ExperienceTransformer $transformer,
         private readonly JsonResponder $responder,
     ) {
     }
@@ -20,8 +22,12 @@ class DeleteExperienceAction
     public function __invoke(Request $request, Response $response, array $args): Response
     {
         $id = (int)$args['id'];
-        $this->experienceService->deleteExperience($id);
+        $experience = $this->experienceService->getExperience($id);
 
-        return $this->responder->success($response, 'Experiência excluída com sucesso.');
+        return $this->responder->success(
+            $response,
+            'Experiência recuperada com sucesso.',
+            $this->transformer->transform($experience),
+        );
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Action\Project;
+namespace App\Presentation\Action\Project\Admin;
 
 use App\Application\Service\ProjectService;
 use App\Presentation\Responder\JsonResponder;

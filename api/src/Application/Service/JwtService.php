@@ -50,17 +50,6 @@ class JwtService
     }
 
     /**
-     * Gera um token público para acesso de visitantes.
-     */
-    public function generatePublicToken(): string
-    {
-        return $this->createToken([
-            'name'      => 'Guest User',
-            'role_name' => 'public',
-        ], 'site-client');
-    }
-
-    /**
      * Gera um token privado para usuários autenticados.
      */
     public function generatePrivateToken(array $data): string

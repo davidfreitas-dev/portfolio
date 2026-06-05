@@ -11,7 +11,7 @@ interface ProjectRepositoryInterface
     /**
      * @return array{projects: Project[], total: int}
      */
-    public function findAll(int $page, int $limit, string $search): array;
+    public function findAll(int $page, int $limit, string $search, bool $onlyActive = false): array;
 
     public function findById(int $id): ?Project;
 

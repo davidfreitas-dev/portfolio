@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Action\Experience;
+namespace App\Presentation\Action\Experience\Admin;
 
 use App\Application\Service\ExperienceService;
 use App\Presentation\Responder\JsonResponder;

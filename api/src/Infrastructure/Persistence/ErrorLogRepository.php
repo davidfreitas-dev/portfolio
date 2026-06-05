@@ -18,7 +18,7 @@ class ErrorLogRepository implements ErrorLogRepositoryInterface
     {
         $sql = "INSERT INTO error_logs (level, message, context, resolved_at, resolved_by) 
                 VALUES (:level, :message, :context, :resolved_at, :resolved_by)";
-        
+
         $params = [
             ':level' => $errorLog->severity,
             ':message' => $errorLog->message,
@@ -36,7 +36,7 @@ class ErrorLogRepository implements ErrorLogRepositoryInterface
             resolvedAt: $errorLog->resolvedAt,
             resolvedBy: $errorLog->resolvedBy,
             createdAt: new DateTimeImmutable(),
-            id: (int) $id
+            id: (int) $id,
         );
     }
 

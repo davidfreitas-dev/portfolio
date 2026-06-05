@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Action\Project;
+namespace App\Presentation\Action\Project\Admin;
 
 use App\Application\DTO\Project\ProjectRequestDTO;
 use App\Application\Service\ProjectService;
 use App\Presentation\Responder\JsonResponder;
+use App\Presentation\Transformer\ProjectTransformer;
 use App\Shared\Enum\HttpStatus as HTTPStatus;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -15,6 +16,7 @@ class SaveProjectAction
 {
     public function __construct(
         private readonly ProjectService $projectService,
+        private readonly ProjectTransformer $transformer,
         private readonly JsonResponder $responder,
     ) {
     }
@@ -50,6 +52,11 @@ class SaveProjectAction
             $status = HTTPStatus::CREATED;
         }
 
-        return $this->responder->success($response, $message, $project, $status);
+        return $this->responder->success(
+            $response,
+            $message,
+            $this->transformer->transform($project),
+            $status,
+        );
     }
 }

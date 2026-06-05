@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Action\Experience;
+namespace App\Presentation\Action\Experience\Admin;
 
 use App\Application\DTO\Experience\ExperienceRequestDTO;
 use App\Application\Service\ExperienceService;
 use App\Presentation\Responder\JsonResponder;
+use App\Presentation\Transformer\ExperienceTransformer;
 use App\Shared\Enum\HttpStatus as HTTPStatus;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -15,6 +16,7 @@ class CreateExperienceAction
 {
     public function __construct(
         private readonly ExperienceService $experienceService,
+        private readonly ExperienceTransformer $transformer,
         private readonly JsonResponder $responder,
     ) {
     }
@@ -33,6 +35,11 @@ class CreateExperienceAction
 
         $experience = $this->experienceService->createExperience($dto);
 
-        return $this->responder->success($response, 'Experiência criada com sucesso.', $experience, HTTPStatus::CREATED);
+        return $this->responder->success(
+            $response,
+            'Experiência criada com sucesso.',
+            $this->transformer->transform($experience),
+            HTTPStatus::CREATED,
+        );
     }
 }

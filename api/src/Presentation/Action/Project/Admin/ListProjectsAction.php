@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Action\Experience;
+namespace App\Presentation\Action\Project\Admin;
 
-use App\Application\Service\ExperienceService;
+use App\Application\Service\ProjectService;
 use App\Presentation\Responder\JsonResponder;
-use App\Presentation\Transformer\ExperienceTransformer;
+use App\Presentation\Transformer\ProjectTransformer;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class ListExperiencesAction
+class ListProjectsAction
 {
     public function __construct(
-        private readonly ExperienceService $experienceService,
-        private readonly ExperienceTransformer $transformer,
+        private readonly ProjectService $projectService,
+        private readonly ProjectTransformer $transformer,
         private readonly JsonResponder $responder,
     ) {
     }
@@ -26,10 +26,11 @@ class ListExperiencesAction
         $limit = (int)($queryParams['limit'] ?? 10);
         $search = (string)($queryParams['search'] ?? '');
 
-        $result = $this->experienceService->listExperiences($page, $limit, $search);
+        // onlyActive = false (shows all)
+        $result = $this->projectService->listProjects($page, $limit, $search, false);
 
         $data = [
-            'experiences' => $this->transformer->transformCollection($result['experiences']),
+            'projects' => $this->transformer->transformCollection($result['projects']),
             'pagination' => [
                 'total_items' => $result['total_items'],
                 'current_page' => $result['current_page'],
@@ -38,6 +39,6 @@ class ListExperiencesAction
             ],
         ];
 
-        return $this->responder->success($response, 'Experiências recuperadas com sucesso.', $data);
+        return $this->responder->success($response, 'Projetos recuperados com sucesso.', $data);
     }
 }

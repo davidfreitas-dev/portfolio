@@ -56,6 +56,14 @@ class RedisCache
         return $ttl !== false ? $ttl : -2;
     }
 
+    public function deleteByPattern(string $pattern): void
+    {
+        $iterator = null;
+        while ($keys = $this->redis->scan($iterator, $pattern, 100)) {
+            $this->redis->del($keys);
+        }
+    }
+
     public function flush(): bool
     {
         return $this->redis->flushDB();

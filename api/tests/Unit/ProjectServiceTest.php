@@ -27,6 +27,7 @@ test('should return list of projects', function () {
     $page = 1;
     $limit = 10;
     $search = '';
+    $onlyActive = false;
     
     $projects = [
         new Project('Project 1', 'Desc 1', 'project-1', 'Summary 1', null, null, null, 1, true, [], 1),
@@ -34,14 +35,14 @@ test('should return list of projects', function () {
     ];
 
     $this->repository->shouldReceive('findAll')
-        ->with($page, $limit, $search)
+        ->with($page, $limit, $search, $onlyActive)
         ->once()
         ->andReturn([
             'projects' => $projects,
             'total' => 2
         ]);
 
-    $result = $this->service->listProjects($page, $limit, $search);
+    $result = $this->service->listProjects($page, $limit, $search, $onlyActive);
 
     expect($result)->toBeArray()
         ->and($result['projects'])->toBe($projects)

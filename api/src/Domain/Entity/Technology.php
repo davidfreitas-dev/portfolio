@@ -6,9 +6,8 @@ namespace App\Domain\Entity;
 
 use App\Shared\Utility\StringHelper;
 use DateTimeImmutable;
-use JsonSerializable;
 
-class Technology implements JsonSerializable
+class Technology
 {
     public string $slug {
         set => $value !== '' && $value !== '0' ? StringHelper::slugify($value) : StringHelper::slugify($this->name);
@@ -26,18 +25,5 @@ class Technology implements JsonSerializable
         public private(set) ?DateTimeImmutable $updatedAt = null,
     ) {
         $this->slug = $slug ?? $this->name;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'image' => $this->image,
-            'sort_order' => $this->sortOrder,
-            'created_at' => $this->createdAt?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updatedAt?->format('Y-m-d H:i:s'),
-        ];
     }
 }

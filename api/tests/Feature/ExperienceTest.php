@@ -22,7 +22,8 @@ class ExperienceTest extends AppTestCase
         
         $data = $envelope['data'];
         $this->assertArrayHasKey('experiences', $data);
-        $this->assertArrayHasKey('total_items', $data);
+        $this->assertArrayHasKey('pagination', $data);
+        $this->assertArrayHasKey('total_items', $data['pagination']);
         $this->assertGreaterThanOrEqual(1, count($data['experiences']));
     }
 
@@ -60,7 +61,7 @@ class ExperienceTest extends AppTestCase
             'sort_order' => 5
         ];
 
-        $request = $this->createJsonRequest('POST', '/experiences', $data);
+        $request = $this->createJsonRequest('POST', '/admin/experiences', $data);
         $request = $this->withAdminToken($request);
         
         $response = $this->request($request);
@@ -81,7 +82,7 @@ class ExperienceTest extends AppTestCase
             'sort_order' => 5
         ];
 
-        $request = $this->createJsonRequest('POST', '/experiences', $data);
+        $request = $this->createJsonRequest('POST', '/admin/experiences', $data);
         $response = $this->request($request);
 
         $this->assertEquals(403, $response->getStatusCode());
@@ -98,17 +99,17 @@ class ExperienceTest extends AppTestCase
             'sort_order' => 99
         ];
         
-        $createRequest = $this->createJsonRequest('POST', '/experiences', $createData)
+        $createRequest = $this->createJsonRequest('POST', '/admin/experiences', $createData)
             ->withHeader('Authorization', 'Bearer ' . $token);
         $createResponse = $this->request($createRequest);
         $createdId = json_decode((string)$createResponse->getBody(), true)['data']['id'];
 
         // Agora deleta
-        $deleteRequest = $this->createRequest('DELETE', "/experiences/$createdId")
+        $deleteRequest = $this->createRequest('DELETE', "/admin/experiences/$createdId")
             ->withHeader('Authorization', 'Bearer ' . $token);
         $deleteResponse = $this->request($deleteRequest);
 
-        $this->assertEquals(200, $responseCode = $deleteResponse->getStatusCode());
+        $this->assertEquals(204, $deleteResponse->getStatusCode());
         
         // Verifica se foi deletado (logical delete)
         $getRequest = $this->createRequest('GET', "/experiences/$createdId");

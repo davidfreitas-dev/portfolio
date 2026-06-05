@@ -18,6 +18,7 @@ class ProjectTest extends AppTestCase
         $envelope = json_decode((string)$response->getBody(), true);
         $this->assertEquals('success', $envelope['status']);
         $this->assertArrayHasKey('projects', $envelope['data']);
+        $this->assertArrayHasKey('pagination', $envelope['data']);
     }
 
     public function test_can_get_single_project(): void
@@ -43,7 +44,7 @@ class ProjectTest extends AppTestCase
             'sort_order' => 10
         ];
 
-        $request = $this->createJsonRequest('POST', '/projects', $data);
+        $request = $this->createJsonRequest('POST', '/admin/projects', $data);
         $request = $this->withAdminToken($request);
         
         $response = $this->request($request);

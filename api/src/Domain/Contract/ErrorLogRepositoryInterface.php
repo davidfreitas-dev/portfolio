@@ -9,5 +9,6 @@ use App\Domain\Entity\ErrorLog;
 interface ErrorLogRepositoryInterface
 {
     public function save(ErrorLog $errorLog): ErrorLog;
+
     public function markAsResolved(int $errorLogId, int $resolvedByUserId): bool;
 }

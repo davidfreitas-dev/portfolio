@@ -42,6 +42,7 @@ return [
         ],
 
         'site_url' => $_ENV['SITE_URL'] ?? 'http://localhost',
+        'api_url' => $_ENV['API_URL'] ?? 'http://localhost:8080',
 
         'cors' => [
             'allowed_origins' => [$_ENV['SITE_URL'] ?? 'http://localhost'],

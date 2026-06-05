@@ -18,9 +18,9 @@ class ProjectService
     ) {
     }
 
-    public function listProjects(int $page, int $limit, string $search): array
+    public function listProjects(int $page, int $limit, string $search, bool $onlyActive = false): array
     {
-        $result = $this->repository->findAll($page, $limit, $search);
+        $result = $this->repository->findAll($page, $limit, $search, $onlyActive);
 
         return [
             'projects' => $result['projects'],

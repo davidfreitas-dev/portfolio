@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Action\Technology;
+namespace App\Presentation\Action\Technology\Admin;
 
 use App\Application\DTO\Technology\TechnologyRequestDTO;
 use App\Application\Service\TechnologyService;
 use App\Presentation\Responder\JsonResponder;
+use App\Presentation\Transformer\TechnologyTransformer;
 use App\Shared\Enum\HttpStatus as HTTPStatus;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -15,6 +16,7 @@ class SaveTechnologyAction
 {
     public function __construct(
         private readonly TechnologyService $technologyService,
+        private readonly TechnologyTransformer $transformer,
         private readonly JsonResponder $responder,
     ) {
     }
@@ -44,6 +46,11 @@ class SaveTechnologyAction
             $status = HTTPStatus::CREATED;
         }
 
-        return $this->responder->success($response, $message, $technology, $status);
+        return $this->responder->success(
+            $response,
+            $message,
+            $this->transformer->transform($technology),
+            $status,
+        );
     }
 }

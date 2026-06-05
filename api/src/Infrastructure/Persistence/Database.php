@@ -12,7 +12,7 @@ class Database
         string $host,
         string $database,
         string $username,
-        string $password
+        string $password,
     ) {
         $this->conn = new \PDO(
             "mysql:dbname=$database;host=$host",

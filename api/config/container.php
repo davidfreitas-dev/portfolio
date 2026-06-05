@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Application\Service\AuthService;
+use App\Application\Service\ErrorLoggerService;
 use App\Application\Service\ExperienceService;
 use App\Application\Service\FileUploaderService;
 use App\Application\Service\JwtService;
@@ -10,6 +11,7 @@ use App\Application\Service\MailService;
 use App\Application\Service\ProjectService;
 use App\Application\Service\TechnologyService;
 use App\Application\Service\UserService;
+use App\Domain\Contract\ErrorLogRepositoryInterface;
 use App\Domain\Contract\ExperienceRepositoryInterface;
 use App\Domain\Contract\MailerInterface;
 use App\Domain\Contract\OtpRepositoryInterface;
@@ -18,10 +20,13 @@ use App\Domain\Contract\TechnologyRepositoryInterface;
 use App\Domain\Contract\UserRepositoryInterface;
 use App\Infrastructure\Http\Middleware\CorsMiddleware;
 use App\Infrastructure\Http\Middleware\ErrorMiddleware;
+use App\Infrastructure\Http\Middleware\HttpCacheInvalidationMiddleware;
+use App\Infrastructure\Http\Middleware\HttpCacheMiddleware;
 use App\Infrastructure\Http\Middleware\JwtAuthMiddleware;
 use App\Infrastructure\Http\Middleware\RateLimitMiddleware;
 use App\Infrastructure\Mailer\PHPMailerService;
 use App\Infrastructure\Persistence\Database;
+use App\Infrastructure\Persistence\ErrorLogRepository;
 use App\Infrastructure\Persistence\ExperienceRepository;
 use App\Infrastructure\Persistence\OtpRepository;
 use App\Infrastructure\Persistence\ProjectRepository;
@@ -51,7 +56,7 @@ $containerBuilder->addDefinitions([
             $dbSettings['host'],
             $dbSettings['database'],
             $dbSettings['username'],
-            $dbSettings['password']
+            $dbSettings['password'],
         );
     },
 
@@ -159,6 +164,12 @@ $containerBuilder->addDefinitions([
 
     JsonResponder::class => fn (): \App\Presentation\Responder\JsonResponder => new JsonResponder(),
 
+    \App\Presentation\Transformer\ProjectTransformer::class => fn (ContainerInterface $c): \App\Presentation\Transformer\ProjectTransformer => new \App\Presentation\Transformer\ProjectTransformer($c->get('settings')['api_url']),
+
+    \App\Presentation\Transformer\ExperienceTransformer::class => fn (): \App\Presentation\Transformer\ExperienceTransformer => new \App\Presentation\Transformer\ExperienceTransformer(),
+
+    \App\Presentation\Transformer\TechnologyTransformer::class => fn (ContainerInterface $c): \App\Presentation\Transformer\TechnologyTransformer => new \App\Presentation\Transformer\TechnologyTransformer($c->get('settings')['api_url']),
+
     ErrorMiddleware::class => fn (ContainerInterface $c): \App\Infrastructure\Http\Middleware\ErrorMiddleware => new ErrorMiddleware(
         $c->get(JsonResponder::class),
         $c->get(LoggerInterface::class),
@@ -177,6 +188,10 @@ $containerBuilder->addDefinitions([
         $c->get(JwtService::class),
         $c->get('settings')['rate_limit'] ?? [],
     ),
+
+    HttpCacheMiddleware::class => fn (ContainerInterface $c): \App\Infrastructure\Http\Middleware\HttpCacheMiddleware => new HttpCacheMiddleware($c->get(RedisCache::class)),
+
+    HttpCacheInvalidationMiddleware::class => fn (ContainerInterface $c): \App\Infrastructure\Http\Middleware\HttpCacheInvalidationMiddleware => new HttpCacheInvalidationMiddleware($c->get(RedisCache::class)),
 ]);
 
 return $containerBuilder->build();

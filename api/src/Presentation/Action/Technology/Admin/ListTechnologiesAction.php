@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Action\Experience;
+namespace App\Presentation\Action\Technology\Admin;
 
-use App\Application\Service\ExperienceService;
+use App\Application\Service\TechnologyService;
 use App\Presentation\Responder\JsonResponder;
-use App\Presentation\Transformer\ExperienceTransformer;
+use App\Presentation\Transformer\TechnologyTransformer;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class ListExperiencesAction
+class ListTechnologiesAction
 {
     public function __construct(
-        private readonly ExperienceService $experienceService,
-        private readonly ExperienceTransformer $transformer,
+        private readonly TechnologyService $service,
+        private readonly TechnologyTransformer $transformer,
         private readonly JsonResponder $responder,
     ) {
     }
@@ -26,10 +26,10 @@ class ListExperiencesAction
         $limit = (int)($queryParams['limit'] ?? 10);
         $search = (string)($queryParams['search'] ?? '');
 
-        $result = $this->experienceService->listExperiences($page, $limit, $search);
+        $result = $this->service->listTechnologies($page, $limit, $search);
 
         $data = [
-            'experiences' => $this->transformer->transformCollection($result['experiences']),
+            'technologies' => $this->transformer->transformCollection($result['technologies']),
             'pagination' => [
                 'total_items' => $result['total_items'],
                 'current_page' => $result['current_page'],
@@ -38,6 +38,6 @@ class ListExperiencesAction
             ],
         ];
 
-        return $this->responder->success($response, 'Experiências recuperadas com sucesso.', $data);
+        return $this->responder->success($response, 'Tecnologias recuperadas com sucesso.', $data);
     }
 }

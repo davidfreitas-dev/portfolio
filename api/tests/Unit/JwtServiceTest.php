@@ -25,14 +25,6 @@ test('should create and decode a token', function () {
         ->and($decoded['iss'])->toBe('portfolio-api');
 });
 
-test('should generate public token', function () {
-    $token = $this->service->generatePublicToken();
-    $decoded = $this->service->decodeToken($token);
-
-    expect($decoded['user']['role_name'])->toBe('public')
-        ->and($decoded['sub'])->toBe('site-client');
-});
-
 test('should generate private token', function () {
     $data = ['id' => 123, 'role_name' => 'editor'];
     $token = $this->service->generatePrivateToken($data);

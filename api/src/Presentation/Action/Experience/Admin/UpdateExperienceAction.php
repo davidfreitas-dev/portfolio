@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Action\Experience;
+namespace App\Presentation\Action\Experience\Admin;
 
 use App\Application\DTO\Experience\ExperienceRequestDTO;
 use App\Application\Service\ExperienceService;
 use App\Presentation\Responder\JsonResponder;
+use App\Presentation\Transformer\ExperienceTransformer;
 use App\Shared\Enum\HttpStatus as HTTPStatus;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -15,6 +16,7 @@ class UpdateExperienceAction
 {
     public function __construct(
         private readonly ExperienceService $experienceService,
+        private readonly ExperienceTransformer $transformer,
         private readonly JsonResponder $responder,
     ) {
     }
@@ -34,6 +36,11 @@ class UpdateExperienceAction
 
         $experience = $this->experienceService->updateExperience($id, $dto);
 
-        return $this->responder->success($response, 'Experiência atualizada com sucesso.', $experience, HTTPStatus::OK);
+        return $this->responder->success(
+            $response,
+            'Experiência atualizada com sucesso.',
+            $this->transformer->transform($experience),
+            HTTPStatus::OK,
+        );
     }
 }
