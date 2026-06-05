@@ -19,7 +19,7 @@ class UserTest extends AppTestCase
         
         $envelope = json_decode((string)$response->getBody(), true);
         $this->assertEquals('success', $envelope['status']);
-        $this->assertEquals('Admin User', $envelope['data']['name']);
+        $this->assertEquals('Admin Portfolio', $envelope['data']['name']);
     }
 
     public function test_cannot_get_profile_without_token(): void
@@ -27,6 +27,7 @@ class UserTest extends AppTestCase
         $request = $this->createRequest('GET', '/users/me');
         $response = $this->request($request);
 
-        $this->assertEquals(404, $response->getStatusCode());
+        // Agora que adicionamos o RoleMiddleware, deve retornar 403 se o JWT estiver ausente
+        $this->assertEquals(403, $response->getStatusCode());
     }
 }

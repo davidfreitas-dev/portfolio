@@ -38,7 +38,10 @@ CREATE TABLE error_logs (
   message TEXT NOT NULL,
   trace TEXT NULL,
   context JSON NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  resolved_at TIMESTAMP NULL DEFAULT NULL,
+  resolved_by BIGINT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (resolved_by) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 📜 experiences

@@ -8,23 +8,23 @@ class Database
 {
     private readonly \PDO $conn;
 
-    public function __construct()
-    {
-
+    public function __construct(
+        string $host,
+        string $database,
+        string $username,
+        string $password
+    ) {
         $this->conn = new \PDO(
-            "mysql:dbname=".$_ENV['DB_NAME'].";host=".$_ENV['DB_HOST'],
-            $_ENV['DB_USER'],
-            $_ENV['DB_PASS'],
+            "mysql:dbname=$database;host=$host",
+            $username,
+            $password,
             [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8;SET time_zone='America/Sao_Paulo'"],
         );
-
     }
 
     public function getConnection(): \PDO
     {
-
         return $this->conn;
-
     }
 
     public function insert($rawQuery, $params = []): int

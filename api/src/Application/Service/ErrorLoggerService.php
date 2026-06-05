@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Service;
 
 use App\Domain\Entity\ErrorLog;
-use App\Domain\Repository\ErrorLogRepositoryInterface;
+use App\Domain\Contract\ErrorLogRepositoryInterface;
 use DateTimeImmutable;
 
 class ErrorLoggerService

@@ -66,7 +66,7 @@ return function (App $app): void {
         $group->put('', UpdateMeAction::class);
         $group->patch('/change-password', ChangePasswordAction::class);
         $group->delete('', DeleteMeAction::class);
-    });
+    })->add(new RoleMiddleware(['user', 'editor', 'admin']));
 
     /**
      * Experience Routes

@@ -45,7 +45,15 @@ $containerBuilder->addDefinitions(require __DIR__ . '/settings.php');
 
 // Add service and middleware definitions
 $containerBuilder->addDefinitions([
-    Database::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\Database => new Database(),
+    Database::class => function (ContainerInterface $c): \App\Infrastructure\Persistence\Database {
+        $dbSettings = $c->get('settings')['db'];
+        return new Database(
+            $dbSettings['host'],
+            $dbSettings['database'],
+            $dbSettings['username'],
+            $dbSettings['password']
+        );
+    },
 
     LoggerInterface::class => function (ContainerInterface $c): \Monolog\Logger {
         $logger = new Logger('app');
@@ -101,6 +109,10 @@ $containerBuilder->addDefinitions([
         $c->get(ValidatorInterface::class),
         $c->get(FileUploaderService::class),
     ),
+
+    ErrorLogRepositoryInterface::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\ErrorLogRepository => new ErrorLogRepository($c->get(Database::class)),
+
+    ErrorLoggerService::class => fn (ContainerInterface $c): \App\Application\Service\ErrorLoggerService => new ErrorLoggerService($c->get(ErrorLogRepositoryInterface::class)),
 
     OtpRepositoryInterface::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\OtpRepository => new OtpRepository($c->get(RedisCache::class)),
 
