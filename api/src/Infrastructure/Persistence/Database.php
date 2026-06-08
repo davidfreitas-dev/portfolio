@@ -15,10 +15,10 @@ class Database
         string $password,
     ) {
         $this->conn = new \PDO(
-            "mysql:dbname=$database;host=$host",
+            "mysql:dbname=$database;host=$host;charset=utf8mb4",
             $username,
             $password,
-            [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8;SET time_zone='America/Sao_Paulo'"],
+            [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4;SET time_zone='America/Sao_Paulo'"],
         );
     }
 

@@ -2,11 +2,17 @@
 
 ## Índice
 - [Geral](#geral)
-- [Autenticação](#autenticação)
-- [Perfil do Usuário](#perfil-do-usuário)
-- [Experiências](#experiências)
-- [Projetos](#projetos)
-- [Tecnologias](#tecnologias)
+- [Public API (Site)](#public-api-site)
+  - [Experiências](#experiências-público)
+  - [Projetos](#projetos-público)
+  - [Tecnologias](#tecnologias-público)
+  - [Imagens](#imagens)
+- [CMS API (Admin)](#cms-api-admin)
+  - [Autenticação](#autenticação)
+  - [Perfil do Usuário](#perfil-do-usuário)
+  - [Gestão de Experiências](#gestão-de-experiências)
+  - [Gestão de Projetos](#gestão-de-projetos)
+  - [Gestão de Tecnologias](#gestão-de-tecnologias)
 
 ---
 
@@ -16,292 +22,672 @@
 ```http
 GET /
 ```
+**Resposta (200 OK):**
+```json
+{
+  "message": "Welcome to the Personal Portfolio Site API!"
+}
+```
 
 #### Health Check
 ```http
 GET /health
 ```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Health check performed successfully",
+  "data": {
+    "status": "up",
+    "version": "1.0.0",
+    "database": "connected"
+  }
+}
+```
 
 ---
 
-## Autenticação
+## Public API (Site)
 
+Endpoints utilizados pelo site estático para consumo de dados públicos. Todos retornam um objeto com `code`, `status`, `message` e a chave `data`.
+
+### Experiências (Público)
+Base path: `/public/experiences`
+
+#### Listar Experiências
+```http
+GET /public/experiences?page=1&limit=10&search=
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Experiências listadas com sucesso.",
+  "data": {
+    "experiences": [
+      {
+        "id": 1,
+        "title": "Desenvolvedor Full Stack",
+        "description": "Atuação em projetos PHP e Vue.js",
+        "start_date": "2023-01-01",
+        "end_date": null,
+        "sort_order": 0
+      }
+    ],
+    "total": 1,
+    "page": 1,
+    "limit": 10,
+    "pages": 1
+  }
+}
+```
+
+#### Obter detalhes da Experiência
+```http
+GET /public/experiences/{id}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Experiência encontrada.",
+  "data": {
+    "id": 1,
+    "title": "Desenvolvedor Full Stack",
+    "description": "Atuação em projetos PHP e Vue.js",
+    "start_date": "2023-01-01",
+    "end_date": null,
+    "sort_order": 0
+  }
+}
+```
+
+### Projetos (Público)
+Base path: `/public/projects`
+
+#### Listar Projetos
+```http
+GET /public/projects?page=1&limit=10&search=
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Projetos listados com sucesso.",
+  "data": {
+    "projects": [
+      {
+        "id": 1,
+        "title": "Meu Portfólio",
+        "description": "Site pessoal feito com Slim Framework e Vanilla JS",
+        "slug": "meu-portfolio",
+        "summary": "Resumo do projeto",
+        "link": "https://meu-site.com",
+        "github_link": "https://github.com/user/portfolio",
+        "image": "https://api.meu-site.com/images/projects/portfolio.png",
+        "technologies": [
+          { "id": 1, "name": "PHP", "image": "php.png" }
+        ]
+      }
+    ],
+    "total": 1,
+    "page": 1,
+    "limit": 10,
+    "pages": 1
+  }
+}
+```
+
+#### Obter detalhes do Projeto
+```http
+GET /public/projects/{id}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Projeto encontrado.",
+  "data": {
+    "id": 1,
+    "title": "Meu Portfólio",
+    "description": "Descrição completa...",
+    "slug": "meu-portfolio",
+    "summary": "Resumo...",
+    "link": "https://...",
+    "github_link": "https://...",
+    "image": "https://...",
+    "technologies": [
+      { "id": 1, "name": "PHP", "image": "php.png" }
+    ]
+  }
+}
+```
+
+### Tecnologias (Público)
+Base path: `/public/technologies`
+
+#### Listar Tecnologias
+```http
+GET /public/technologies?page=1&limit=10&search=
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Tecnologias listadas com sucesso.",
+  "data": {
+    "technologies": [
+      {
+        "id": 1,
+        "name": "PHP",
+        "slug": "php",
+        "image": "https://api.meu-site.com/images/technologies/php.png",
+        "sort_order": 0
+      }
+    ],
+    "total": 1,
+    "page": 1,
+    "limit": 10,
+    "pages": 1
+  }
+}
+```
+
+#### Obter detalhes da Tecnologia
+```http
+GET /public/technologies/{id}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Tecnologia encontrada.",
+  "data": {
+    "id": 1,
+    "name": "PHP",
+    "slug": "php",
+    "image": "https://...",
+    "sort_order": 0
+  }
+}
+```
+
+### Imagens
+#### Obter Imagem
+Retorna o arquivo binário da imagem.
+```http
+GET /images/{folder}/{image}
+```
+
+---
+
+## CMS API (Admin)
+
+Endpoints utilizados pelo sistema de gestão (CMS). Requerem autenticação JWT (exceto rotas de login). O token deve ser enviado no header `Authorization: Bearer {token}`.
+
+### Autenticação
 Base path: `/auth`
 
 #### Solicitar Código de Login (OTP)
-Valida se o e-mail existe na base de dados e envia um código OTP para login.
+Envia um código para o e-mail do usuário.
 ```http
 POST /auth/request-login
 ```
-
-**Body:**
+**Body (JSON):**
 ```json
 {
-  "email": "joao@example.com"
+  "email": "admin@portfolio.com"
+}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Se o e-mail existir, um código OTP foi enviado."
 }
 ```
 
 #### Login
-Autentica o usuário utilizando e-mail com senha OU e-mail com código OTP.
+Autenticação por senha ou OTP.
 ```http
 POST /auth/login
 ```
-
-**Body (Senha):**
+**Body (JSON - Senha):**
 ```json
 {
-  "email": "joao@example.com",
-  "password": "senha123"
+  "email": "admin@portfolio.com",
+  "password": "SenhaSegura"
 }
 ```
-
-**Body (OTP):**
+**Body (JSON - OTP):**
 ```json
 {
-  "email": "joao@example.com",
+  "email": "admin@portfolio.com",
   "otp": "123456"
+}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Login realizado com sucesso.",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1...",
+    "user": {
+      "id": 1,
+      "name": "João Silva",
+      "email": "admin@portfolio.com",
+      "role": "admin"
+    }
+  }
 }
 ```
 
 #### Logout
-Encerra a sessão do usuário.
 ```http
 POST /auth/logout
 ```
-Requer token JWT no header `Authorization: Bearer {token}`.
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Logout realizado com sucesso."
+}
+```
 
-#### Solicitar Reset de Senha
+#### Reset de Senha (Esqueci a senha)
+
+Utilizado para recuperação de conta quando o usuário esquece a senha.
+
+##### 1. Solicitar Reset
+Envia um código de verificação para o e-mail informado.
 ```http
 POST /auth/forgot
 ```
-
-**Body:**
+**Body (JSON):**
 ```json
 {
-  "email": "joao@example.com"
+  "email": "admin@portfolio.com"
+}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Se o e-mail existir, um código para redefinição foi enviado."
 }
 ```
 
-#### Validar Código de Reset
+##### 2. Validar Código
+Verifica se o código enviado por e-mail é válido para o usuário.
 ```http
 POST /auth/validate-reset-code
 ```
-
-**Body:**
+**Body (JSON):**
 ```json
 {
-  "email": "joao@example.com",
+  "email": "admin@portfolio.com",
   "code": "123456"
 }
 ```
-
-#### Reset de Senha
-```http
-POST /auth/reset
-```
-
-**Body:**
+**Resposta (200 OK):**
 ```json
 {
-  "email": "joao@example.com",
-  "code": "123456",
-  "password": "novaSenha123",
-  "password_confirm": "novaSenha123"
+  "code": 200,
+  "status": "success",
+  "message": "Código validado com sucesso."
 }
 ```
 
----
+##### 3. Definir Nova Senha
+Efetiva a alteração da senha utilizando o código validado.
+```http
+POST /auth/reset
+```
+**Body (JSON):**
+```json
+{
+  "email": "admin@portfolio.com",
+  "code": "123456",
+  "password": "NovaSenhaSegura123",
+  "password_confirm": "NovaSenhaSegura123"
+}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Senha alterada com sucesso."
+}
+```
 
-## Perfil do Usuário
+### Perfil do Usuário
+Base path: `/users/me`
 
-#### Obter perfil do usuário logado
-Requer token JWT.
-
+#### Obter perfil
 ```http
 GET /users/me
 ```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Perfil recuperado com sucesso.",
+  "data": {
+    "id": 1,
+    "name": "João Silva",
+    "email": "admin@portfolio.com",
+    "phone": "11988887777",
+    "role": "admin"
+  }
+}
+```
 
-#### Atualizar dados do perfil
-Requer token JWT.
-
+#### Atualizar dados
 ```http
 PUT /users/me
 ```
-
-**Body:**
+**Body (JSON):**
 ```json
 {
   "name": "Nome Atualizado",
-  "email": "novo@example.com",
-  "phone": "99988877766"
+  "email": "novo@email.com",
+  "phone": "11900001111"
+}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Perfil atualizado com sucesso."
 }
 ```
 
 #### Alterar senha
-Requer token JWT.
-
 ```http
 PATCH /users/me/change-password
 ```
-
-**Body:**
+**Body (JSON):**
 ```json
 {
-  "current_password": "senhaAtual",
-  "new_password": "novaSenha123",
-  "new_password_confirm": "novaSenha123"
+  "current_password": "SenhaAntiga",
+  "new_password": "NovaSenha123",
+  "new_password_confirm": "NovaSenha123"
+}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Senha alterada com sucesso."
 }
 ```
 
-#### Deletar conta
-Requer token JWT.
+### Gestão de Experiências
+Base path: `/admin/experiences`
 
+#### Listar Experiências (Admin)
 ```http
-DELETE /users/me
+GET /admin/experiences?page=1&limit=10&search=
 ```
-
----
-
-## Experiências
-
-Base path: `/experiences`
-Requer permissões apropriadas (pública para listagem, admin para gestão).
-
-#### Listar Experiências
-```http
-GET /experiences?page=1&limit=10&search=
-```
-
-**Query Parameters:**
-- `page`: int (opcional, padrão: 1)
-- `limit`: int (opcional, padrão: 10)
-- `search`: string (opcional)
-
-#### Obter detalhes da Experiência
-```http
-GET /experiences/{id}
-```
-
-#### Criar Experiência (Admin)
-```http
-POST /experiences
-```
-
-**Body:**
+**Resposta (200 OK):**
 ```json
 {
-  "title": "Cargo",
-  "description": "Descrição das atividades",
-  "start_date": "2023-01-01",
-  "end_date": "2023-12-31",
-  "sort_order": 0
+  "code": 200,
+  "status": "success",
+  "message": "Experiências listadas com sucesso.",
+  "data": {
+    "experiences": [...],
+    "total": 10,
+    "page": 1,
+    "limit": 10,
+    "pages": 1
+  }
 }
 ```
-#### Atualizar Experiência (Admin)
-```http
-PUT /experiences/{id}
-```
 
-**Body:**
+#### Obter detalhes da Experiência (Admin)
+```http
+GET /admin/experiences/{id}
+```
+**Resposta (200 OK):**
 ```json
 {
-  "title": "Cargo Atualizado",
-  "description": "Descrição atualizada",
-  "start_date": "2023-01-01",
+  "code": 200,
+  "status": "success",
+  "message": "Experiência encontrada.",
+  "data": { "id": 1, "title": "...", ... }
+}
+```
+
+#### Criar Experiência
+```http
+POST /admin/experiences
+```
+**Body (JSON):**
+```json
+{
+  "title": "Sênior Dev",
+  "description": "Descrição...",
+  "start_date": "2020-01-01",
   "end_date": null,
-  "sort_order": 0
+  "sort_order": 5
 }
 ```
-#### Deletar Experiência (Admin)
-```http
-DELETE /experiences/{id}
+**Resposta (201 Created):**
+```json
+{
+  "code": 201,
+  "status": "success",
+  "message": "Experiência criada com sucesso.",
+  "data": { "id": 10, "title": "Sênior Dev", ... }
+}
 ```
 
----
-
-## Projetos
-
-Base path: `/projects`
-Requer permissões apropriadas (pública para listagem, admin para gestão).
-
-#### Listar Projetos
+#### Atualizar Experiência
 ```http
-GET /projects?page=1&limit=10&search=
+PUT /admin/experiences/{id}
+```
+**Body (JSON):** Todos os campos são opcionais.
+```json
+{
+  "title": "Novo Título"
+}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Experiência atualizada com sucesso."
+}
 ```
 
-**Query Parameters:**
-- `page`: int (opcional, padrão: 1)
-- `limit`: int (opcional, padrão: 10)
-- `search`: string (opcional)
-
-#### Obter detalhes do Projeto
+#### Deletar Experiência
 ```http
-GET /projects/{id}
+DELETE /admin/experiences/{id}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Experiência removida com sucesso."
+}
 ```
 
-#### Salvar Projeto (Criar/Atualizar) (Admin)
-Utilize esta rota para criar ou atualizar um projeto. Se o campo `id` for enviado no corpo da requisição, o projeto será atualizado. Esta rota utiliza `multipart/form-data` para suportar upload de imagens.
+### Gestão de Projetos
+Base path: `/admin/projects`
+
+#### Listar Projetos (Admin)
 ```http
-POST /projects
+GET /admin/projects?page=1&limit=10&search=
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Projetos listados com sucesso.",
+  "data": {
+    "projects": [...],
+    "total": 5,
+    "page": 1,
+    "limit": 10,
+    "pages": 1
+  }
+}
 ```
 
+#### Obter detalhes do Projeto (Admin)
+```http
+GET /admin/projects/{id}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Projeto encontrado.",
+  "data": { "id": 1, "title": "...", ... }
+}
+```
+
+#### Salvar Projeto (Criar/Atualizar)
+Este endpoint utiliza `multipart/form-data` devido ao upload de imagem. Para atualizar, envie o campo `id`.
+```http
+POST /admin/projects
+```
 **Body (Multipart/form-data):**
-- `id`: int (opcional - enviar apenas para atualizar)
-- `title`: string (obrigatório)
-- `description`: string (obrigatório)
-- `slug`: string (opcional)
-- `summary`: string (opcional)
-- `link`: string (opcional)
-- `github_link`: string (opcional)
-- `sort_order`: int (opcional, padrão: 0)
-- `is_active`: bool (opcional, padrão: true)
-- `image`: file (opcional)
-- `technology_ids[]`: array of int (opcional) - Ex: `technology_ids[0]=1&technology_ids[1]=2`
+- `id`: 1 (Opcional, apenas para atualização)
+- `title`: "Novo Projeto"
+- `description`: "Descrição longa..."
+- `slug`: "novo-projeto" (Opcional)
+- `summary`: "Resumo..." (Opcional)
+- `link`: "https://..." (Opcional)
+- `github_link`: "https://..." (Opcional)
+- `sort_order`: 1 (Opcional)
+- `is_active`: 1 (Opcional)
+- `image`: [Arquivo Binário] (Opcional)
+- `technology_ids[]`: [1, 2, 3] (Opcional)
 
-#### Deletar Projeto (Admin)
-```http
-DELETE /projects/{id}
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Projeto salvo com sucesso.",
+  "data": {
+    "id": 1,
+    "title": "Novo Projeto",
+    "description": "Descrição longa...",
+    "image": "https://...",
+    "technologies": [...]
+  }
+}
 ```
 
----
-
-## Tecnologias
-
-Base path: `/technologies`
-Requer permissões apropriadas (pública para listagem, admin para gestão).
-
-#### Listar Tecnologias
+#### Deletar Projeto
 ```http
-GET /technologies?page=1&limit=10&search=
+DELETE /admin/projects/{id}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Projeto removido com sucesso."
+}
 ```
 
-**Query Parameters:**
-- `page`: int (opcional, padrão: 1)
-- `limit`: int (opcional, padrão: 10)
-- `search`: string (opcional)
+### Gestão de Tecnologias
+Base path: `/admin/technologies`
 
-#### Obter detalhes da Tecnologia
+#### Listar Tecnologias (Admin)
 ```http
-GET /technologies/{id}
+GET /admin/technologies?page=1&limit=10&search=
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Tecnologias listadas com sucesso.",
+  "data": {
+    "technologies": [...],
+    "total": 20,
+    "page": 1,
+    "limit": 10,
+    "pages": 2
+  }
+}
 ```
 
-#### Salvar Tecnologia (Criar/Atualizar) (Admin)
-Utilize esta rota para criar ou atualizar uma tecnologia. Se o campo `id` for enviado no corpo da requisição, a tecnologia será atualizada. Esta rota utiliza `multipart/form-data` para suportar upload de imagens.
+#### Obter detalhes da Tecnologia (Admin)
 ```http
-POST /technologies
+GET /admin/technologies/{id}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Tecnologia encontrada.",
+  "data": { "id": 1, "name": "...", ... }
+}
 ```
 
+#### Salvar Tecnologia (Criar/Atualizar)
+Utiliza `multipart/form-data`.
+```http
+POST /admin/technologies
+```
 **Body (Multipart/form-data):**
-- `id`: int (opcional - enviar apenas para atualizar)
-- `name`: string (obrigatório)
-- `slug`: string (opcional)
-- `sort_order`: int (opcional, padrão: 0)
-- `image`: file (opcional)
+- `id`: 1 (Opcional)
+- `name`: "Node.js"
+- `slug`: "node-js" (Opcional)
+- `sort_order`: 1 (Opcional)
+- `image`: [Arquivo Binário] (Opcional)
 
-#### Deletar Tecnologia (Admin)
-```http
-DELETE /technologies/{id}
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Tecnologia salva com sucesso.",
+  "data": {
+    "id": 1,
+    "name": "Node.js",
+    "image": "https://..."
+  }
+}
 ```
 
----
-
+#### Deletar Tecnologia
+```http
+DELETE /admin/technologies/{id}
+```
+**Resposta (200 OK):**
+```json
+{
+  "code": 200,
+  "status": "success",
+  "message": "Tecnologia removida com sucesso."
+}
+```

@@ -28,11 +28,6 @@ $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 $app->add(new BasePathMiddleware($app));
 
-$settings = $container->get('settings');
-
-// CORS Middleware
-$app->add($container->get(\App\Infrastructure\Http\Middleware\CorsMiddleware::class));
-
 // JWT Middleware
 $app->add($container->get(\App\Infrastructure\Http\Middleware\JwtAuthMiddleware::class));
 
@@ -41,6 +36,9 @@ $app->add($container->get(\App\Infrastructure\Http\Middleware\RateLimitMiddlewar
 
 // Error Middleware
 $app->add($container->get(\App\Infrastructure\Http\Middleware\ErrorMiddleware::class));
+
+// CORS Middleware
+$app->add($container->get(\App\Infrastructure\Http\Middleware\CorsMiddleware::class));
 
 // Register routes
 (require __DIR__ . '/routes.php')($app);

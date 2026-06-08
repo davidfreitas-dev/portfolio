@@ -24,7 +24,10 @@ class GetImageAction
         // 2. Segurança: Sanitizar nome do arquivo
         $imageName = \basename((string) $imageName);
 
-        $storagePath = $_ENV['STORAGE_PATH'] ?? (defined('APP_ROOT') ? APP_ROOT . '/storage' : __DIR__ . '/../../../../storage');
+        // Determinando o caminho do storage de forma robusta
+        $storagePath = $_ENV['STORAGE_PATH'] ?? (defined('APP_ROOT') ? APP_ROOT . DIRECTORY_SEPARATOR . 'storage' : \dirname(__DIR__, 4) . DIRECTORY_SEPARATOR . 'storage');
+        $storagePath = \rtrim((string) $storagePath, DIRECTORY_SEPARATOR);
+        
         $imagePath = $storagePath . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $imageName;
 
         $isDefault = false;
@@ -38,12 +41,16 @@ class GetImageAction
         }
 
         // 3. Performance: Detectar MIME type
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo->file($imagePath);
+        try {
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $mimeType = $finfo->file($imagePath);
+        } catch (\Exception) {
+            $mimeType = 'image/png';
+        }
 
         // 4. Cache: Cabeçalhos para o navegador
         $lastModified = \filemtime($imagePath);
-        $etag = \md5($imagePath . $lastModified . \filesize($imagePath));
+        $etag = \md5($imagePath . $lastModified . (string) \filesize($imagePath));
 
         if ($request->getHeaderLine('If-None-Match') === $etag ||
            ($request->getHeaderLine('If-Modified-Since') && \strtotime($request->getHeaderLine('If-Modified-Since')) === $lastModified)) {

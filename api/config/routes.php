@@ -125,16 +125,6 @@ return function (App $app): void {
     ->add(new RoleMiddleware(['admin', 'editor']));
 
     /**
-     * Legacy / Compatibility Routes (mapped to Public actions)
-     */
-    $app->get('/experiences', ListExperiencesAction::class)->add(HttpCacheMiddleware::class);
-    $app->get('/experiences/{id}', GetExperienceAction::class)->add(HttpCacheMiddleware::class);
-    $app->get('/projects', ListProjectsAction::class)->add(HttpCacheMiddleware::class);
-    $app->get('/projects/{id}', GetProjectAction::class)->add(HttpCacheMiddleware::class);
-    $app->get('/technologies', ListTechnologiesAction::class)->add(HttpCacheMiddleware::class);
-    $app->get('/technologies/{id}', GetTechnologyAction::class)->add(HttpCacheMiddleware::class);
-
-    /**
      * Image Routes
      */
     $app->get('/images/{folder}/{image}', GetImageAction::class);

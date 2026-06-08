@@ -21,6 +21,7 @@ class TechnologyTransformer extends AbstractTransformer
             'id' => $object->id,
             'name' => $object->name,
             'slug' => $object->slug,
+            'image' => $object->image,
             'image_url' => $object->image ? sprintf('%s/images/technologies/%s', $this->apiUrl, $object->image) : null,
             'sort_order' => $object->sortOrder,
             'created_at' => $object->createdAt?->format('Y-m-d H:i:s'),

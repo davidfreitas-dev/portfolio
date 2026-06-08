@@ -45,12 +45,12 @@ return [
         'api_url' => $_ENV['API_URL'] ?? 'http://localhost:8080',
 
         'cors' => [
-            'allowed_origins' => [$_ENV['SITE_URL'] ?? 'http://localhost'],
-            'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-            'allowed_headers' => ['Authorization', 'Content-Type', 'Accept', 'Origin', 'X-Requested-With'],
-            'exposed_headers' => [],
-            'max_age' => 0,
-            'allow_credentials' => true,
+            'allowed_origins' => isset($_ENV['CORS_ALLOWED_ORIGINS']) ? array_map('trim', explode(',', $_ENV['CORS_ALLOWED_ORIGINS'])) : [$_ENV['SITE_URL'] ?? 'http://localhost'],
+            'allowed_methods' => isset($_ENV['CORS_ALLOWED_METHODS']) ? array_map('trim', explode(',', $_ENV['CORS_ALLOWED_METHODS'])) : ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+            'allowed_headers' => isset($_ENV['CORS_ALLOWED_HEADERS']) ? array_map('trim', explode(',', $_ENV['CORS_ALLOWED_HEADERS'])) : ['Authorization', 'Content-Type', 'Accept', 'Origin', 'X-Requested-With'],
+            'exposed_headers' => isset($_ENV['CORS_EXPOSED_HEADERS']) ? array_map('trim', explode(',', $_ENV['CORS_EXPOSED_HEADERS'])) : [],
+            'max_age' => (int)($_ENV['CORS_MAX_AGE'] ?? 0),
+            'allow_credentials' => filter_var($_ENV['CORS_ALLOW_CREDENTIALS'] ?? true, FILTER_VALIDATE_BOOLEAN),
         ],
 
         'rate_limit' => [

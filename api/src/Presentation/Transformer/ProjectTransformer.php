@@ -23,6 +23,7 @@ class ProjectTransformer extends AbstractTransformer
             'slug' => $object->slug,
             'summary' => $object->summary,
             'description' => $object->description,
+            'image' => $object->image,
             'image_url' => $object->image ? sprintf('%s/images/projects/%s', $this->apiUrl, $object->image) : null,
             'links' => [
                 'demo' => $object->link,
@@ -34,6 +35,7 @@ class ProjectTransformer extends AbstractTransformer
                 'id' => $tech['id'],
                 'name' => $tech['name'],
                 'slug' => $tech['slug'],
+                'image' => $tech['image'],
                 'image_url' => $tech['image'] ? sprintf('%s/images/technologies/%s', $this->apiUrl, $tech['image']) : null,
             ], $object->technologies),
             'created_at' => $object->createdAt?->format('Y-m-d H:i:s'),

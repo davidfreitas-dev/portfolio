@@ -35,6 +35,33 @@ A autenticação é baseada em **JWT (JSON Web Tokens)**.
 - **Requisições**: O token deve ser enviado no cabeçalho: `Authorization: Bearer <seu-token-jwt>`.
 - **Logout**: A autenticação é *stateless*. O logout é tratado no lado do cliente (o cliente descarta o token). O token emitido permanece válido para acesso até o fim do tempo de expiração (1 hora) ou até que a expiração ocorra naturalmente.
 
+### ⚡ Caching & Performance (Redis)
+
+A API utiliza o **Redis** para otimizar a performance e garantir a segurança através de diferentes estratégias de cache:
+
+- **Rate Limiting**: Controla o abuso da API limitando o número de requisições por IP ou por Usuário (via JWT).
+  - **Chave**: `rate_limit:ip:<ip>` ou `rate_limit:user:<id>`.
+- **OTP (One Time Password)**: Armazenamento temporário de códigos de acesso para login e recuperação de senha (expiração de 10 minutos).
+  - **Chave**: `otp:<email>`.
+- **Cache de Respostas HTTP (GET)**: Cache completo de respostas JSON para rotas de leitura.
+  - **Funcionamento**: Apenas requisições `GET` bem-sucedidas (200 OK) são cacheadas por 1 hora.
+  - **Chave**: `http:<recurso>:<caminho>:<hash_da_query>`.
+  - **Invalidação Automática**: O cache de um recurso é invalidado automaticamente sempre que ocorre uma alteração bem-sucedida (`POST`, `PUT`, `PATCH`, `DELETE`) em seu respectivo endpoint administrativo (ex: alterar um projeto limpa o cache de `http:projects:*`).
+
+#### 🧹 Limpeza Manual de Cache
+
+Caso precise limpar o cache manualmente, você pode usar os seguintes comandos via Docker:
+
+**1. Limpar tudo (Flush total do Redis):**
+```bash
+docker compose exec redis redis-cli -a ${REDIS_PASSWORD} FLUSHALL
+```
+
+**2. Limpar apenas o cache de respostas HTTP (Preserva OTPs e Rate Limits):**
+```bash
+docker compose exec redis redis-cli -a ${REDIS_PASSWORD} --scan --pattern "http:*" | xargs -r docker compose exec redis redis-cli -a ${REDIS_PASSWORD} DEL
+```
+
 ---
 
 ## 🚀 Tecnologias
