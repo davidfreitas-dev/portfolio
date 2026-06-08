@@ -107,6 +107,17 @@ server {
         try_files $uri /index.php$is_args$args;
     }
 
+    # Internal locations for X-Accel-Redirect (Images)
+    location /internal_static/ {
+        internal;
+        alias /var/www/portfolio/api/storage/;
+    }
+
+    location /internal_uploads/ {
+        internal;
+        alias /var/www/portfolio/api/storage/uploads/;
+    }
+
     location ~ \.php {
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
