@@ -183,25 +183,29 @@
   .timeline-centered .timeline-content {
     width: 50%;
   }
-  .timeline-centered > .timeline-item:nth-child(odd) .timeline-info {
-    float: left;
-    text-align: right;
-    padding-right: 30px;
-  }
-  .timeline-centered > .timeline-item:nth-child(odd) .timeline-content {
+  .timeline-centered > .timeline-item.timeline-item-odd .timeline-info {
     float: right;
     text-align: left;
     padding-left: 30px;
+    padding-right: 0;
   }
-  .timeline-centered > .timeline-item:nth-child(even) .timeline-info {
-    float: right;
-    text-align: left;
-    padding-left: 30px;
-  }
-  .timeline-centered > .timeline-item:nth-child(even) .timeline-content {
+  .timeline-centered > .timeline-item.timeline-item-odd .timeline-content {
     float: left;
     text-align: right;
     padding-right: 30px;
+    padding-left: 0;
+  }
+  .timeline-centered > .timeline-item.timeline-item-even .timeline-info {
+    float: left;
+    text-align: right;
+    padding-right: 30px;
+    padding-left: 0;
+  }
+  .timeline-centered > .timeline-item.timeline-item-even .timeline-content {
+    float: right;
+    text-align: left;
+    padding-left: 30px;
+    padding-right: 0;
   }
   .timeline-centered > .timeline-item.period .timeline-content {
     float: none;
