@@ -322,6 +322,17 @@ sudo systemctl enable mariadb
 sudo systemctl status mariadb
 ```
 
+### 4.5 Acesso via MySQL Workbench (Standard TCP/IP over SSH)
+
+Como o banco está protegido por firewall e o acesso root remoto está desativado, a forma correta de conectar é via **Túnel SSH**:
+
+1.  **Connection Method:** `Standard TCP/IP over SSH`.
+2.  **SSH Hostname:** O IP da sua VPS.
+3.  **SSH Username:** Seu usuário administrativo (o mesmo do passo 0.1).
+4.  **SSH Key File:** Sua chave privada (arquivo `.pem` ou `.key`).
+5.  **MySQL Hostname:** `127.0.0.1` (refere-se ao banco dentro do servidor).
+6.  **Username / Password:** Os dados que você definiu no `.env` da API.
+
 ---
 
 ## 5. Instalando e Configurando Redis
@@ -366,6 +377,38 @@ sudo systemctl restart redis-server
 sudo systemctl enable redis-server
 sudo systemctl status redis-server
 ```
+
+### 5.6 Como Limpar o Cache (Comandos Protegidos)
+
+Como desabilitamos os comandos `FLUSHALL` e `FLUSHDB` no passo 5.2 por segurança, ao tentar usá-los você receberá um erro de "unknown command". 
+
+Escolha um dos métodos abaixo para limpar o cache quando necessário:
+
+#### 🟢 Método 1: Rápido (Via Reinicialização)
+Se o Redis for usado apenas como cache (sem persistência em disco), reiniciar o serviço limpa a memória RAM instantaneamente.
+
+```bash
+sudo systemctl restart redis-server
+```
+
+#### 🟡 Método 2: Completo (Garantido)
+Use este se o Método 1 não for suficiente ou se houver persistência de dados.
+
+1.  **Liberar comandos:** No arquivo `/etc/redis/redis.conf`, comente temporariamente as linhas de restrição adicionando `#`:
+    ```text
+    # rename-command FLUSHDB ""
+    # rename-command FLUSHALL ""
+    ```
+2.  **Limpar:** Reinicie o serviço e execute a limpeza (use a senha do passo 5.2):
+    ```bash
+    sudo systemctl restart redis-server
+    redis-cli -a sua_senha FLUSHALL
+    ```
+3.  **Proteger:** Remova os `#` do arquivo e reinicie o serviço novamente.
+
+---
+💡 **Dica Pro:** Se precisar limpar o cache com frequência, você pode renomear o comando para algo secreto no `redis.conf` em vez de desabilitá-lo:
+`rename-command FLUSHALL "LIMPAR_TUDO_AGORA_ABC"`
 
 ---
 
