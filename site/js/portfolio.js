@@ -16,7 +16,7 @@ export async function loadPortfolio() {
     // Clear existing hardcoded content
     swiperWrapper.innerHTML = '';
 
-    projects.forEach(project => {
+    projects.forEach((project, index) => {
         // Construct image URL using API helper with fallback
         const imageUrl = api.getImageUrl('projects', project.image || 'no-image.png');
         
@@ -27,6 +27,7 @@ export async function loadPortfolio() {
         
         const slide = document.createElement('div');
         slide.className = 'swiper-slide portfolio';
+        
         slide.innerHTML = `
             <div class="cover" style="background-image: url(${imageUrl});"></div>
             <div class="content">
