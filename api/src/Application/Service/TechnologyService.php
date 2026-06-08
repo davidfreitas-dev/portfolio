@@ -46,7 +46,7 @@ class TechnologyService
         $dto->validate($this->validator);
 
         $imageName = null;
-        if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface) {
+        if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface && $dto->image->getError() === UPLOAD_ERR_OK) {
             $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'technologies';
             $imageName = $this->fileUploader->upload($dto->image, $uploadPath, 'tech');
         }
@@ -71,7 +71,7 @@ class TechnologyService
         }
 
         $imageName = $existingTechnology->image;
-        if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface) {
+        if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface && $dto->image->getError() === UPLOAD_ERR_OK) {
             $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'technologies';
 
             // Delete old image

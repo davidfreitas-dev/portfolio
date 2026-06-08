@@ -10,7 +10,7 @@ class TechnologyTest extends AppTestCase
 {
     public function test_can_list_technologies(): void
     {
-        $request = $this->createRequest('GET', '/technologies');
+        $request = $this->createRequest('GET', '/public/technologies');
         $response = $this->request($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -23,7 +23,7 @@ class TechnologyTest extends AppTestCase
 
     public function test_can_get_single_technology(): void
     {
-        $request = $this->createRequest('GET', '/technologies/1');
+        $request = $this->createRequest('GET', '/public/technologies/1');
         $response = $this->request($request);
 
         $this->assertEquals(200, $response->getStatusCode());

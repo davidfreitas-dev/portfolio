@@ -10,7 +10,7 @@ class ExperienceTest extends AppTestCase
 {
     public function test_can_list_experiences(): void
     {
-        $request = $this->createRequest('GET', '/experiences');
+        $request = $this->createRequest('GET', '/public/experiences');
         $response = $this->request($request);
 
         $body = (string)$response->getBody();
@@ -30,7 +30,7 @@ class ExperienceTest extends AppTestCase
     public function test_can_get_single_experience(): void
     {
         // Assumindo que o seed inseriu pelo menos uma experiência com ID 1
-        $request = $this->createRequest('GET', '/experiences/1');
+        $request = $this->createRequest('GET', '/public/experiences/1');
         $response = $this->request($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -45,7 +45,7 @@ class ExperienceTest extends AppTestCase
 
     public function test_returns_404_for_non_existent_experience(): void
     {
-        $request = $this->createRequest('GET', '/experiences/9999');
+        $request = $this->createRequest('GET', '/public/experiences/9999');
         $response = $this->request($request);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -112,7 +112,7 @@ class ExperienceTest extends AppTestCase
         $this->assertEquals(204, $deleteResponse->getStatusCode());
         
         // Verifica se foi deletado (logical delete)
-        $getRequest = $this->createRequest('GET', "/experiences/$createdId");
+        $getRequest = $this->createRequest('GET', "/public/experiences/$createdId");
         $getResponse = $this->request($getRequest);
         $this->assertEquals(404, $getResponse->getStatusCode());
     }

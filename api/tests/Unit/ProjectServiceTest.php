@@ -109,6 +109,8 @@ test('should create a project without image', function () {
 
 test('should create a project with image', function () {
     $image = Mockery::mock(UploadedFileInterface::class);
+    $image->shouldReceive('getError')->andReturn(UPLOAD_ERR_OK);
+    
     $dto = new ProjectRequestDTO(
         title: 'New Project',
         description: 'New Desc',

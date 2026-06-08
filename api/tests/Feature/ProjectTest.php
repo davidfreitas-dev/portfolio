@@ -10,7 +10,7 @@ class ProjectTest extends AppTestCase
 {
     public function test_can_list_projects(): void
     {
-        $request = $this->createRequest('GET', '/projects');
+        $request = $this->createRequest('GET', '/public/projects');
         $response = $this->request($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -23,7 +23,7 @@ class ProjectTest extends AppTestCase
 
     public function test_can_get_single_project(): void
     {
-        $request = $this->createRequest('GET', '/projects/1');
+        $request = $this->createRequest('GET', '/public/projects/1');
         $response = $this->request($request);
 
         $this->assertEquals(200, $response->getStatusCode());

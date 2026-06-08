@@ -45,7 +45,7 @@ class ProjectService
         $dto->validate($this->validator);
 
         $imageName = null;
-        if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface) {
+        if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface && $dto->image->getError() === UPLOAD_ERR_OK) {
             $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'projects';
             $imageName = $this->fileUploader->upload($dto->image, $uploadPath, 'project');
         }
@@ -76,7 +76,7 @@ class ProjectService
         }
 
         $imageName = $existingProject->image;
-        if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface) {
+        if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface && $dto->image->getError() === UPLOAD_ERR_OK) {
             $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'projects';
 
             // Delete old image
