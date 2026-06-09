@@ -82,32 +82,97 @@ sudo nano /etc/nginx/sites-available/portfolio
 
 **Conteúdo do Arquivo:**
 ```nginx
-# 1. SITE PRINCIPAL (seu-dominio.com.br)
+# 1. SITE PRINCIPAL - Redirect HTTP → HTTPS
 server {
     listen 80;
     listen [::]:80;
-    server_name seu-dominio.com.br www.seu-dominio.com.br;
+    server_name yourdomain.com www.yourdomain.com;
+    return 301 https://$host$request_uri;
+}
+
+# 1. SITE PRINCIPAL - HTTPS
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name yourdomain.com www.yourdomain.com;
     root /var/www/portfolio/site;
     index index.html;
+
+    # SSL config here
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+    add_header Referrer-Policy "no-referrer-when-downgrade";
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';";
+
+    error_log /var/www/portfolio/site/error.log;
+
+    # Bloquear dotfiles (.env, .git, .htaccess, etc.)
+    location ~ /\.(?!well-known).* {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # Bloquear arquivos sensíveis
+    location ~* \.(env|log|sql|yaml|yml|json)$ {
+        deny all;
+    }
 
     location / {
         try_files $uri $uri/ =404;
     }
+
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|webp)$ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
 }
 
-# 2. API (api.seu-dominio.com.br)
+# 2. API - Redirect HTTP → HTTPS
 server {
     listen 80;
     listen [::]:80;
-    server_name api.seu-dominio.com.br;
+    server_name api.yourdomain.com;
+    return 301 https://$host$request_uri;
+}
+
+# 2. API - HTTPS
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name api.yourdomain.com;
     root /var/www/portfolio/api/public;
     index index.php;
+
+    # SSL config here
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+    add_header Referrer-Policy "no-referrer-when-downgrade";
+    add_header Content-Security-Policy "default-src 'none';"; 
+    style-src 'self' 'unsafe-inline';";
+
+    error_log /var/www/portfolio/api/logs/error.log;
+
+    # Bloquear dotfiles (.env, .git, .htaccess, etc.)
+    location ~ /\.(?!well-known).* {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # Bloquear arquivos sensíveis
+    location ~* \.(env|log|sql|yaml|yml)$ {
+        deny all;
+    }
 
     location / {
         try_files $uri /index.php$is_args$args;
     }
 
-    # Internal locations for X-Accel-Redirect (Images)
     location /internal_static/ {
         internal;
         alias /var/www/portfolio/api/storage/;
@@ -125,13 +190,43 @@ server {
     }
 }
 
-# 3. CMS (cms.seu-dominio.com.br)
+# 3. CMS - Redirect HTTP → HTTPS
 server {
     listen 80;
     listen [::]:80;
-    server_name cms.seu-dominio.com.br;
+    server_name cms.yourdomain.com;
+    return 301 https://$host$request_uri;
+}
+
+# 3. CMS - HTTPS
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name cms.yourdomain.com;
     root /var/www/portfolio/cms;
     index index.html;
+
+    # SSL config here
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+    add_header Referrer-Policy "no-referrer-when-downgrade";
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';";
+
+    error_log /var/www/portfolio/cms/error.log;
+
+    # Bloquear dotfiles (.env, .git, .htaccess, etc.)
+    location ~ /\.(?!well-known).* {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # Bloquear arquivos sensíveis
+    location ~* \.(env|log|sql|yaml|yml|json)$ {
+        deny all;
+    }
 
     location / {
         try_files $uri $uri/ /index.html;
