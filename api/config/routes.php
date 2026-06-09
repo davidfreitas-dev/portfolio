@@ -11,6 +11,7 @@ use App\Presentation\Action\Auth\RequestLoginOtpAction;
 use App\Presentation\Action\Auth\RequestPasswordResetAction;
 use App\Presentation\Action\Auth\ResetPasswordAction;
 use App\Presentation\Action\Auth\ValidateResetCodeAction;
+use App\Presentation\Action\Contact\ContactAction;
 use App\Presentation\Action\Experience\Admin\CreateExperienceAction as AdminCreateExperienceAction;
 use App\Presentation\Action\Experience\Admin\DeleteExperienceAction as AdminDeleteExperienceAction;
 use App\Presentation\Action\Experience\Admin\GetExperienceAction as AdminGetExperienceAction;
@@ -88,6 +89,8 @@ return function (App $app): void {
 
         $group->get('/technologies', ListTechnologiesAction::class);
         $group->get('/technologies/{id}', GetTechnologyAction::class);
+
+        $group->post('/contact', ContactAction::class);
     })
     ->add(HttpCacheMiddleware::class)
     ->add(new RoleMiddleware(['public', 'user', 'editor', 'admin']));

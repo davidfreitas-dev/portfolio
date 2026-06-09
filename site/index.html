@@ -278,7 +278,13 @@
 									</div>
 
 									<div class="form-group">
-										<textarea type="text" id="message" name="message" cols="30" rows="5" placeholder="Escreva sua mensagem aqui"></textarea>
+										<textarea type="text" id="message" name="message" cols="30" rows="5" placeholder="Escreva sua mensagem aqui" maxlength="1000"></textarea>
+									</div>
+
+									<!-- Honeypot field to prevent spam -->
+									<div style="display:none;">
+										<label for="website">Se você é humano, deixe este campo vazio:</label>
+										<input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
 									</div>
 
 									<div class="form-group">
@@ -348,7 +354,6 @@
     </div>
 	</main>
 
-	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script type="module" src="js/main.js"></script>
 	<script src="js/wow.min.js"></script>

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Application\Service\AuthService;
+use App\Application\Service\ContactService;
 use App\Application\Service\ErrorLoggerService;
 use App\Application\Service\ExperienceService;
 use App\Application\Service\FileUploaderService;
@@ -139,6 +140,12 @@ $containerBuilder->addDefinitions([
 
     MailService::class => fn (ContainerInterface $c): \App\Application\Service\MailService => new MailService($c->get(MailerInterface::class)),
 
+    ContactService::class => fn (ContainerInterface $c): \App\Application\Service\ContactService => new ContactService(
+        $c->get(MailerInterface::class),
+        $c->get(LoggerInterface::class),
+        $c->get('settings')['mailer'],
+    ),
+
     JwtService::class => function (ContainerInterface $c): \App\Application\Service\JwtService {
         $settings = $c->get('settings')['jwt'];
         return new JwtService(
@@ -180,7 +187,7 @@ $containerBuilder->addDefinitions([
 
     JwtAuthMiddleware::class => fn (ContainerInterface $c): \App\Infrastructure\Http\Middleware\JwtAuthMiddleware => new JwtAuthMiddleware(
         $c->get(JwtService::class),
-        ['/', '/health', '/images', '/auth/login', '/auth/request-login', '/auth/forgot', '/auth/validate-reset-code', '/auth/reset'],
+        ['/', '/health', '/images', '/auth/login', '/auth/request-login', '/auth/forgot', '/auth/validate-reset-code', '/auth/reset', '/public/contact'],
     ),
 
     RateLimitMiddleware::class => fn (ContainerInterface $c): \App\Infrastructure\Http\Middleware\RateLimitMiddleware => new RateLimitMiddleware(

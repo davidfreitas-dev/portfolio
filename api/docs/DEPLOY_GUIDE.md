@@ -81,6 +81,9 @@ sudo nano /etc/nginx/sites-available/portfolio
 ```
 
 **Conteúdo do Arquivo:**
+
+> **Nota importante sobre Headers:** No Nginx, se você usar `add_header` dentro de um bloco `location`, ele ignora os headers definidos no bloco `server`. Por isso, os headers de segurança devem ser repetidos em locais que possuem seu próprio `add_header` (como cache de estáticos).
+
 ```nginx
 # 1. SITE PRINCIPAL - Redirect HTTP → HTTPS
 server {
@@ -100,11 +103,12 @@ server {
 
     # SSL config here
 
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-XSS-Protection "1; mode=block";
-    add_header X-Content-Type-Options "nosniff";
-    add_header Referrer-Policy "no-referrer-when-downgrade";
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';";
+    # Security Headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    # CSP removido temporariamente para mapeamento de domínios externos
 
     error_log /var/www/portfolio/site/error.log;
 
@@ -124,9 +128,16 @@ server {
         try_files $uri $uri/ =404;
     }
 
+    # Assets Estáticos com Cache e Headers de Segurança repetidos
     location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|webp)$ {
         expires 30d;
         add_header Cache-Control "public, immutable";
+        
+        # Repetir headers de segurança (Obrigatório pois add_header limpa herança)
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Referrer-Policy "no-referrer-when-downgrade" always;
     }
 }
 
@@ -148,12 +159,12 @@ server {
 
     # SSL config here
 
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-XSS-Protection "1; mode=block";
-    add_header X-Content-Type-Options "nosniff";
-    add_header Referrer-Policy "no-referrer-when-downgrade";
-    add_header Content-Security-Policy "default-src 'none';"; 
-    style-src 'self' 'unsafe-inline';";
+    # Security Headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    # CSP removido temporariamente
 
     error_log /var/www/portfolio/api/logs/error.log;
 
@@ -187,6 +198,12 @@ server {
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_pass unix:/run/php/php8.4-fpm-portfolio-api.sock;
+        
+        # Repetir headers de segurança
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Referrer-Policy "no-referrer-when-downgrade" always;
     }
 }
 
@@ -208,11 +225,12 @@ server {
 
     # SSL config here
 
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-XSS-Protection "1; mode=block";
-    add_header X-Content-Type-Options "nosniff";
-    add_header Referrer-Policy "no-referrer-when-downgrade";
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';";
+    # Security Headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    # CSP removido temporariamente
 
     error_log /var/www/portfolio/cms/error.log;
 
