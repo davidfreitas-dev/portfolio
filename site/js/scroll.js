@@ -1,7 +1,7 @@
 $(function() {
     // Função para navegação suave
     function smoothScroll() {
-        $('.nav a[href^="#"]').on('click', function(e) {
+        $('.nav a[href^="#"], .header__logo-link[href^="#"]').on('click', function(e) {
             e.preventDefault();
             const targetId = $(this).attr('href');
             const targetOffset = $(targetId).offset().top;

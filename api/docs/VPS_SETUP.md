@@ -37,7 +37,9 @@
 
 **Nunca execute todas as configurações como `root`**.
 
-### 0.1 Criando Usuário (Obrigatório)
+> A VPS gratuita da Oracle Cloud por padrão vem com o usuário **ubuntu** configurado. Tornando o passo abaixo opcional.
+
+### 0.1 Criando Usuário
 
 Crie um usuário com privilégios de administrador:
 
@@ -490,7 +492,7 @@ Enquanto o UFW bloqueia portas, o **Fail2Ban** monitora os logs do sistema e ban
     sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
     ```
 
-### 3. Configurar as regras básicas
+### 8.4 Configurar as regras básicas
 
 ```bash
 sudo nano /etc/fail2ban/jail.local
@@ -513,7 +515,7 @@ backend = systemd
 
 **Observação:** Não configure `logpath` manualmente. No Ubuntu 22.04, o Fail2Ban pode utilizar o systemd-journald diretamente para monitorar tentativas de login SSH.
 
-### 4. Validar a configuração
+### 8.5 Validar a configuração
 
 ```bash
 sudo fail2ban-client -d
@@ -521,7 +523,7 @@ sudo fail2ban-client -d
 
 Se não houver erros, prossiga.
 
-### 5. Reiniciar e verificar
+### 8.6 Reiniciar e verificar
 
 ```bash
 sudo systemctl restart fail2ban
