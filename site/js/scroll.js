@@ -19,24 +19,43 @@ $(function() {
         $('.nav__link').each(function() {
             const currLink = $(this);
             const refElement = $(currLink.attr('href'));
-            const elementTop = refElement.position().top;
-            const elementHeight = refElement.height();
+            
+            if (refElement.length) {
+                const elementTop = refElement.position().top;
+                const elementHeight = refElement.height();
 
-            if (elementTop <= scrollPos + 50 && elementTop + elementHeight > scrollPos + 50) {
-                $('.nav__link').removeClass('active');
-                currLink.addClass('active');
-            } else {
-                currLink.removeClass('active');
+                if (elementTop <= scrollPos + 50 && elementTop + elementHeight > scrollPos + 50) {
+                    $('.nav__link').removeClass('active');
+                    currLink.addClass('active');
+                } else {
+                    currLink.removeClass('active');
+                }
             }
         });
     }
 
-    // Inicializa a navegação suave
+    // Função para gerenciar o cabeçalho transparente/sólido
+    function handleHeaderScroll() {
+        const scrollPos = $(document).scrollTop();
+        const header = $('.header');
+        
+        if (scrollPos > 50) {
+            header.addClass('header--scrolled');
+        } else {
+            header.removeClass('header--scrolled');
+        }
+    }
+
+    // Inicializa as funções
     smoothScroll();
 
-    // Atualiza a classe ativa nos links de navegação ao rolar a página
-    $(window).on('scroll', updateActiveNavLink);
+    // Eventos de rolagem
+    $(window).on('scroll', function() {
+        updateActiveNavLink();
+        handleHeaderScroll();
+    });
     
-    // Atualiza a classe ativa ao carregar a página
+    // Executa no carregamento inicial
     updateActiveNavLink();
+    handleHeaderScroll();
 });
