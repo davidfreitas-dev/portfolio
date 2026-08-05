@@ -71,10 +71,12 @@ const openEditModal = (tech: TechnologyFormData) => {
 
 const handleSubmit = async (payload: TechnologyFormData) => {
   try {
-    await technologiesStore.saveTechnology({
-      id: isEditing.value ? technologyBeingEdited.value?.id : undefined,
-      name: payload.name,
-      image: payload.image ?? undefined,
+    await withLoading(async () => {
+      await technologiesStore.saveTechnology({
+        id: isEditing.value ? technologyBeingEdited.value?.id : undefined,
+        name: payload.name,
+        image: payload.image ?? undefined,
+      });
     });
 
     showToast(
@@ -107,7 +109,9 @@ const handleDeleteTechnology = (id: number) => {
 
 const deleteTechnology = async () => {
   if (!technologyToDelete.value) return;
-  await technologiesStore.deleteTechnology(technologyToDelete.value);
+  await withLoading(async () => {
+    await technologiesStore.deleteTechnology(technologyToDelete.value!);
+  });
   showToast('success', 'Tecnologia deletada com sucesso!');
   await loadTechnologies();
 };

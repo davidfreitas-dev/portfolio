@@ -10,6 +10,7 @@ export interface Project {
   link: string;
   github_link: string;
   image: string;
+  is_active?: number;
   technologies: Technology[];
 }
 

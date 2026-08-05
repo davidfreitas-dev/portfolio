@@ -4,6 +4,7 @@ import { debounce } from 'vue-debounce';
 import { useLoading } from '@/composables/useLoading';
 import { useToast } from '@/composables/useToast';
 import { useExperiencesStore } from '@/stores/experiencesStore';
+import type { CreateExperiencePayload } from '@/services/experienceService';
 import Container from '@/components/Container.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
 import Icon from '@/components/Icon.vue';
@@ -64,21 +65,33 @@ const openCreateModal = () => {
   experienceModal.value?.openModal();
 };
 
-const openEditModal = (exp: ExperienceFormData) => {
+import type { Experience } from '@/types';
+
+const openEditModal = (exp: Experience) => {
   isEditing.value = true;
-  experienceBeingEdited.value = { ...exp };
+  experienceBeingEdited.value = { ...exp, end_date: exp.end_date ?? '' } as unknown as ExperienceFormData;
   experienceModal.value?.openModal();
 };
 
 const handleSubmit = async (payload: ExperienceFormData) => {
   try {
-    if (isEditing.value && experienceBeingEdited.value?.id) {
-      await experiencesStore.updateExperience(experienceBeingEdited.value.id, payload);
-      showToast('success', 'Experiência atualizada com sucesso!');
-    } else {
-      await experiencesStore.createExperience(payload);
-      showToast('success', 'Experiência adicionada com sucesso!');
-    }
+    await withLoading(async () => {
+      const apiPayload: CreateExperiencePayload = {
+        title: payload.title,
+        description: payload.description,
+        start_date: payload.start_date,
+        end_date: payload.end_date || null,
+        sort_order: 0
+      };
+
+      if (isEditing.value && experienceBeingEdited.value?.id) {
+        await experiencesStore.updateExperience(experienceBeingEdited.value.id, apiPayload);
+        showToast('success', 'Experiência atualizada com sucesso!');
+      } else {
+        await experiencesStore.createExperience(apiPayload);
+        showToast('success', 'Experiência adicionada com sucesso!');
+      }
+    });
     experienceModal.value?.closeModal();
     await loadExperiences();
   } catch(err) {
@@ -101,7 +114,9 @@ const handleDeleteExperience = (id: number) => {
 
 const deleteExperience = async () => {
   if (!experienceToDelete.value) return;
-  await experiencesStore.deleteExperience(experienceToDelete.value);
+  await withLoading(async () => {
+    await experiencesStore.deleteExperience(experienceToDelete.value!);
+  });
   showToast('success', 'Experiência deletada com sucesso!');
   await loadExperiences();
 };

@@ -32,7 +32,9 @@ const technologiesOptions = computed(() => {
 
 const loadTechnologies = async () => {
   if (!technologiesStore.technologies.length) {
-    await technologiesStore.fetchTechnologies();
+    await withLoading(async () => {
+      await technologiesStore.fetchTechnologies();
+    });
   }
 };
 
@@ -90,14 +92,16 @@ const openEditModal = (proj: ProjectFormData) => {
 
 const handleSubmit = async (payload: ProjectFormData) => {
   try {
-    await projectsStore.saveProject({
-      id: isEditing.value ? projectBeingEdited.value?.id : undefined,
-      title: payload.title,
-      description: payload.description,
-      link: payload.link,
-      image: payload.image ?? undefined,
-      is_active: payload.is_active,
-      technologies: payload.technologies,
+    await withLoading(async () => {
+      await projectsStore.saveProject({
+        id: isEditing.value ? projectBeingEdited.value?.id : undefined,
+        title: payload.title,
+        description: payload.description,
+        link: payload.link,
+        image: payload.image ?? undefined,
+        is_active: payload.is_active,
+        technologies: payload.technologies,
+      });
     });
 
     showToast(
@@ -129,7 +133,9 @@ const handleDeleteProject = (id: number) => {
 
 const deleteProject = async () => {
   if (!projectToDelete.value) return;
-  await projectsStore.deleteProject(projectToDelete.value);
+  await withLoading(async () => {
+    await projectsStore.deleteProject(projectToDelete.value!);
+  });
   showToast('success', 'Projeto deletado com sucesso!');
   await loadProjects();
 };

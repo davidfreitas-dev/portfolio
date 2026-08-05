@@ -48,6 +48,7 @@ async function refreshAccessToken(): Promise<string> {
     { withCredentials: true }
   );
 
+  if (!data.data) throw new Error('Refresh failed, no data received.');
   const { access_token } = data.data;
   authStore.setToken(access_token);
 

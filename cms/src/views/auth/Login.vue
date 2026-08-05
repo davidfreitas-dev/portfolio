@@ -4,14 +4,12 @@ import { useRouter } from 'vue-router';
 import { useVuelidate } from '@vuelidate/core';
 import { required, email, minLength } from '@vuelidate/validators';
 import { useAuthStore } from '@/stores/authStore';
-import { useProfileStore } from '@/stores/profileStore';
 import { useToast } from '@/composables/useToast';
 import Input from '@/components/Input.vue';
 import Button from '@/components/Button.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
-const profileStore = useProfileStore();
 
 const formData = ref({
   email: '',

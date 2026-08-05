@@ -11,6 +11,10 @@ export interface AuthData {
   user: UserProfile;
 }
 
+export interface AuthTokensData {
+  access_token: string;
+}
+
 export interface LoginCredentials {
   email: string;
   password?: string;
