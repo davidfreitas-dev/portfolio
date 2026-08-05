@@ -45,7 +45,7 @@ services:
       target: development
     restart: unless-stopped
     env_file:
-      - ./api/.env
+      - ./.env
     volumes:
       - ./api:/var/www/html
     working_dir: /var/www/html

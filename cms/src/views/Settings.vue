@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import { useVuelidate } from '@vuelidate/core';
 import { required, email, helpers } from '@vuelidate/validators';
 import { useDark } from '@vueuse/core';
 import { useAuthStore } from '@/stores/authStore';
 import { useProfileStore } from '@/stores/profileStore';
+import { storeToRefs } from 'pinia';
 import { useLoading } from '@/composables/useLoading';
 import { useToast } from '@/composables/useToast';
 import Container from '@/components/Container.vue';
@@ -26,10 +27,12 @@ const formData = ref({
   email: ''
 });
 
-onMounted(() => {
-  if (profileStore.user) {
-    formData.value.name = profileStore.user.name;
-    formData.value.email = profileStore.user.email;
+const { user } = storeToRefs(profileStore);
+
+watchEffect(() => {
+  if (user.value) {
+    formData.value.name = user.value.name || '';
+    formData.value.email = user.value.email || '';
   }
 });
 

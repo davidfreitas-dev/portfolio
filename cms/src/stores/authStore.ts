@@ -41,7 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function hydrate(): Promise<boolean> {
-    if (isHydrated.value) return isAuthenticated.value;
+    if (isHydrated.value && profileStore.user) return isAuthenticated.value;
     
     // Se não há token em memória (e não está sendo carregado por persistência), não estamos autenticados.
     // Como a API não possui endpoint de refresh, apenas validamos se o perfil consegue ser obtido.
@@ -128,6 +128,6 @@ export const useAuthStore = defineStore('auth', () => {
   };
 }, {
   persist: {
-    paths: ['accessToken']
+    pick: ['accessToken']
   }
 });

@@ -6,7 +6,7 @@ import { required, minLength, maxLength, numeric } from '@vuelidate/validators';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/composables/useToast';
 import axios from 'axios';
-import Input from '@/components/Input.vue';
+import InputOtp from '@/components/InputOtp.vue';
 import Button from '@/components/Button.vue';
 import Logo from '@/components/Logo.vue';
 
@@ -93,15 +93,12 @@ const handleValidateCode = async () => {
           <strong class="text-font dark:text-font-dark">{{ formData.email }}</strong>
         </p>
 
-        <Input
+        <InputOtp
           v-model="formData.code"
-          type="text"
           label="Código de 6 dígitos"
-          placeholder="000000"
-          maxlength="6"
+          :length="6"
           :error="v$.code.$dirty && v$.code.$error ? 'Informe o código de 6 dígitos' : ''"
           :disabled="isLoading"
-          @blur="v$.code.$touch"
         />
 
         <Button :disabled="isLoading" :is-loading="isLoading" class="mt-6">
