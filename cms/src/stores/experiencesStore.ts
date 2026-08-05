@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
 import { useLoading } from '@/composables/useLoading';
-import axios from '@/api/axios';
+import axios from '@/api';
 
 export interface Experience {
   id?: number;
@@ -20,37 +20,37 @@ export const useExperiencesStore = defineStore('experiences', () => {
 
   const fetchExperiences = async (page = 1, limit = 10, search = '') => {
     await withLoading(async () => {
-      const response = await axios.get('/experiences', {
+      const response = await axios.get('/admin/experiences', {
         params: { page, limit, search }
       });
       experiences.value = response.data.experiences;
-      totalItems.value = response.data.total;
-      totalPages.value = response.data.pages;
+      totalItems.value = response.data.pagination.total_items;
+      totalPages.value = response.data.pagination.total_pages;
     });
   };
 
   const fetchExperienceById = async (id: number) => {
     await withLoading(async () => {
-      const response = await axios.get(`/experiences/${id}`);
+      const response = await axios.get(`/admin/experiences/${id}`);
       selectedExperience.value = response.data;
     });
   };
 
   const createExperience = async (payload: Experience): Promise<void> => {
     await withLoading(async () => {
-      await axios.post('/experiences', payload);
+      await axios.post('/admin/experiences', payload);
     });
   };
 
   const updateExperience = async (id: number, payload: Experience): Promise<void> => {
     await withLoading(async () => {
-      await axios.put(`/experiences/${id}`, payload);
+      await axios.put(`/admin/experiences/${id}`, payload);
     });
   };
 
   const deleteExperience = async (id: number): Promise<void> => {
     await withLoading(async () => {
-      await axios.delete(`/experiences/${id}`);      
+      await axios.delete(`/admin/experiences/${id}`);      
     });      
   };
 

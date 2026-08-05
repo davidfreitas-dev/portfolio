@@ -12,6 +12,16 @@ const routes = [
     name: 'Forgot',
     component: () => import('../views/auth/Forgot.vue') 
   },
+  { 
+    path: '/validate-code', 
+    name: 'ValidateCode',
+    component: () => import('../views/auth/ValidateCode.vue') 
+  },
+  { 
+    path: '/reset-password', 
+    name: 'ResetPassword',
+    component: () => import('../views/auth/ResetPassword.vue') 
+  },
   {
     path: '/',
     name: 'Home',

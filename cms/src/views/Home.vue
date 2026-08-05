@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { useUserStore } from '@/stores/userStore';
+import { useProfileStore } from '@/stores/profileStore';
 import Container from '@/components/Container.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
 
-const userStore = useUserStore();
+const profileStore = useProfileStore();
 
-const { user } = storeToRefs(userStore);
+const { user } = storeToRefs(profileStore);
 </script>
 
 <template>

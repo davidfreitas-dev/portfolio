@@ -1,5 +1,5 @@
 import { ref, type Ref } from 'vue';
-import type { ToastData, ToastType } from '@/types/toast';
+import type { ToastData, ToastType } from '@/types';
 
 interface ToastComponent {
   showToast: () => void;

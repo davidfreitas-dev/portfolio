@@ -8,6 +8,7 @@ use App\Infrastructure\Http\Middleware\RoleMiddleware;
 use App\Presentation\Action\Auth\LoginAction;
 use App\Presentation\Action\Auth\LogoutAction;
 use App\Presentation\Action\Auth\RequestLoginOtpAction;
+use App\Presentation\Action\Auth\RefreshAction;
 use App\Presentation\Action\Auth\RequestPasswordResetAction;
 use App\Presentation\Action\Auth\ResetPasswordAction;
 use App\Presentation\Action\Auth\ValidateResetCodeAction;
@@ -61,6 +62,7 @@ return function (App $app): void {
     $app->group('/auth', function (RouteCollectorProxy $group): void {
         $group->post('/request-login', RequestLoginOtpAction::class);
         $group->post('/login', LoginAction::class);
+        $group->post('/refresh', RefreshAction::class);
         $group->post('/logout', LogoutAction::class);
         $group->post('/forgot', RequestPasswordResetAction::class);
         $group->post('/validate-reset-code', ValidateResetCodeAction::class);

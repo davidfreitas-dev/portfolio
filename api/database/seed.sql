@@ -21,21 +21,22 @@ INSERT INTO experiences (title, description, start_date, end_date, sort_order) V
 -- 🛠️ technologies
 INSERT INTO technologies (id, name, slug, image, sort_order) VALUES 
 (1, 'PHP', 'php', 'php.png', 1),
-(2, 'Laravel', 'laravel', 'laravel.png', 2),
-(3, 'Slim Framework', 'slim-framework', 'slim.png', 3),
-(4, 'React', 'react', 'react.png', 4),
-(5, 'TypeScript', 'typescript', 'typescript.png', 5),
-(6, 'Docker', 'docker', 'docker.png', 6),
-(7, 'MySQL', 'mysql', 'mysql.png', 7);
+(2, 'Slim Framework', 'slim-framework', 'slim.png', 2),
+(3, 'Tailwind CSS', 'tailwind-css', 'tailwind.png', 3),
+(4, 'TypeScript', 'typescript', 'typescript.png', 4),
+(5, 'Docker', 'docker', 'docker.png', 5),
+(6, 'MySQL', 'mysql', 'mysql.png', 6),
+(7, 'Vue.js', 'vuejs', 'vue.png', 7),
+(8, 'Ionic', 'ionic', 'ionic.png', 8);
 
 -- 📦 projects
 INSERT INTO projects (id, title, slug, summary, description, link, github_link, sort_order, is_active) VALUES 
-(1, 'E-commerce Platform', 'e-commerce-platform', 'Plataforma completa de vendas online.', 'Uma plataforma robusta com suporte a múltiplos gateways de pagamento e gestão de estoque em tempo real.', 'https://ecommerce.demo', 'https://github.com/user/ecommerce', 1, 1),
-(2, 'Task Management API', 'task-management-api', 'API para gerenciamento de tarefas e equipes.', 'Backend escalável construído com Slim Framework e Redis para alta performance.', NULL, 'https://github.com/user/task-api', 2, 1),
-(3, 'Personal Portfolio', 'personal-portfolio', 'Este projeto que você está vendo agora!', 'Um CMS customizado para gerenciar portfólios profissionais de forma eficiente.', 'https://portfolio.demo', 'https://github.com/user/portfolio', 3, 1);
+(1, 'Portfolio', 'portfolio', 'Este projeto que você está vendo agora!', 'Um CMS customizado para gerenciar portfólios profissionais de forma eficiente.', 'https://portfolio.demo', 'https://github.com/user/portfolio', 3, 1),
+(2, 'E-commerce', 'e-commerce', 'Plataforma completa de vendas online.', 'Uma plataforma robusta com suporte a múltiplos gateways de pagamento e gestão de estoque em tempo real.', 'https://ecommerce.demo', 'https://github.com/user/ecommerce', 1, 1),
+(3, 'Habitus', 'habitus', 'App de rastreamento de hábitos diários.', 'App de rastreamento de hábitos diários feito com Vue + TypeScript + Ionic e a API feita com PHP e Slim Framework.', NULL, 'https://github.com/user/habitus-app', 2, 1);
 
 -- 🔗 project_technologies
 INSERT INTO project_technologies (project_id, technology_id) VALUES 
-(1, 1), (1, 2), (1, 7),
-(2, 3), (2, 6), (2, 7),
-(3, 1), (3, 3), (3, 4), (3, 5);
+(1, 1), (1, 2), (1, 6), (1, 5),
+(2, 1), (2, 2), (2, 3), (2, 5), (2, 6), (2, 7),
+(3, 1), (3, 2), (3, 4), (3, 7), (3, 8);

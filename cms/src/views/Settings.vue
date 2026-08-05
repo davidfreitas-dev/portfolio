@@ -5,7 +5,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { required, email, helpers } from '@vuelidate/validators';
 import { useDark } from '@vueuse/core';
 import { useAuthStore } from '@/stores/authStore';
-import { useUserStore } from '@/stores/userStore';
+import { useProfileStore } from '@/stores/profileStore';
 import { useLoading } from '@/composables/useLoading';
 import { useToast } from '@/composables/useToast';
 import Container from '@/components/Container.vue';
@@ -19,7 +19,7 @@ import Dialog from '@/components/Dialog.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
-const userStore = useUserStore();
+const profileStore = useProfileStore();
 
 const formData = ref({
   name: '',
@@ -27,9 +27,9 @@ const formData = ref({
 });
 
 onMounted(() => {
-  if (userStore.user) {
-    formData.value.name = userStore.user.name;
-    formData.value.email = userStore.user.email;
+  if (profileStore.user) {
+    formData.value.name = profileStore.user.name;
+    formData.value.email = profileStore.user.email;
   }
 });
 
@@ -48,15 +48,15 @@ const rules = computed(() => ({
 
 const v$ = useVuelidate(rules, formData);
 
-const needsReauth = computed(() => formData.value.email !== userStore.user?.email);
+const needsReauth = computed(() => formData.value.email !== profileStore.user?.email);
 
 const modalRef = ref<InstanceType<typeof Modal> | null>(null);
 
 const { showToast } = useToast();
 
 const updateUserData = async () => {
-  if (!userStore.user?.id) throw new Error('Usuário não encontrado');
-  await userStore.updateUser(formData.value);
+  if (!profileStore.user?.id) throw new Error('Usuário não encontrado');
+  await profileStore.updateProfile(formData.value);
   modalRef.value?.closeModal();
 };
 
@@ -101,13 +101,13 @@ const confirmPassword = async (event: Event) => {
 
   await withConfirming(async () => {
     try {
-      if (!userStore.user?.email) {
+      if (!profileStore.user?.email) {
         showToast('error', 'Usuário não encontrado.');
         return;
       }
 
-      await authStore.signIn({
-        login: userStore.user.email,
+      await authStore.login({
+        email: profileStore.user.email,
         password: currentPassword.value
       });
 
@@ -124,7 +124,7 @@ const dialogRef = ref<InstanceType<typeof Dialog> | null>(null);
 const handleLogout = () => dialogRef.value?.openModal();
 
 const handleConfirmLogout = () => {
-  authStore.logOut();
+  authStore.logout();
   router.push({ name: 'Login' });
 };
 

@@ -57,6 +57,19 @@ class JwtService
         return $this->createToken([
             'id'        => $data['id'],
             'role_name' => $data['role_name'] ?? 'user',
+            'type'      => 'access',
         ], 'user-client');
+    }
+
+    /**
+     * Gera um refresh token.
+     */
+    public function generateRefreshToken(array $data): string
+    {
+        return $this->createToken([
+            'id'        => $data['id'],
+            'role_name' => $data['role_name'] ?? 'user',
+            'type'      => 'refresh',
+        ], 'user-client', 604800); // 7 days
     }
 }

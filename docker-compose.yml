@@ -5,7 +5,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx-gateway.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/dev/conf.d:/etc/nginx/conf.d:ro
       - ./api:/var/www/html/api:ro
       - ./site:/var/www/html/site:ro
     depends_on:

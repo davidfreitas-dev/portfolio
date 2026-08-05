@@ -46,6 +46,13 @@ class LoginAction
                 return $this->responder->error($response, "Senha ou código OTP é obrigatório.", HTTPStatus::BAD_REQUEST);
             }
 
+            if (isset($result['refresh_token'])) {
+                $refreshToken = $result['refresh_token'];
+                unset($result['refresh_token']);
+                $cookieString = 'refresh_token=' . urlencode($refreshToken) . '; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=604800';
+                $response = $response->withAddedHeader('Set-Cookie', $cookieString);
+            }
+
             return $this->responder->success($response, 'Login realizado com sucesso.', $result);
         } catch (\Exception $e) {
             return $this->responder->error($response, $e->getMessage(), (int) $e->getCode() ?: HTTPStatus::UNAUTHORIZED);

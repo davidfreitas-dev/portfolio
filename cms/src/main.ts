@@ -20,7 +20,7 @@ const initApp = async () => {
   app.use(filters);
 
   const authStore = useAuthStore();
-  await authStore.initAuth();
+  await authStore.hydrate();
 
   app.use(router);
   app.mount('#app');

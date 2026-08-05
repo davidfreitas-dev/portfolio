@@ -4,10 +4,12 @@ import { useVuelidate } from '@vuelidate/core';
 import { required, email } from '@vuelidate/validators';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/composables/useToast';
+import { useRouter } from 'vue-router';
 import Input from '@/components/Input.vue';
 import Button from '@/components/Button.vue';
 
 const authStore = useAuthStore();
+const router = useRouter();
 
 const { showToast } = useToast();
 
@@ -29,9 +31,10 @@ const submitForm = async () => {
     return;
   }
 
-  await authStore.forgotPassword(formData.value.email);
+  await authStore.forgotPassword({ email: formData.value.email });
 
   showToast('success', 'Enviamos um link de recuperação para o seu e-mail');
+  router.push({ name: 'ValidateCode', query: { email: formData.value.email } });
 };
 </script>
 

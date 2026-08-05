@@ -1,112 +1,133 @@
 import { defineStore } from 'pinia';
-import { ref, computed, type Ref } from 'vue';
-import { useLoading } from '@/composables/useLoading';
-import { useUserStore } from '@/stores/userStore';
-import axios from '@/api/axios';
-import type { User } from '@/types/user';
+import { ref, computed } from 'vue';
+import { authService } from '@/services/authService';
+import { useProfileStore } from '@/stores/profileStore';
+import type {
+  LoginCredentials,
+  ForgotPasswordPayload,
+  ResetPasswordPayload,
+  ValidateResetCodePayload,
+  RequestLoginPayload,
+} from '@/types';
 
-interface SignInPayload {
-  login: string;
-  password: string;
-}
-
-interface SignUpPayload {
-  name: string;
-  email: string;
-  phone?: string;
-  cpfcnpj?: string;
-  password: string;
+export class UnauthorizedRoleError extends Error {
+  isUnauthorizedRole = true;
+  constructor(message: string) {
+    super(message);
+    this.name = 'UnauthorizedRoleError';
+  }
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const userStore = useUserStore();
+  // Stores
+  const profileStore = useProfileStore();
 
-  const token: Ref<string | null> = ref(null);  
-  const isAuthChecked: Ref<boolean> = ref(false);
-  const isAuthenticated = computed(() => !!token.value);
+  // State
+  const accessToken = ref<string | null>(null);
+  const isLoading = ref(false);
+  const isHydrated = ref(false);
 
-  const { isLoading, withLoading } = useLoading();
+  // Getters
+  const isAuthenticated = computed(() => !!accessToken.value);
 
-  const setToken = (jwt: string) => {
-    token.value = jwt;
-  };
+  // Actions
+  function setToken(access: string): void {
+    accessToken.value = access;
+  }
 
-  const clearToken = () => {
-    token.value = null;
-    userStore.clearUser();
-  };
+  function clearSession(): void {
+    accessToken.value = null;
+    profileStore.clearProfile();
+  }
 
-  const initAuth = async () => {
-    if (token.value) {
-      try {
-        const response = await axios.get('/users/me');
-        const userData: User = response.data;
-        userStore.setUser(userData);
-      } catch {
-        clearToken();
-      }
+  async function hydrate(): Promise<boolean> {
+    if (isHydrated.value) return isAuthenticated.value;
+    
+    // Se não há token em memória (e não está sendo carregado por persistência), não estamos autenticados.
+    // Como a API não possui endpoint de refresh, apenas validamos se o perfil consegue ser obtido.
+    if (!accessToken.value) {
+      isHydrated.value = true;
+      return false;
     }
-    isAuthChecked.value = true;
-  };
 
-  const signIn = async (payload: SignInPayload) => {
-    await withLoading(async () => {
-      const response = await axios.post('/auth/signin', payload);
-      const jwt = response.data.token;
-      setToken(jwt);
-      const userData: User = await axios.get('/users/me');
-      userStore.setUser(userData);
-    });
-  };
+    try {
+      const profile = await profileStore.fetchProfile();
+      if (profile?.role === 'customer' || profile?.role === 'user') {
+        clearSession();
+        throw new UnauthorizedRoleError('Acesso não autorizado para esta role.');
+      }
+      return true;
+    } catch {
+      clearSession();
+      return false;
+    } finally {
+      isHydrated.value = true;
+    }
+  }
 
-  const signUp = async (payload: SignUpPayload) => {
-    await withLoading(async () => {
-      const response = await axios.post('/auth/signup', payload);
-      const jwt = response.data.token;
-      setToken(jwt);
-      const userData: User = await axios.get('/users/me');
-      userStore.setUser(userData);
-    });
-  };
+  async function login(credentials: LoginCredentials): Promise<void> {
+    isLoading.value = true;
+    try {
+      const data = await authService.login(credentials);
+      setToken(data.token);
 
-  const logOut = async () => {
-    clearToken();
-  };
+      // Busca o perfil imediatamente para verificar a role
+      const profile = await profileStore.fetchProfile();
+      
+      if (profile?.role === 'customer' || profile?.role === 'user') {
+        clearSession();
+        throw new UnauthorizedRoleError('Acesso não autorizado para esta role.');
+      }
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
-  const forgotPassword = async (email: string) => {
-    await withLoading(async () => {
-      await axios.post('/auth/forgot', { email });
-    });
-  };
+  async function logout(): Promise<void> {
+    isLoading.value = true;
+    try {
+      await authService.logout();
+    } catch {
+      // Ignora erro de rede no logout
+    } finally {
+      clearSession();
+      isLoading.value = false;
+    }
+  }
 
-  const resetPassword = async (code: string, newPassword: string) => {
-    await withLoading(async () => {
-      await axios.post('/auth/reset', { code, password: newPassword });
-    });
-  };
+  async function requestLogin(payload: RequestLoginPayload): Promise<void> {
+    await authService.requestLogin(payload);
+  }
+
+  async function forgotPassword(payload: ForgotPasswordPayload): Promise<void> {
+    await authService.forgotPassword(payload);
+  }
+
+  async function validateResetCode(payload: ValidateResetCodePayload): Promise<void> {
+    await authService.validateResetCode(payload);
+  }
+
+  async function resetPassword(payload: ResetPasswordPayload): Promise<void> {
+    await authService.resetPassword(payload);
+  }
 
   return {
+    accessToken,
     isLoading,
-    isAuthChecked,
+    isHydrated,
     isAuthenticated,
-    token,
     setToken,
-    initAuth,
-    signIn,
-    signUp,
-    logOut,
+    clearSession,
+    hydrate,
+    requestLogin,
+    login,
+    logout,
     forgotPassword,
+    validateResetCode,
     resetPassword,
   };
 }, {
   persist: {
-    key: 'authToken',
-    storage: localStorage,
-    serializer: {
-      serialize: (state) => JSON.stringify({
-        token: state.token,
-      }),
-      deserialize: (str) => JSON.parse(str),
-    },
-  },
+    paths: ['accessToken']
+  }
 });

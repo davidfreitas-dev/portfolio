@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
 import { useLoading } from '@/composables/useLoading';
-import axios from '@/api/axios';
+import axios from '@/api';
 
 export interface Technology {
   id: number;
@@ -28,18 +28,18 @@ export const useProjectsStore = defineStore('projects', () => {
 
   const fetchProjects = async (page = 1, limit = 10, search = '') => {
     await withLoading(async () => {
-      const response = await axios.get<{ projects: Project[]; total: number; pages: number }>('/projects', {
+      const response = await axios.get<{ projects: Project[]; pagination: { total_items: number; total_pages: number } }>('/admin/projects', {
         params: { page, limit, search }
       });
       projects.value = response.data.projects;
-      totalItems.value = response.data.total;
-      totalPages.value = response.data.pages;
+      totalItems.value = response.data.pagination.total_items;
+      totalPages.value = response.data.pagination.total_pages;
     });
   };
 
   const fetchProjectById = async (id: number) => {
     await withLoading(async () => {
-      const response = await axios.get(`/projects/${id}`);
+      const response = await axios.get(`/admin/projects/${id}`);
       selectedProject.value = response.data;
     });
   };
@@ -56,7 +56,7 @@ export const useProjectsStore = defineStore('projects', () => {
       if (payload.is_active !== undefined) formData.append('is_active', String(payload.is_active));
       formData.append('technologies', payload.technologies.map(t => t.id).join(','));
 
-      await axios.post('/projects', formData, {
+      await axios.post('/admin/projects', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
     });
@@ -64,7 +64,7 @@ export const useProjectsStore = defineStore('projects', () => {
 
   const deleteProject = async (id: number): Promise<void> => {
     await withLoading(async () => {
-      await axios.delete(`/projects/${id}`);
+      await axios.delete(`/admin/projects/${id}`);
     });
   };
 

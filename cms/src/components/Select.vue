@@ -6,7 +6,7 @@ import {
   ListboxOptions,
   ListboxOption,
 } from '@headlessui/vue';
-import { type Option } from '@/types/option';
+import { type Option } from '@/types';
 import Icon from '@/components/Icon.vue';
 
 const props = defineProps<{

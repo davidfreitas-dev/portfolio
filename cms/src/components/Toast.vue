@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import type { ToastData } from '@/types/toast';
+import type { ToastData } from '@/types';
 import Icon from '@/components/Icon.vue';
 import 'animate.css';
 

@@ -4,14 +4,14 @@ import { useRouter } from 'vue-router';
 import { useVuelidate } from '@vuelidate/core';
 import { required, email, minLength } from '@vuelidate/validators';
 import { useAuthStore } from '@/stores/authStore';
-import { useUserStore } from '@/stores/userStore';
+import { useProfileStore } from '@/stores/profileStore';
 import { useToast } from '@/composables/useToast';
 import Input from '@/components/Input.vue';
 import Button from '@/components/Button.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
-const userStore = useUserStore();
+const profileStore = useProfileStore();
 
 const formData = ref({
   email: '',
@@ -20,7 +20,7 @@ const formData = ref({
 
 const rules = computed(() => ({
   email: { required, email },
-  password: { required, minLength: minLength(6) }
+  password: { required, minLength: minLength(8) }
 }));
 
 const v$ = useVuelidate(rules, formData);
@@ -35,8 +35,8 @@ const submitForm = async () => {
     return;
   }
 
-  await authStore.signIn({
-    login: formData.value.email,
+  await authStore.login({
+    email: formData.value.email,
     password: formData.value.password
   });
 
@@ -44,8 +44,6 @@ const submitForm = async () => {
     showToast('error', 'Falha na autenticação');
     return;
   }
-
-  await userStore.fetchUser();
 
   router.push({ name: 'Home' });
 };
@@ -80,7 +78,7 @@ const submitForm = async () => {
           type="password"
           label="Sua senha"
           placeholder="**********"
-          :error="v$.password.$dirty && v$.password.$error ? 'A senha deve ter no mínimo 6 caracteres' : ''"
+          :error="v$.password.$dirty && v$.password.$error ? 'A senha deve ter no mínimo 8 caracteres' : ''"
           @blur="v$.password.$touch"
         />
 

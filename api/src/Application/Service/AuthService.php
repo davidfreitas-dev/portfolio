@@ -105,11 +105,13 @@ class AuthService
     private function generateAuthResponse(array $user): array
     {
         $jwt = $this->jwtService->generatePrivateToken($user);
+        $refreshToken = $this->jwtService->generateRefreshToken($user);
 
         return [
-            "token"      => $jwt,
-            "type"       => "Bearer",
-            "expires_in" => 3600,
+            "token"         => $jwt,
+            "refresh_token" => $refreshToken,
+            "type"          => "Bearer",
+            "expires_in"    => 3600,
         ];
     }
 }

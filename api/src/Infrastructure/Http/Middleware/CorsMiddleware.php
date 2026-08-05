@@ -29,7 +29,7 @@ class CorsMiddleware implements MiddlewareInterface
 
         // Check if origin is allowed. Also allow requests without an Origin header.
         if ($origin === '' || \in_array('*', $allowedOrigins, true) || \in_array($origin, $allowedOrigins, true)) {
-            $allowOrigin = \in_array('*', $allowedOrigins, true) ? '*' : $origin;
+            $allowOrigin = (\in_array('*', $allowedOrigins, true) && !$this->settings['allow_credentials']) ? '*' : ($origin ?: '*');
             $response = $response
                 ->withHeader('Access-Control-Allow-Origin', $allowOrigin)
                 ->withHeader(

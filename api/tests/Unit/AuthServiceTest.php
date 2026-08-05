@@ -62,10 +62,16 @@ test('should login with password', function () {
         ->once()
         ->andReturn('fake-jwt-token');
 
+    $this->jwtService->shouldReceive('generateRefreshToken')
+        ->with($user)
+        ->once()
+        ->andReturn('fake-refresh-token');
+
     $result = $this->service->loginWithPassword($email, $password);
 
     expect($result)->toBeArray()
         ->and($result['token'])->toBe('fake-jwt-token')
+        ->and($result['refresh_token'])->toBe('fake-refresh-token')
         ->and($result['type'])->toBe('Bearer');
 });
 
@@ -102,6 +108,11 @@ test('should login with otp', function () {
         ->with($user)
         ->once()
         ->andReturn('fake-jwt-token');
+
+    $this->jwtService->shouldReceive('generateRefreshToken')
+        ->with($user)
+        ->once()
+        ->andReturn('fake-refresh-token');
 
     $result = $this->service->loginWithOtp($email, $otp);
 
