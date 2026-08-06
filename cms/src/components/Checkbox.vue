@@ -29,8 +29,8 @@ const model = computed({
         class="peer absolute inset-0 h-full w-full opacity-0 cursor-pointer"
       >
       <span
-        class="h-5.5 w-5.5 rounded border border-[var(--color-gray-300)] bg-transparent dark:border-gray-600 dark:bg-gray-800 transition 
- peer-checked:bg-[var(--color-primary-default)] peer-checked:border-[var(--color-primary-default)] dark:peer-checked:bg-[var(--color-primary-default)] dark:peer-checked:border-[var(--color-primary-default)]"
+        class="h-5.5 w-5.5 rounded border border-gray-300 bg-transparent dark:border-gray-600 dark:bg-gray-800 transition 
+ peer-checked:bg-primary-default peer-checked:border-primary-default dark:peer-checked:bg-primary-default dark:peer-checked:border-primary-default"
       />
       <span
         class="absolute h-2.5 w-1.5 rotate-45 border-r-2 border-b-2 mb-0.5 border-white 

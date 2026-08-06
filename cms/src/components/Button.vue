@@ -27,11 +27,11 @@ const classes = computed(() => [
     'w-full text-center h-[52px] text-[15px] rounded-xl': size === 'full',
 
     // Variants
-    'bg-[var(--color-primary-default)] text-white hover:bg-[var(--color-primary-dark)] disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:text-gray-400':
+    'bg-primary-default text-white hover:bg-primary-dark disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:text-gray-400':
  variant === 'fill',
-    'bg-transparent text-[var(--color-primary-default)] border border-[var(--color-primary-default)] hover:bg-primary-bg disabled:border-gray-200 disabled:hover:bg-transparent disabled:text-gray-400':
+    'bg-transparent text-primary-default border border-primary-default hover:bg-primary-bg disabled:border-gray-200 disabled:hover:bg-transparent disabled:text-gray-400':
  variant === 'outline',
-    'bg-transparent text-[var(--color-primary-default)] hover:text-[var(--color-primary-dark)] hover:underline disabled:text-gray-400 disabled:no-underline disabled:hover:text-gray-400':
+    'bg-transparent text-primary-default hover:text-primary-dark hover:underline disabled:text-gray-400 disabled:no-underline disabled:hover:text-gray-400':
  variant === 'link',
   },
 ]);

@@ -5,6 +5,7 @@ import { useLoading } from '@/composables/useLoading';
 import { useToast } from '@/composables/useToast';
 import { useExperiencesStore } from '@/stores/experiencesStore';
 import type { CreateExperiencePayload } from '@/services/experienceService';
+import dayjs from 'dayjs';
 import Container from '@/components/Container.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
 import Icon from '@/components/Icon.vue';
@@ -69,7 +70,7 @@ import type { Experience } from '@/types';
 
 const openEditModal = (exp: Experience) => {
   isEditing.value = true;
-  experienceBeingEdited.value = { ...exp, end_date: exp.end_date ?? '' } as unknown as ExperienceFormData;
+  experienceBeingEdited.value = { ...exp, end_date: exp.end_date ?? null } as unknown as ExperienceFormData;
   experienceModal.value?.openModal();
 };
 
@@ -79,8 +80,8 @@ const handleSubmit = async (payload: ExperienceFormData) => {
       const apiPayload: CreateExperiencePayload = {
         title: payload.title,
         description: payload.description,
-        start_date: payload.start_date,
-        end_date: payload.end_date || null,
+        start_date: dayjs(payload.start_date).format('YYYY-MM-DD'),
+        end_date: payload.end_date ? dayjs(payload.end_date).format('YYYY-MM-DD') : null,
         sort_order: 0
       };
 
@@ -138,8 +139,7 @@ const deleteExperience = async () => {
       <div class="filters grid grid-cols-1 md:grid-cols-2 gap-4 w-full border-b border-gray-200 dark:border-gray-600 p-5">
         <InputSearch
           v-model="search"
-          label="Buscar por título"
-          floating-label
+          placeholder="Buscar por título"
         />
       </div>
 

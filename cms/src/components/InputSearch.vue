@@ -31,8 +31,8 @@ const updateValue = (event: Event) => {
         :placeholder="placeholder || ''"
         :disabled="disabled"
         :class="[
-          'text-gray-700 dark:text-gray-100 bg-transparent text-[14px] w-full h-[44px] rounded-lg pl-4 pr-10 focus:outline-none focus:ring-1 transition-all duration-200 disabled:cursor-not-allowed',
-          'border border-gray-300 dark:border-gray-600 focus:ring-primary-default focus:border-primary-default '
+          'text-gray-700 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 text-[14px] w-full h-[44px] rounded-lg pl-4 pr-10 focus:outline-none focus:ring-1 transition-all duration-200 disabled:cursor-not-allowed',
+          'border border-gray-200 dark:border-gray-600 focus:ring-primary-default focus:border-primary-default '
         ]"
         :aria-label="label"
         @input="updateValue"

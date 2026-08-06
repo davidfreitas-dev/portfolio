@@ -46,16 +46,16 @@ const updateValue = (event: Event) => {
       :disabled="disabled"
       rows="4"
       :class="[
-        'text-gray-700 dark:text-gray-100 bg-transparent text-[14px] w-full rounded-lg px-4 py-3 resize-none focus:outline-none focus:ring-1 disabled:cursor-not-allowed',
+        'text-gray-700 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 text-[14px] w-full rounded-lg px-4 py-3 resize-none focus:outline-none focus:ring-1 disabled:cursor-not-allowed',
         error
-          ? 'border border-[var(--color-danger)] focus:ring-[var(--color-danger)] focus:border-[var(--color-danger)]'
-          : 'border border-[var(--color-gray-300)] dark:border-gray-600 focus:ring-[var(--color-primary-default)] focus:border-[var(--color-primary-default)] dark:focus:ring-[var(--color-primary-default)]'
+          ? 'border border-danger focus:ring-danger focus:border-danger'
+          : 'border border-gray-200 dark:border-gray-600 focus:ring-primary-default focus:border-primary-default dark:focus:ring-primary-default'
       ]"
       @input="updateValue"
       @keyup.enter="$emit('onKeyupEnter')"
       @blur="$emit('blur', $event)"
     />
 
-    <span v-if="error" class="text-[14px] text-[var(--color-danger)]">{{ error }}</span>
+    <span v-if="error" class="text-[14px] text-danger">{{ error }}</span>
   </div>
 </template>

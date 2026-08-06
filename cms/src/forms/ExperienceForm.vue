@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength } from '@vuelidate/validators';
 import Input from '@/components/Input.vue';
+import InputDate from '@/components/InputDate.vue';
 import Textarea from '@/components/Textarea.vue';
 import Button from '@/components/Button.vue';
 
@@ -10,8 +11,8 @@ export interface ExperienceFormData {
   id?: number;
   title: string;
   description: string;
-  start_date: string;
-  end_date: string;
+  start_date: string | Date | null;
+  end_date: string | Date | null;
 }
 
 const props = defineProps<{
@@ -28,8 +29,8 @@ const emit = defineEmits<{
 const emptyForm: ExperienceFormData = {
   title: '',
   description: '',
-  start_date: '',
-  end_date: ''
+  start_date: null,
+  end_date: null
 };
 
 const formData = ref<ExperienceFormData>({ ...emptyForm });
@@ -89,17 +90,15 @@ const handleCancel = () => {
       @blur="v$.description.$touch"
     />
 
-    <Input
+    <InputDate
       v-model="formData.start_date"
-      type="date"
       label="Data de início"
       :error="v$.start_date.$dirty && v$.start_date.$error ? 'Informe a data de início' : ''"
       @blur="v$.start_date.$touch"
     />
 
-    <Input
+    <InputDate
       v-model="formData.end_date"
-      type="date"
       label="Data de término"
       :error="v$.end_date.$dirty && v$.end_date.$error ? 'Data inválida' : ''"
       @blur="v$.end_date.$touch"

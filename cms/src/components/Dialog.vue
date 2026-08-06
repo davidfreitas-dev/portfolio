@@ -84,7 +84,7 @@ defineExpose({ openModal });
                 <div class="flex justify-start flex-row-reverse gap-3 mt-5">
                   <button
                     type="button"
-                    class="inline-flex justify-center rounded-lg px-4 py-2 bg-[var(--color-primary-default)] hover:bg-primary-hover text-white text-sm font-medium border-2 border-transparent focus-visible:border-primary focus-visible: focus-visible:ring-2 focus-visible:ring-primary-focus focus:outline-none cursor-pointer"
+                    class="inline-flex justify-center rounded-lg px-4 py-2 bg-primary-default hover:bg-primary-hover text-white text-sm font-medium border-2 border-transparent focus-visible:border-primary focus-visible: focus-visible:ring-2 focus-visible:ring-primary-focus focus:outline-none cursor-pointer"
                     @click="handleConfirm"
                   >
                     Confirmar

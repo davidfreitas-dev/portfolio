@@ -81,13 +81,13 @@ onBeforeUnmount(() => {
 
     <div
       class="flex flex-wrap items-center justify-between border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-100 bg-transparent text-base w-full h-[52px] rounded-xl px-4 focus:outline-none focus:ring-2 transition-all duration-200 cursor-pointer disabled:cursor-not-allowed"
-      :class="{'border-[var(--color-primary-default)] dark:border-[var(--color-primary-default)]': isFocused}"
+      :class="{'border-primary-default dark:border-primary-default': isFocused}"
       @click="toggleDropdown"
     >
       <div class="flex flex-wrap gap-2 items-center flex-grow">
         <template v-if="selectedOptions.length">
           <template v-for="opt in selectedOptions" :key="opt.id">
-            <span class="flex items-center gap-2 bg-[var(--color-primary-bg)] dark:bg-[var(--color-primary-default)] dark:text-gray-100 py-1.5 px-4 rounded-full">
+            <span class="flex items-center gap-2 bg-primary-bg dark:bg-primary-default dark:text-gray-100 py-1.5 px-4 rounded-full">
               {{ opt.name }}
               <Icon
                 name="close"
@@ -119,7 +119,7 @@ onBeforeUnmount(() => {
         :class="{'border-b border-gray-300 dark:border-gray-600': index !== formattedOptions.length - 1, 'bg-gray-50 dark:bg-gray-600': isOptionSelected(option)}"
         @click="selectOption(option)"
       >
-        <Icon :name="isOptionSelected(option) ? 'check_box' : 'check_box_outline_blank'" class="text-[var(--color-primary-default)]" />
+        <Icon :name="isOptionSelected(option) ? 'check_box' : 'check_box_outline_blank'" class="text-primary-default" />
         {{ option.name }}
       </li>
     </ul>

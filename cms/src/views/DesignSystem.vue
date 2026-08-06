@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import Button from '@/components/Button.vue';
 import Input from '@/components/Input.vue';
+import InputDate from '@/components/InputDate.vue';
 import Textarea from '@/components/Textarea.vue';
 import Switch from '@/components/Switch.vue';
 import Checkbox from '@/components/Checkbox.vue';
@@ -14,6 +15,7 @@ import InputSearch from '@/components/InputSearch.vue';
 
 const inputValue = ref('');
 const inputFilled = ref('Texto preenchido');
+const dateValue = ref<Date | null>(null);
 const selectValue = ref(null);
 const selectOptions = [
   { label: 'Opção 1', value: 1 },
@@ -31,33 +33,33 @@ const colorGroups = [
   {
     title: 'Primary',
     colors: [
-      { name: 'Primary Dark', class: 'bg-[var(--color-primary-dark)]' },
-      { name: 'Primary Default', class: 'bg-[var(--color-primary-default)]' },
-      { name: 'Primary Light', class: 'bg-[var(--color-primary-light)]' },
-      { name: 'Primary Bg', class: 'bg-[var(--color-primary-bg)]', textClass: 'text-gray-700' },
+      { name: 'Primary Dark', class: 'bg-primary-dark' },
+      { name: 'Primary Default', class: 'bg-primary-default' },
+      { name: 'Primary Light', class: 'bg-primary-light' },
+      { name: 'Primary Bg', class: 'bg-primary-bg', textClass: 'text-gray-700' },
     ]
   },
   {
     title: 'Grays / Neutrals',
     colors: [
-      { name: 'Grey 900', class: 'bg-[var(--color-gray-900)]' },
-      { name: 'Grey 800', class: 'bg-[var(--color-gray-800)]' },
-      { name: 'Grey 700', class: 'bg-[var(--color-gray-700)]' },
-      { name: 'Grey 600', class: 'bg-[var(--color-gray-600)]' },
-      { name: 'Grey 500', class: 'bg-[var(--color-gray-500)]' },
-      { name: 'Grey 400', class: 'bg-[var(--color-gray-400)]' },
-      { name: 'Grey 300', class: 'bg-[var(--color-gray-300)]', textClass: 'text-gray-700' },
-      { name: 'Grey 200', class: 'bg-[var(--color-gray-200)]', textClass: 'text-gray-700' },
-      { name: 'Grey 100', class: 'bg-[var(--color-gray-100)]', textClass: 'text-gray-700' },
+      { name: 'Grey 900', class: 'bg-gray-900' },
+      { name: 'Grey 800', class: 'bg-gray-800' },
+      { name: 'Grey 700', class: 'bg-gray-700' },
+      { name: 'Grey 600', class: 'bg-gray-600' },
+      { name: 'Grey 500', class: 'bg-gray-500' },
+      { name: 'Grey 400', class: 'bg-gray-400' },
+      { name: 'Grey 300', class: 'bg-gray-300', textClass: 'text-gray-700' },
+      { name: 'Grey 200', class: 'bg-gray-200', textClass: 'text-gray-700' },
+      { name: 'Grey 100', class: 'bg-gray-100', textClass: 'text-gray-700' },
       { name: 'White', class: 'bg-white border border-gray-200 dark:border-gray-700', textClass: 'text-gray-700' },
     ]
   },
   {
     title: 'Feedback (Status)',
     colors: [
-      { name: 'Success', class: 'bg-[var(--color-success)]' },
-      { name: 'Warning', class: 'bg-[var(--color-warning)]', textClass: 'text-gray-700' },
-      { name: 'Danger', class: 'bg-[var(--color-danger)]' },
+      { name: 'Success', class: 'bg-success' },
+      { name: 'Warning', class: 'bg-warning', textClass: 'text-gray-700' },
+      { name: 'Danger', class: 'bg-danger' },
     ]
   }
 ];
@@ -284,6 +286,15 @@ const colorGroups = [
             label="Select com Erro"
             error="Seleção obrigatória"
           />
+          <InputDate
+            v-model="dateValue"
+            label="Input Date Default"
+          />
+          <InputDate
+            v-model="dateValue"
+            label="Input Date com Erro"
+            error="Data inválida"
+          />
         </div>
  
         <div class="space-y-4">
@@ -356,7 +367,7 @@ const colorGroups = [
             <div class="p-4 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
               <Loader color="primary" />
             </div>
-            <div class="p-4 rounded-lg bg-[var(--color-primary-default)] flex items-center justify-center">
+            <div class="p-4 rounded-lg bg-primary-default flex items-center justify-center">
               <Loader color="white" />
             </div>
           </div>

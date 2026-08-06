@@ -70,7 +70,7 @@ const submitForm = async () => {
   <div class="flex items-center justify-center w-full min-h-screen md:bg-gray-100 dark:md:bg-gray-900 p-4 md:p-8">
     <div class="w-full max-w-[1000px] flex flex-col md:flex-row bg-white dark:bg-gray-800 md:shadow-xl rounded-2xl overflow-hidden relative">
       <!-- Left: Branding & Welcome -->
-      <div class="w-full md:w-5/12 bg-[var(--color-primary-default)] relative p-8 md:p-12 flex flex-col justify-between text-white overflow-hidden">
+      <div class="w-full md:w-5/12 bg-primary-default relative p-8 md:p-12 flex flex-col justify-between text-white overflow-hidden">
         <!-- Decorative background elements -->
         <div class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 text-primary-focus ">
           <svg
@@ -163,7 +163,7 @@ const submitForm = async () => {
           <div class="flex justify-end">
             <router-link
               to="/forgot"
-              class="text-sm text-[var(--color-primary-default)] hover:text-primary-hover outline-primary cursor-pointer transition-colors"
+              class="text-sm text-primary-default hover:text-primary-hover outline-primary cursor-pointer transition-colors"
             >
               Esqueci minha senha
             </router-link>

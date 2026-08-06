@@ -7,9 +7,9 @@ const { label, color } = defineProps<{
 }>();
 
 const colorClasses = {
-  success: 'bg-[var(--color-success-accent)] text-[var(--color-success)] dark:bg-[var(--color-success-accent-dark)] dark:text-[var(--color-gray-100)]',
-  warning: 'bg-[var(--color-warning-accent)] text-[var(--color-warning-focus)] dark:bg-[var(--color-warning-accent-dark)] dark:text-[var(--color-gray-100)]',
-  danger: 'bg-[var(--color-danger-accent)] text-[var(--color-danger)] dark:bg-[var(--color-danger-accent-dark)] dark:text-[var(--color-gray-100)]',
+  success: 'bg-success-accent text-success dark:bg-success-accent-dark dark:text-gray-100',
+  warning: 'bg-warning-accent text-warning-focus dark:bg-warning-accent-dark dark:text-gray-100',
+  danger: 'bg-danger-accent text-danger dark:bg-danger-accent-dark dark:text-gray-100',
 };
 </script>
 
