@@ -21,9 +21,9 @@ export const useProjectsStore = defineStore('projects', () => {
 
   const fetchProjects = async (page = 1, limit = 10, search = '') => {
     const data = await projectService.fetchProjects(page, limit, search);
-    projects.value = data.projects;
-    totalItems.value = data.total;
-    totalPages.value = data.pages;
+    projects.value = data.projects || [];
+    totalItems.value = data.total ?? 0;
+    totalPages.value = data.pages ?? 1;
   };
 
   const fetchProjectById = async (id: number) => {

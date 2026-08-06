@@ -33,10 +33,15 @@ const submitForm = async () => {
     return;
   }
 
-  await authStore.login({
-    email: formData.value.email,
-    password: formData.value.password
-  });
+  try {
+    await authStore.login({
+      email: formData.value.email,
+      password: formData.value.password
+    });
+  } catch (error: any) {
+    showToast('error', error?.response?.data?.message || error.message || 'Falha na autenticação');
+    return;
+  }
 
   if (!authStore.isAuthenticated) {
     showToast('error', 'Falha na autenticação');
@@ -91,12 +96,6 @@ const submitForm = async () => {
           Entrar na plataforma
         </Button>
 
-        <router-link
-          to="/register"
-          class="text-center text-sm text-primary dark:text-primary-dark hover:text-primary-hover dark:hover:text-primary-hover-dark outline-primary dark:outline-primary-dark cursor-pointer m-4"
-        >
-          Criar uma conta
-        </router-link>
       </form>
     </div>
   </div>

@@ -13,13 +13,14 @@ class Database
         string $database,
         string $username,
         string $password,
+        string $charset
     ) {
         $this->conn = new \PDO(
-            "mysql:dbname=$database;host=$host;charset=utf8mb4",
+            "mysql:dbname=$database;host=$host;charset=$charset",
             $username,
-            $password,
-            [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4;SET time_zone='America/Sao_Paulo'"],
+            $password
         );
+        $this->conn->exec("SET time_zone='America/Sao_Paulo'");
     }
 
     public function getConnection(): \PDO
@@ -27,7 +28,7 @@ class Database
         return $this->conn;
     }
 
-    public function insert($rawQuery, $params = []): int
+    public function insert(string $rawQuery, array $params = []): int
     {
         try {
 
@@ -53,7 +54,7 @@ class Database
         }
     }
 
-    public function select($rawQuery, $params = []): array
+    public function select(string $rawQuery, array $params = []): array
     {
 
         try {
@@ -84,7 +85,7 @@ class Database
 
     }
 
-    public function query($rawQuery, $params = []): int
+    public function query(string $rawQuery, array $params = []): int
     {
 
         try {
@@ -111,7 +112,7 @@ class Database
 
     }
 
-    private function setParams($statement, $parameters = []): void
+    private function setParams(\PDOStatement $statement, array $parameters = []): void
     {
 
         foreach ($parameters as $key => $value) {
@@ -122,7 +123,7 @@ class Database
 
     }
 
-    private function bindParam($statement, $key, $value): void
+    private function bindParam(\PDOStatement $statement, string|int $key, mixed $value): void
     {
 
         $statement->bindParam($key, $value);

@@ -13,11 +13,13 @@ return [
             'database' => $_ENV['DB_TEST_NAME'] ?? 'portfolio_test',
             'username' => $_ENV['DB_TEST_USER'] ?? 'root',
             'password' => $_ENV['DB_TEST_PASS'] ?? '',
+            'charset' => $_ENV['DB_TEST_CHARSET'] ?? 'utf8mb4',
         ] : [
             'host' => $_ENV['DB_HOST'] ?? 'localhost',
             'database' => $_ENV['DB_NAME'] ?? 'portfolio',
             'username' => $_ENV['DB_USER'] ?? 'root',
             'password' => $_ENV['DB_PASS'] ?? '',
+            'charset' => $_ENV['DB_CHARSET'] ?? 'utf8mb4',
         ],
 
         'redis' => [

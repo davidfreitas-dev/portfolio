@@ -17,9 +17,9 @@ export const useTechnologiesStore = defineStore('technologies', () => {
 
   const fetchTechnologies = async (page = 1, limit = 10, search = '') => {
     const data = await technologyService.fetchTechnologies(page, limit, search);
-    technologies.value = data.technologies;
-    totalItems.value = data.total;
-    totalPages.value = data.pages;
+    technologies.value = data.technologies || [];
+    totalItems.value = data.total ?? 0;
+    totalPages.value = data.pages ?? 1;
   };
 
   const fetchTechnologyById = async (id: number) => {
