@@ -42,13 +42,13 @@ const submitForm = async () => {
       router.push({ name: 'ValidateCode', query: { email: formData.value.email } });
     } catch (error: unknown) {
       let message = 'Ocorreu um erro ao enviar o e-mail';
-      
+ 
       if (axios.isAxiosError<ApiResponse>(error)) {
         message = error.response?.data?.message || message;
       } else if (error instanceof Error) {
         message = error.message;
       }
-      
+ 
       showToast('error', message);
     }
   });
@@ -56,12 +56,12 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center w-full min-h-screen md:bg-background/50 dark:md:bg-background-dark/50 p-4 md:p-8">
-    <div class="w-full max-w-[1000px] flex flex-col md:flex-row bg-background dark:bg-accent-dark md:shadow-xl rounded-2xl overflow-hidden relative">
+  <div class="flex items-center justify-center w-full min-h-screen md:bg-gray-100 dark:md:bg-gray-700 p-4 md:p-8">
+    <div class="w-full max-w-[1000px] flex flex-col md:flex-row bg-white dark:bg-gray-600 md:shadow-xl rounded-2xl overflow-hidden relative">
       <!-- Left: Branding & Welcome -->
-      <div class="w-full md:w-5/12 bg-primary dark:bg-primary-dark relative p-8 md:p-12 flex flex-col justify-between text-white overflow-hidden">
+      <div class="w-full md:w-5/12 bg-[var(--color-primary-default)] relative p-8 md:p-12 flex flex-col justify-between text-white overflow-hidden">
         <!-- Decorative background elements -->
-        <div class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 text-primary-focus dark:text-primary-focus-dark">
+        <div class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 text-primary-focus ">
           <svg
             class="absolute w-[150%] h-[150%] -top-1/4 -left-1/4 animate-[spin_60s_linear_infinite]"
             preserveAspectRatio="none"
@@ -81,14 +81,14 @@ const submitForm = async () => {
             />
           </svg>
         </div>
-        <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary-focus dark:bg-primary-focus-dark rounded-full blur-3xl opacity-50 mix-blend-screen" />
-        
+        <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary-focus rounded-full blur-3xl opacity-50 mix-blend-screen" />
+ 
         <div class="relative z-10 flex items-center mb-8 md:mb-12">
           <h3 class="text-3xl font-extrabold tracking-tight">
             Dave<span class="text-white/80 ml-0.5">Dev</span>
           </h3>
         </div>
-        
+ 
         <div class="relative z-10 space-y-4 md:space-y-6">
           <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">
             Recuperar acesso.
@@ -97,7 +97,7 @@ const submitForm = async () => {
             Não se preocupe, te ajudaremos a recuperar o acesso à sua conta de forma segura.
           </p>
         </div>
-        
+ 
         <div class="relative z-10 mt-12 md:mt-24 pt-6 md:pt-8 border-t border-white/20 flex items-start gap-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -118,18 +118,18 @@ const submitForm = async () => {
           </p>
         </div>
       </div>
-      
+ 
       <!-- Right: Form -->
       <div class="w-full md:w-7/12 p-8 md:p-12 lg:p-16 flex flex-col justify-center">
         <div class="mb-8 md:mb-10 text-center md:text-left">
-          <h2 class="text-2xl md:text-3xl font-bold text-font dark:text-font-dark mb-2">
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-700 dark:text-gray-100 mb-2">
             Esqueceu sua senha?
           </h2>
-          <p class="text-secondary text-sm md:text-base">
+          <p class="text-gray-500 dark:text-gray-300 text-sm md:text-base">
             Enviaremos um código para que você possa redefinir sua senha com segurança
           </p>
         </div>
-        
+ 
         <form class="flex flex-col gap-5 w-full max-w-md mx-auto md:mx-0" @submit.prevent="submitForm">
           <Input
             v-model="formData.email"
@@ -152,7 +152,7 @@ const submitForm = async () => {
           <div class="flex justify-center mt-2">
             <router-link
               to="/login"
-              class="text-sm text-primary dark:text-primary-dark hover:text-primary-hover dark:hover:text-primary-hover-dark outline-primary dark:outline-primary-dark cursor-pointer transition-colors"
+              class="text-sm text-[var(--color-primary-default)] hover:text-primary-hover outline-primary cursor-pointer transition-colors"
             >
               Voltar ao login
             </router-link>

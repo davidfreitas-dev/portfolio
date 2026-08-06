@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import Icon from '@/components/Icon.vue';
 
 export interface Option {
-  id: number;
-  name: string;
+ id: number;
+ name: string;
 }
 
 const props = defineProps<{
-  label?: string;
-  modelValue: Option[]; // v-model
-  options: { label: string; value: number }[]; // opções brutas
+ label?: string;
+ modelValue: Option[]; // v-model
+ options: { label: string; value: number }[]; // opções brutas
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: Option[]): void;
+ (e: 'update:modelValue', value: Option[]): void;
 }>();
 
 const isFocused = ref(false);
@@ -76,24 +77,23 @@ onBeforeUnmount(() => {
 
 <template>
   <div ref="selectboxRef" class="flex flex-col gap-2 relative">
-    <label class="text-font dark:text-font-dark font-semibold">{{ label }}</label>
+    <label class="text-gray-700 dark:text-gray-100 font-semibold">{{ label }}</label>
 
     <div
-      class="flex flex-wrap items-center justify-between border border-neutral dark:border-neutral-dark text-font dark:text-font-dark bg-transparent text-base w-full h-[52px] rounded-xl px-4 focus:outline-none focus:ring-2 transition-all duration-200 cursor-pointer disabled:cursor-not-allowed"
-      :class="{'border-primary dark:border-primary-dark': isFocused}"
+      class="flex flex-wrap items-center justify-between border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-100 bg-transparent text-base w-full h-[52px] rounded-xl px-4 focus:outline-none focus:ring-2 transition-all duration-200 cursor-pointer disabled:cursor-not-allowed"
+      :class="{'border-[var(--color-primary-default)] dark:border-[var(--color-primary-default)]': isFocused}"
       @click="toggleDropdown"
     >
       <div class="flex flex-wrap gap-2 items-center flex-grow">
         <template v-if="selectedOptions.length">
           <template v-for="opt in selectedOptions" :key="opt.id">
-            <span class="flex items-center gap-2 bg-primary-accent dark:bg-primary-accent-dark py-1.5 px-4 rounded-full">
+            <span class="flex items-center gap-2 bg-[var(--color-primary-bg)] dark:bg-[var(--color-primary-default)] dark:text-gray-100 py-1.5 px-4 rounded-full">
               {{ opt.name }}
-              <span
-                class="material-icons text-base cursor-pointer"
+              <Icon
+                name="close"
+                class="text-base cursor-pointer"
                 @click.stop="selectOption(opt)"
-              >
-                close
-              </span>
+              />
             </span>
           </template>
         </template>
@@ -103,27 +103,23 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="chevrons">
-        <span class="material-icons pt-2">
-          {{ isDropdownOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
-        </span>
+        <Icon :name="isDropdownOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" class="pt-2" />
       </div>
     </div>
 
     <ul
       v-if="isDropdownOpen"
-      class="absolute top-full left-0 z-10 w-full max-h-[170px] overflow-y-auto mt-2 rounded-lg border border-neutral dark:border-neutral-dark bg-background dark:bg-background-dark cursor-pointer"
+      class="absolute top-full left-0 z-10 w-full max-h-[170px] overflow-y-auto mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 cursor-pointer"
       @mousedown="preventBlur"
     >
       <li
         v-for="(option, index) in formattedOptions"
         :key="option.id"
-        class="flex items-center gap-2 p-4 text-secondary dark:text-secondary-dark"
-        :class="{'border-b border-neutral dark:border-neutral-dark': index !== formattedOptions.length - 1, 'bg-background dark:bg-background-dark': isOptionSelected(option)}"
+        class="flex items-center gap-2 p-4 text-gray-400 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+        :class="{'border-b border-gray-300 dark:border-gray-600': index !== formattedOptions.length - 1, 'bg-gray-50 dark:bg-gray-600': isOptionSelected(option)}"
         @click="selectOption(option)"
       >
-        <span class="material-icons text-primary">
-          {{ isOptionSelected(option) ? 'check_box' : 'check_box_outline_blank' }}
-        </span>
+        <Icon :name="isOptionSelected(option) ? 'check_box' : 'check_box_outline_blank'" class="text-[var(--color-primary-default)]" />
         {{ option.name }}
       </li>
     </ul>

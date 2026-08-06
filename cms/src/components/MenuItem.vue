@@ -4,42 +4,47 @@ import { useRoute } from 'vue-router';
 import Icon from '@/components/Icon.vue';
 
 const props = defineProps<{
-  to: string;
-  icon: string;
-  text: string;
-  isExpanded: boolean;
+ to: string;
+ icon: string;
+ text: string;
+ isExpanded: boolean;
 }>();
 
 const route = useRoute();
-
 const isActive = computed(() => route.path === props.to);
 
-const menuItemStyle = computed(() =>
+const linkClasses = computed(() =>
   isActive.value
-    ? 'bg-primary dark:bg-primary-dark'
-    : 'hover:bg-primary-accent dark:hover:bg-primary-accent-dark hover:text-primary-pressed dark:hover:text-primary-dark'
+    ? 'bg-primary-default text-white font-semibold shadow-sm'
+    : 'text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'
+);
+
+const iconClasses = computed(() =>
+  isActive.value
+    ? 'text-white'
+    : 'text-gray-400 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'
 );
 </script>
 
 <template>
-  <div class="menu-item flex justify-center">
-    <router-link
-      :to="to"
-      :class="[
-        'flex items-center text-decoration-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-pressed transition ease-in-out duration-200 rounded-xl w-full p-3',
-        menuItemStyle
-      ]"
+  <router-link
+    :to="to"
+    :class="[
+      'flex items-center rounded-lg transition-all group py-3',
+      isExpanded ? 'px-4 justify-start' : 'px-0 justify-center w-12 mx-auto',
+      linkClasses
+    ]"
+    :title="!isExpanded ? text : ''"
+  >
+    <Icon
+      :name="icon"
+      :class="['transition-colors', isExpanded ? 'mr-3' : '', iconClasses]"
+    />
+    <span 
+      v-if="isExpanded"
+      class="font-button-md text-button-md whitespace-nowrap"
     >
-      <Icon
-        :name="icon"
-        :class="{ 'text-white': isActive }"
-      />
-      <span 
-        v-if="isExpanded" 
-        :class="['ml-2 font-medium', { 'text-white': isActive, }]"
-      >
-        {{ text }}
-      </span>
-    </router-link>
-  </div>
+      {{ text }}
+    </span>
+  </router-link>
 </template>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-const { sidebarWidth } = defineProps<{
-  sidebarWidth?: string
+// sidebarWidth não é mais necessário no cálculo de largura pois o App.vue usa padding (pl-...)
+defineProps<{
+ sidebarWidth?: string
 }>();
 </script>
 
 <template>
-  <main class="h-screen overflow-y-auto transition-all ease-in-out duration-200 p-6" :style="{ width: `calc(100% - ${sidebarWidth})` }">
+  <div class="w-full transition-all ease-in-out duration-200 p-6 lg:p-8">
     <slot />
-  </main>
+  </div>
 </template>

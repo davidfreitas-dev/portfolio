@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, onMounted, ref } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, maxLength, numeric } from '@vuelidate/validators';
@@ -45,18 +45,18 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const handleValidateCode = async () => {
   const isValidForm = await v$.value.$validate();
-  
+ 
   if (!isValidForm) {
     showToast('error', 'Preencha o código corretamente (6 dígitos)');
     return;
   }
 
   await withLoading(async () => {
-    try {      
+    try { 
       await authStore.validateResetCode(formData); 
-      
-      showToast('success', 'Código validado com sucesso!');       
-      
+ 
+      showToast('success', 'Código validado com sucesso!'); 
+ 
       await delay(1500);
 
       router.push({ 
@@ -68,13 +68,13 @@ const handleValidateCode = async () => {
       }); 
     } catch (error: unknown) {
       let message = 'Falha ao validar o código.';
-      
+ 
       if (axios.isAxiosError<ApiResponse>(error)) {
         message = error.response?.data?.message || message;
       } else if (error instanceof Error) {
         message = error.message;
       }
-      
+ 
       showToast('error', message);
     }
   });
@@ -82,12 +82,12 @@ const handleValidateCode = async () => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center w-full min-h-screen md:bg-background/50 dark:md:bg-background-dark/50 p-4 md:p-8">
-    <div class="w-full max-w-[1000px] flex flex-col md:flex-row bg-background dark:bg-accent-dark md:shadow-xl rounded-2xl overflow-hidden relative">
+  <div class="flex items-center justify-center w-full min-h-screen md:bg-gray-100 dark:md:bg-gray-700 p-4 md:p-8">
+    <div class="w-full max-w-[1000px] flex flex-col md:flex-row bg-white dark:bg-gray-600 md:shadow-xl rounded-2xl overflow-hidden relative">
       <!-- Left: Branding & Welcome -->
-      <div class="w-full md:w-5/12 bg-primary dark:bg-primary-dark relative p-8 md:p-12 flex flex-col justify-between text-white overflow-hidden">
+      <div class="w-full md:w-5/12 bg-[var(--color-primary-default)] relative p-8 md:p-12 flex flex-col justify-between text-white overflow-hidden">
         <!-- Decorative background elements -->
-        <div class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 text-primary-focus dark:text-primary-focus-dark">
+        <div class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 text-primary-focus ">
           <svg
             class="absolute w-[150%] h-[150%] -top-1/4 -left-1/4 animate-[spin_60s_linear_infinite]"
             preserveAspectRatio="none"
@@ -107,14 +107,14 @@ const handleValidateCode = async () => {
             />
           </svg>
         </div>
-        <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary-focus dark:bg-primary-focus-dark rounded-full blur-3xl opacity-50 mix-blend-screen" />
-        
+        <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary-focus rounded-full blur-3xl opacity-50 mix-blend-screen" />
+ 
         <div class="relative z-10 flex items-center mb-8 md:mb-12">
           <h3 class="text-3xl font-extrabold tracking-tight">
             Dave<span class="text-white/80 ml-0.5">Dev</span>
           </h3>
         </div>
-        
+ 
         <div class="relative z-10 space-y-4 md:space-y-6">
           <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">
             Verificação de Segurança
@@ -123,7 +123,7 @@ const handleValidateCode = async () => {
             Estamos quase lá. Por favor, insira o código que enviamos para o seu e-mail para validar sua solicitação.
           </p>
         </div>
-        
+ 
         <div class="relative z-10 mt-12 md:mt-24 pt-6 md:pt-8 border-t border-white/20 flex items-start gap-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -144,18 +144,18 @@ const handleValidateCode = async () => {
           </p>
         </div>
       </div>
-      
+ 
       <!-- Right: Form -->
       <div class="w-full md:w-7/12 p-8 md:p-12 lg:p-16 flex flex-col justify-center">
         <div class="mb-8 md:mb-10 text-center md:text-left">
-          <h2 class="text-2xl md:text-3xl font-bold text-font dark:text-font-dark mb-2">
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-700 dark:text-gray-100 mb-2">
             Validar Código
           </h2>
-          <p class="text-secondary text-sm md:text-base">
-            Insira o código de 6 dígitos que enviamos para <strong class="text-font dark:text-font-dark">{{ formData.email }}</strong>
+          <p class="text-gray-500 dark:text-gray-300 text-sm md:text-base">
+            Insira o código de 6 dígitos que enviamos para <strong class="text-gray-700 dark:text-gray-100">{{ formData.email }}</strong>
           </p>
         </div>
-        
+ 
         <form class="flex flex-col gap-5 w-full max-w-md mx-auto md:mx-0" @submit.prevent="handleValidateCode">
           <InputOtp
             v-model="formData.code"
@@ -175,7 +175,7 @@ const handleValidateCode = async () => {
           </div>
 
           <div class="flex justify-center mt-2">
-            <router-link :to="{ name: 'Forgot' }" class="text-sm text-primary dark:text-primary-dark hover:text-primary-hover dark:hover:text-primary-hover-dark outline-primary dark:outline-primary-dark cursor-pointer transition-colors">
+            <router-link :to="{ name: 'Forgot' }" class="text-sm text-[var(--color-primary-default)] hover:text-primary-hover outline-primary cursor-pointer transition-colors">
               Reenviar código
             </router-link>
           </div>

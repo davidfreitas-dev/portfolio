@@ -5,7 +5,7 @@ import Icon from '@/components/Icon.vue';
 import 'animate.css';
 
 const { toastData } = defineProps<{
-  toastData: ToastData;
+ toastData: ToastData;
 }>();
 
 const isShowing = ref(false);
@@ -50,29 +50,26 @@ defineExpose({ showToast });
     id="toast"
     role="alert"
     :class="[
-      'fixed z-50 top-5 right-6 flex items-center p-4 mb-4 w-full max-w-xs text-white rounded-lg shadow-md animate__animated',
+      'fixed z-50 top-5 right-6 flex items-center p-4 mb-4 w-full max-w-xs rounded-xl shadow-lg border backdrop-blur-sm animate__animated',
       animationClass,
-      {
-        'bg-success dark:bg-success-dark': toastData.type === 'success',
-        'bg-danger dark:bg-danger-dark': toastData.type === 'error',
-        'bg-warning dark:bg-warning-dark': toastData.type === 'info'
-      }
+      'bg-white/95 dark:bg-gray-800/95 border-gray-100 dark:border-gray-700 text-gray-800 dark:text-gray-100'
     ]"
     @animationend="handleAnimationEnd"
   >
     <div
-      class="inline-flex flex-shrink-0 justify-center items-center w-9 h-9 rounded-lg"
+      class="inline-flex flex-shrink-0 justify-center items-center w-10 h-10 rounded-lg shadow-sm"
       :class="{
-        'bg-success-hover dark:bg-success-hover-dark': toastData.type === 'success',
-        'bg-danger-hover dark:bg-danger-hover-dark': toastData.type === 'error',
-        'bg-warning-hover dark:bg-warning-hover-dark': toastData.type === 'info'
+        'bg-success-accent text-success dark:bg-success-accent-dark dark:text-success-hover': toastData.type === 'success',
+        'bg-danger-accent text-danger dark:bg-danger-accent-dark dark:text-danger-hover': toastData.type === 'error',
+        'bg-warning-accent text-warning dark:bg-warning-accent-dark dark:text-warning-hover': toastData.type === 'warning',
+        'bg-primary-light text-primary-dark dark:bg-primary-dark dark:text-primary-light': toastData.type === 'info'
       }"
     >
-      <Icon :name="toastIcon" class="text-white" />
+      <Icon :name="toastIcon" class="w-5 h-5" />
       <span class="sr-only">Icon</span>
     </div>
 
-    <div class="ml-3 text-sm font-normal">
+    <div class="ml-3 text-sm font-medium">
       {{ toastData.message }}
     </div>
   </div>

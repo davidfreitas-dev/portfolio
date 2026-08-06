@@ -2,17 +2,17 @@
 import { ref, watch, onMounted, computed } from 'vue';
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: Date | null): void;
-  (e: 'onKeyupEnter'): void;
+ (e: 'update:modelValue', value: Date | null): void;
+ (e: 'onKeyupEnter'): void;
 }>();
 
 const props = defineProps<{
-  label?: string;
-  floatingLabel?: boolean;
-  placeholder?: string;
-  modelValue: Date | null;
-  disabled?: boolean;
-  error?: string;
+ label?: string;
+ floatingLabel?: boolean;
+ placeholder?: string;
+ modelValue: Date | null;
+ disabled?: boolean;
+ error?: string;
 }>();
 
 const MAX_DIGITS = 8;
@@ -31,17 +31,17 @@ const labelClasses = computed(() => {
   if (!props.label) return [];
 
   const base = props.floatingLabel
-    ? 'absolute left-4 transition-all duration-200 bg-background dark:bg-background-dark pointer-events-none z-10 text-normal'
-    : 'block mb-1.5 text-font dark:text-font-dark font-semibold';
+    ? 'absolute left-4 transition-all duration-200 bg-white dark:bg-gray-800 pointer-events-none z-10 text-normal'
+    : 'block mb-1.5 text-gray-700 dark:text-gray-100 font-semibold';
 
   const color = props.disabled
-    ? 'text-disabled dark:text-disabled-dark'
+    ? 'text-gray-300 dark:text-gray-500'
     : props.floatingLabel && isFocused.value && hasError.value
       ? 'text-danger dark:text-danger-dark'
       : props.floatingLabel && isFocused.value
-        ? 'text-primary dark:text-primary'
+        ? 'text-primary-default '
         : props.floatingLabel
-          ? 'text-neutral-400'
+          ? 'text-gray-400 dark:text-gray-400'
           : '';
 
   const position = props.floatingLabel
@@ -54,16 +54,16 @@ const labelClasses = computed(() => {
 });
 
 const inputClasses = computed(() => {
-  const base = 'w-full h-[52px] rounded-xl px-4 bg-transparent text-base text-font dark:text-font-dark outline-none transition-all duration-200 border focus:ring-2';
+  const base = 'w-full h-[52px] rounded-xl px-4 bg-transparent text-base text-gray-700 dark:text-gray-100 outline-none transition-all duration-200 border focus:ring-2';
 
   const stateClasses = hasError.value
     ? 'border-danger dark:border-danger-dark focus:ring-danger dark:focus:ring-danger-dark'
     : isFocused.value
-      ? 'border-neutral dark:border-neutral-dark focus:ring-primary dark:focus:ring-primary-dark'
-      : 'border-neutral dark:border-neutral-dark';
-      
+      ? 'border-gray-300 dark:border-gray-600 focus:ring-primary-default '
+      : 'border-gray-300 dark:border-gray-600';
+ 
   const placeholder = props.floatingLabel ? 'placeholder-transparent' : '';
-  
+ 
   const disabled = props.disabled ? 'cursor-not-allowed opacity-60' : '';
 
   return [base, stateClasses, placeholder, disabled];
@@ -78,14 +78,14 @@ const formatDate = (value: string): string => {
   return [day, month, year].filter(Boolean).join('/');
 };
 
-// Converte "dd/MM/yyyy" para Date (ou null)
+// Converte "dd/MM/yyyy"para Date (ou null)
 const parseDate = (value: string): Date | null => {
   const [day, month, year] = value.split('/');
   if (day && month && year && day.length === 2 && month.length === 2 && year.length === 4) {
     const date = new Date(Number(year), Number(month) - 1, Number(day));
     return date.getDate() === Number(day) &&
-           date.getMonth() === Number(month) - 1 &&
-           date.getFullYear() === Number(year)
+ date.getMonth() === Number(month) - 1 &&
+ date.getFullYear() === Number(year)
       ? date
       : null;
   }
@@ -123,7 +123,7 @@ onMounted(() => {
 // Quando digita
 const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
-  
+ 
   let numericValue = target.value.replace(/[^\d]/g, '').slice(0, MAX_DIGITS);
 
   const day = numericValue.slice(0, 2);
@@ -168,6 +168,6 @@ const handleKeydown = (event: KeyboardEvent) => {
         @keyup.enter="emit('onKeyupEnter')"
       >
     </div>
-    <span v-if="error" class="text-sm text-danger">{{ error }}</span>
+    <span v-if="error" class="text-sm text-danger dark:text-danger-dark">{{ error }}</span>
   </div>
 </template>

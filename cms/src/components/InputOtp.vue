@@ -40,7 +40,7 @@ watch(() => props.modelValue, (newVal) => {
 const handleInput = (index: number, event: Event) => {
   const input = event.target as HTMLInputElement;
   const value = input.value;
-  
+ 
   // Only allow numbers
   const lastChar = value.slice(-1);
   if (lastChar && !/^\d$/.test(lastChar)) {
@@ -112,7 +112,7 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col gap-2 relative">
-    <label v-if="label" class="text-font dark:text-font-dark font-semibold">{{ label }}</label>
+    <label v-if="label" class="text-gray-700 dark:text-gray-100 font-semibold">{{ label }}</label>
     <div class="flex justify-between gap-2 sm:gap-4">
       <input
         v-for="(_, index) in length"
@@ -123,17 +123,17 @@ onMounted(() => {
         inputmode="numeric"
         maxlength="1"
         :disabled="disabled"
-        class="text-font dark:text-font-dark bg-transparent text-center text-2xl font-bold w-full h-[64px] rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 disabled:cursor-not-allowed"
+        class="text-gray-700 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 text-center text-2xl font-bold w-full h-[64px] rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 disabled:cursor-not-allowed"
         :class="[
           error 
-            ? 'border border-danger focus:ring-danger' 
-            : 'border border-neutral dark:border-neutral-dark focus:ring-primary dark:focus:ring-primary'
+            ? 'border border-[var(--color-danger)] focus:ring-[var(--color-danger)] focus:border-[var(--color-danger)]'
+            : 'border border-[var(--color-gray-200)] dark:border-gray-600 focus:ring-[var(--color-primary-default)] focus:border-[var(--color-primary-default)] dark:focus:ring-[var(--color-primary-default)]'
         ]"
         @input="handleInput(index, $event)"
         @keydown="handleKeyDown(index, $event)"
         @paste="handlePaste"
       >
     </div>
-    <span v-if="error" class="text-sm text-danger">{{ error }}</span>
+    <span v-if="error" class="text-[14px] text-[var(--color-danger)]">{{ error }}</span>
   </div>
 </template>

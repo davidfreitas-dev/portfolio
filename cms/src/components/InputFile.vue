@@ -2,15 +2,15 @@
 import { ref, watch, computed } from 'vue';
 
 interface InputFileProps {
-  label?: string;
-  modelValue?: File | string | null;
-  previewSize?: string;
-  imagePath?: string;
+ label?: string;
+ modelValue?: File | string | null;
+ previewSize?: string;
+ imagePath?: string;
 }
 
 const { label, modelValue, previewSize: previewSizeProp, imagePath } = defineProps<InputFileProps>();
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: File | string | null): void;
+ (e: 'update:modelValue', value: File | string | null): void;
 }>();
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -45,7 +45,7 @@ const previewSize = computed(() => previewSizeProp ?? 'h-44 w-44');
 </script>
 
 <template>
-  <label class="text-font dark:text-font-dark font-semibold">{{ label }}</label>
+  <label class="text-gray-700 dark:text-gray-100 font-semibold">{{ label }}</label>
 
   <div v-if="preview" :class="`${previewSize} mt-2`">
     <img
@@ -61,25 +61,25 @@ const previewSize = computed(() => previewSizeProp ?? 'h-44 w-44');
     @change="handleFileChange"
   >
 
-  <p class="text-sm text-secondary dark:text-secondary mt-1">
+  <p class="text-sm text-gray-400 dark:text-gray-400 mt-1">
     SVG, PNG, JPG or GIF (MAX. 800x800px).
   </p>
 </template>
 
 <style scoped>
 input[type=file]::file-selector-button {
-  color: #fff;
-  background: #bbbbbb;
-  border: none;
-  border-radius: 6px;
-  height: 40px;
-  padding: 0 1rem;
-  margin-right: 20px;
-  cursor: pointer;
-  transition: background .2s ease-in-out;
+ color: #fff;
+ background: #bbbbbb;
+ border: none;
+ border-radius: 6px;
+ height: 40px;
+ padding: 0 1rem;
+ margin-right: 20px;
+ cursor: pointer;
+ transition: background .2s ease-in-out;
 }
 
 input[type=file]::file-selector-button:hover {
-  background: #01c38d;
+ background: #01c38d;
 }
 </style>

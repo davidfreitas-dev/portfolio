@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, onMounted, computed, ref } from 'vue';
+import { reactive, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, sameAs } from '@vuelidate/validators';
@@ -58,7 +58,7 @@ const handleResetPassword = async () => {
   }
 
   await withLoading(async () => {
-    try {      
+    try { 
       await authStore.resetPassword({
         email: formData.email,
         code: formData.code,
@@ -66,7 +66,7 @@ const handleResetPassword = async () => {
         password_confirm: formData.password_confirm
       }); 
 
-      showToast('success', 'Senha redefinida com sucesso!');       
+      showToast('success', 'Senha redefinida com sucesso!'); 
 
       await delay(1500);
 
@@ -85,12 +85,12 @@ const handleResetPassword = async () => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center w-full min-h-screen md:bg-background/50 dark:md:bg-background-dark/50 p-4 md:p-8">
-    <div class="w-full max-w-[1000px] flex flex-col md:flex-row bg-background dark:bg-accent-dark md:shadow-xl rounded-2xl overflow-hidden relative">
+  <div class="flex items-center justify-center w-full min-h-screen md:bg-gray-100 dark:md:bg-gray-700 p-4 md:p-8">
+    <div class="w-full max-w-[1000px] flex flex-col md:flex-row bg-white dark:bg-gray-600 md:shadow-xl rounded-2xl overflow-hidden relative">
       <!-- Left: Branding & Welcome -->
-      <div class="w-full md:w-5/12 bg-primary dark:bg-primary-dark relative p-8 md:p-12 flex flex-col justify-between text-white overflow-hidden">
+      <div class="w-full md:w-5/12 bg-[var(--color-primary-default)] relative p-8 md:p-12 flex flex-col justify-between text-white overflow-hidden">
         <!-- Decorative background elements -->
-        <div class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 text-primary-focus dark:text-primary-focus-dark">
+        <div class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 text-primary-focus ">
           <svg
             class="absolute w-[150%] h-[150%] -top-1/4 -left-1/4 animate-[spin_60s_linear_infinite]"
             preserveAspectRatio="none"
@@ -110,14 +110,14 @@ const handleResetPassword = async () => {
             />
           </svg>
         </div>
-        <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary-focus dark:bg-primary-focus-dark rounded-full blur-3xl opacity-50 mix-blend-screen" />
-        
+        <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary-focus rounded-full blur-3xl opacity-50 mix-blend-screen" />
+ 
         <div class="relative z-10 flex items-center mb-8 md:mb-12">
           <h3 class="text-3xl font-extrabold tracking-tight">
             Dave<span class="text-white/80 ml-0.5">Dev</span>
           </h3>
         </div>
-        
+ 
         <div class="relative z-10 space-y-4 md:space-y-6">
           <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">
             Nova Senha.
@@ -126,7 +126,7 @@ const handleResetPassword = async () => {
             Crie uma nova senha forte e única para proteger sua conta.
           </p>
         </div>
-        
+ 
         <div class="relative z-10 mt-12 md:mt-24 pt-6 md:pt-8 border-t border-white/20 flex items-start gap-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -147,18 +147,18 @@ const handleResetPassword = async () => {
           </p>
         </div>
       </div>
-      
+ 
       <!-- Right: Form -->
       <div class="w-full md:w-7/12 p-8 md:p-12 lg:p-16 flex flex-col justify-center">
         <div class="mb-8 md:mb-10 text-center md:text-left">
-          <h2 class="text-2xl md:text-3xl font-bold text-font dark:text-font-dark mb-2">
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-700 dark:text-gray-100 mb-2">
             Redefinir senha
           </h2>
-          <p class="text-secondary text-sm md:text-base">
+          <p class="text-gray-500 dark:text-gray-300 text-sm md:text-base">
             Crie uma nova senha segura para a sua conta.
           </p>
         </div>
-        
+ 
         <form class="flex flex-col gap-5 w-full max-w-md mx-auto md:mx-0" @submit.prevent="handleResetPassword">
           <Input
             v-model="formData.password"
@@ -181,33 +181,101 @@ const handleResetPassword = async () => {
           />
 
           <!-- Password Requirements -->
-          <div class="bg-primary/5 dark:bg-primary-dark/5 border border-primary/10 dark:border-primary-dark/10 rounded-xl p-4 md:p-5">
-            <h4 class="text-sm font-semibold text-font dark:text-font-dark mb-3">Requisitos da senha:</h4>
+          <div class="bg-primary-light/10 border border-primary-light/20 rounded-xl p-4 md:p-5">
+            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-100 mb-3">
+              Requisitos da senha:
+            </h4>
             <ul class="space-y-2">
-              <li class="flex items-center gap-2 text-sm" :class="isMinLength ? 'text-success dark:text-success-dark' : 'text-secondary dark:text-secondary-dark'">
-                <svg v-if="isMinLength" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+              <li class="flex items-center gap-2 text-sm" :class="isMinLength ? 'text-success dark:text-success-dark' : 'text-gray-500 dark:text-gray-300'">
+                <svg
+                  v-if="isMinLength"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                    clip-rule="evenodd"
+                  />
                 </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 Mínimo 8 caracteres
               </li>
-              <li class="flex items-center gap-2 text-sm" :class="hasUpperCase ? 'text-success dark:text-success-dark' : 'text-secondary dark:text-secondary-dark'">
-                <svg v-if="hasUpperCase" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+              <li class="flex items-center gap-2 text-sm" :class="hasUpperCase ? 'text-success dark:text-success-dark' : 'text-gray-500 dark:text-gray-300'">
+                <svg
+                  v-if="hasUpperCase"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                    clip-rule="evenodd"
+                  />
                 </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 Uma letra maiúscula
               </li>
-              <li class="flex items-center gap-2 text-sm" :class="hasNumberOrSpecial ? 'text-success dark:text-success-dark' : 'text-secondary dark:text-secondary-dark'">
-                <svg v-if="hasNumberOrSpecial" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+              <li class="flex items-center gap-2 text-sm" :class="hasNumberOrSpecial ? 'text-success dark:text-success-dark' : 'text-gray-500 dark:text-gray-300'">
+                <svg
+                  v-if="hasNumberOrSpecial"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                    clip-rule="evenodd"
+                  />
                 </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 Um número ou caractere especial
               </li>
@@ -224,7 +292,7 @@ const handleResetPassword = async () => {
           </div>
 
           <div class="flex justify-center mt-2">
-            <router-link to="/login" class="text-sm text-primary dark:text-primary-dark hover:text-primary-hover dark:hover:text-primary-hover-dark outline-primary dark:outline-primary-dark cursor-pointer transition-colors">
+            <router-link to="/login" class="text-sm text-[var(--color-primary-default)] hover:text-primary-hover outline-primary cursor-pointer transition-colors">
               Cancelar e voltar ao login
             </router-link>
           </div>

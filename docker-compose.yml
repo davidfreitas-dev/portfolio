@@ -1,62 +1,4 @@
 services:
-  webserver:
-    image: nginx:stable
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/dev/conf.d:/etc/nginx/conf.d:ro
-      - ./api:/var/www/html/api:ro
-      - ./site:/var/www/html/site:ro
-    depends_on:
-      api:
-        condition: service_started
-      admin:
-        condition: service_healthy
-
-  admin:
-    build:
-      context: ./cms
-      dockerfile: .docker/app/Dockerfile
-      target: development
-    restart: unless-stopped
-    volumes:
-      - ./cms:/app
-      - /app/node_modules
-    ports:
-      - "5173:5173"
-      - "3000:3000"
-    environment:
-      - VITE_API_URL=http://api.localhost
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    depends_on:
-      - api
-
-  api:
-    build:
-      context: ./api
-      dockerfile: .docker/php/Dockerfile
-      target: development
-    restart: unless-stopped
-    env_file:
-      - ./.env
-    volumes:
-      - ./api:/var/www/html
-    working_dir: /var/www/html
-    expose:
-      - "9000"
-    depends_on:
-      database:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
   database:
     image: mysql:8.0
     restart: unless-stopped
@@ -113,7 +55,8 @@ services:
       start_period: 5s
 
   mailhog:
-    image: mailhog/mailhog
+    # image: mailhog/mailhog
+    image: axllent/mailpit # For arm64
     restart: unless-stopped
     ports:
       - "1025:1025"
@@ -131,7 +74,66 @@ services:
       PMA_ARBITRARY: 1
       UPLOAD_LIMIT: 64M
 
+  webserver:
+    image: nginx:stable
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/dev/conf.d:/etc/nginx/conf.d:ro
+      - ./api:/var/www/html/api:ro
+      - ./site:/var/www/html/site:ro
+    depends_on:
+      api:
+        condition: service_started
+      admin:
+        condition: service_healthy
+
+  cms:
+    build:
+      context: ./cms
+      dockerfile: .docker/app/Dockerfile
+      target: development
+    restart: unless-stopped
+    volumes:
+      - ./cms:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://api.localhost
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: ./api
+      dockerfile: .docker/php/Dockerfile
+      target: development
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    volumes:
+      - ./api:/var/www/html
+    working_dir: /var/www/html
+    expose:
+      - "9000"
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
 volumes:
   mysql_dev_data:
   mysql_test_data:
   redis_dev_data:
+  

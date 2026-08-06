@@ -126,15 +126,15 @@ const getTechImage = (image: string) => `${apiUrl}/images/technologies/${image}`
     <div class="header flex justify-between items-center flex-wrap gap-4">
       <Breadcrumb title="Tecnologias" description="Gerencie suas tecnologias aqui." />
       <div class="flex gap-2 ml-auto">
-        <Button class="h-fit" @click="openCreateModal">
+        <Button @click="openCreateModal">
           <Icon name="add" class="md:mr-2" />
           <span class="hidden md:block">Nova Tecnologia</span>
         </Button>
       </div>
     </div>
 
-    <div class="relative rounded-3xl border border-neutral dark:border-neutral-dark my-8">
-      <div class="filters grid grid-cols-1 md:grid-cols-2 gap-4 w-full border-b border-neutral dark:border-neutral-dark p-5">
+    <div class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-md my-8">
+      <div class="filters grid grid-cols-1 md:grid-cols-2 gap-4 w-full border-b border-gray-200 dark:border-gray-600 p-5">
         <InputSearch
           v-model="search"
           label="Buscar por nome"
@@ -163,19 +163,19 @@ const getTechImage = (image: string) => `${apiUrl}/images/technologies/${image}`
                 class="w-10 h-10 object-cover rounded"
               >
             </td>
-            <td class="px-6 py-4 truncate text-font dark:text-white">
+            <td class="px-6 py-4 truncate text-gray-700 dark:text-gray-100">
               {{ tech.name }}
             </td>
             <td class="px-6 py-4 w-[5%] min-w-[50px]">
               <div class="flex item-center gap-3">
                 <button
-                  class="p-2 h-10 w-10 bg-primary-accent dark:bg-primary-accent-dark text-primary dark:text-primary-dark rounded-full cursor-pointer"
+                  class="p-2 h-10 w-10 bg-primary-bg dark:bg-gray-600 text-primary-default rounded-full cursor-pointer"
                   @click="openEditModal(tech)"
                 >
                   <Icon name="edit" />
                 </button>
                 <button
-                  class="p-2 h-10 w-10 bg-danger-accent dark:bg-danger-accent-dark text-danger dark:text-danger-dark rounded-full cursor-pointer"
+                  class="p-2 h-10 w-10 bg-gray-100 dark:bg-gray-600 text-danger dark:text-danger-dark rounded-full cursor-pointer"
                   @click="handleDeleteTechnology(tech.id!)"
                 >
                   <Icon name="delete" />
@@ -188,7 +188,7 @@ const getTechImage = (image: string) => `${apiUrl}/images/technologies/${image}`
 
       <div
         v-if="!isLoading && !technologies.length"
-        class="text-secondary dark:text-gray-400 text-center my-10"
+        class="text-gray-500 dark:text-gray-300 text-center my-10"
       >
         Nenhuma tecnologia encontrada.
       </div>

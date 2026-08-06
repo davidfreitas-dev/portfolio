@@ -1,57 +1,18 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import Icon from '@/components/Icon.vue';
 
 const emit = defineEmits<{
-  (event: 'update:modelValue', value: string): void;
-  (event: 'enter'): void;
+ (event: 'update:modelValue', value: string): void;
+ (event: 'enter'): void;
+ (event: 'blur', e: FocusEvent): void;
 }>();
 
-const props = defineProps<{
-  modelValue: string;
-  label?: string;
-  placeholder?: string;
-  floatingLabel?: boolean;
-  disabled?: boolean;
+const { disabled, label, placeholder, modelValue } = defineProps<{
+ modelValue: string;
+ label?: string;
+ placeholder?: string;
+ disabled?: boolean;
 }>();
-
-const isFocused = ref(false);
-
-const isFloating = computed(() =>
-  props.floatingLabel && (isFocused.value || !!props.modelValue)
-);
-
-const labelClasses = computed(() => {
-  if (!props.label) return [];
-
-  const base = props.floatingLabel
-    ? 'absolute left-4 transition-all duration-200 bg-background dark:bg-background-dark pointer-events-none z-10 text-normal'
-    : 'block mb-1.5 text-font dark:text-font-dark font-semibold';
-
-  const color = props.disabled
-    ? 'text-disabled dark:text-disabled-dark'
-    : props.floatingLabel
-      ? isFocused.value
-        ? 'text-primary dark:text-primary'
-        : 'text-neutral-400'
-      : '';
-
-  const position = props.floatingLabel
-    ? isFloating.value
-      ? '-top-2 text-xs px-1'
-      : 'top-1/2 -translate-y-1/2'
-    : '';
-
-  return [base, color, position];
-});
-
-const inputClasses = computed(() => [
-  'w-full h-[52px] rounded-xl border px-4 text-base bg-transparent text-font dark:text-font-dark outline-none focus:outline-none focus:ring-2 transition-all duration-200',
-  props.floatingLabel ? 'placeholder-transparent' : '',
-  isFocused.value
-    ? 'border-neutral dark:border-neutral-dark focus:ring-primary dark:focus:ring-primary'
-    : 'border-neutral dark:border-neutral-dark',
-  props.disabled ? 'cursor-not-allowed opacity-60' : ''
-]);
 
 const updateValue = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -60,20 +21,27 @@ const updateValue = (event: Event) => {
 </script>
 
 <template>
-  <div class="relative w-full">
-    <label v-if="label" :class="labelClasses">{{ label }}</label>
+  <div class="flex flex-col gap-2 relative w-full">
+    <label v-if="label" class="text-gray-700 dark:text-gray-100 font-semibold">{{ label }}</label>
 
-    <input
-      type="text"
-      :value="modelValue"
-      :placeholder="placeholder || ''"
-      :disabled="disabled"
-      :class="inputClasses"
-      :aria-label="label"
-      @input="updateValue"
-      @focus="isFocused = true"
-      @blur="isFocused = false"
-      @keyup.enter="emit('enter')"
-    >
+    <div class="relative">
+      <input
+        type="text"
+        :value="modelValue"
+        :placeholder="placeholder || ''"
+        :disabled="disabled"
+        :class="[
+          'text-gray-700 dark:text-gray-100 bg-transparent text-[14px] w-full h-[44px] rounded-lg pl-4 pr-10 focus:outline-none focus:ring-1 transition-all duration-200 disabled:cursor-not-allowed',
+          'border border-gray-300 dark:border-gray-600 focus:ring-primary-default focus:border-primary-default '
+        ]"
+        :aria-label="label"
+        @input="updateValue"
+        @blur="$emit('blur', $event)"
+        @keyup.enter="emit('enter')"
+      >
+      <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center text-gray-400 dark:text-gray-400 pointer-events-none">
+        <Icon name="search" class="w-5 h-5" />
+      </div>
+    </div>
   </div>
 </template>

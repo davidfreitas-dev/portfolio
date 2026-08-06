@@ -4,55 +4,35 @@ import Loader from '@/components/Loader.vue';
 
 defineOptions({ inheritAttrs: false });
 
-type ButtonColor = 'primary' | 'secondary' | 'success' | 'danger' | 'outline';
-type ButtonSize = '' | 'small' | 'full';
+type ButtonVariant = 'fill' | 'outline' | 'link';
+type ButtonSize = 'large' | 'medium' | 'small' | 'full';
 
-const { size = '', color = 'primary', isLoading = false } = defineProps<{
-  size?: ButtonSize;
-  color?: ButtonColor;
-  isLoading?: boolean;
+const { size = 'medium', variant = 'fill', isLoading = false, disabled = false } = defineProps<{
+ size?: ButtonSize;
+ variant?: ButtonVariant;
+ isLoading?: boolean;
+ disabled?: boolean;
 }>();
 
 const baseClasses =
-  'flex items-center justify-center text-base font-semibold rounded-xl cursor-pointer transition-colors';
+ 'inline-flex items-center justify-center gap-2 font-semibold transition-colors focus:outline-none focus-visible:ring-2 active:scale-95 duration-200 ease-in cursor-pointer disabled:cursor-not-allowed';
 
 const classes = computed(() => [
   baseClasses,
-  'focus:outline-none focus-visible:ring-2 transition-all duration-200 ease-in active:scale-95',
   {
-    // Primary
-    'py-3.5 px-5 bg-primary text-white hover:bg-primary-hover focus-visible:ring-primary-focus focus-visible:bg-primary active:bg-primary-pressed disabled:bg-disabled disabled:cursor-not-allowed':
-      color === 'primary',
-    'dark:bg-primary-dark dark:hover:bg-primary-hover-dark dark:focus-visible:ring-primary-focus-dark dark:focus-visible:bg-primary-dark dark:active:bg-primary-pressed-dark dark:disabled:bg-disabled-dark':
-      color === 'primary',
+    // Sizes
+    'h-[52px] px-6 text-[15px] rounded-xl': size === 'large',
+    'h-[44px] px-5 text-[14px] rounded-lg': size === 'medium',
+    'h-[36px] px-4 text-[13px] rounded-md': size === 'small',
+    'w-full text-center h-[52px] text-[15px] rounded-xl': size === 'full',
 
-    // Secondary
-    'py-3.5 px-5 bg-disabled/30 hover:bg-disabled/40 text-font focus-visible:ring-secondary focus-visible:bg-disabled/30 active:bg-disabled/40 disabled:bg-disabled disabled:cursor-not-allowed':
-      color === 'secondary',
-    'dark:bg-disabled-dark/40 dark:hover:bg-disabled-dark/50 dark:text-font-dark dark:focus-visible:ring-secondary-dark dark:focus-visible:bg-disabled-dark/30 dark:active:bg-disabled-dark/40 dark:disabled:bg-disabled-dark':
-      color === 'secondary',
-
-    // Success
-    'py-3.5 px-5 bg-success text-white hover:bg-success-hover focus-visible:ring-success-focus focus-visible:bg-success active:bg-success-pressed disabled:bg-disabled disabled:cursor-not-allowed':
-      color === 'success',
-    'dark:bg-success-dark dark:hover:bg-success-hover-dark dark:focus-visible:ring-success-focus-dark dark:focus-visible:bg-success-dark dark:active:bg-success-pressed-dark dark:disabled:bg-disabled-dark':
-      color === 'success',
-
-    // Danger
-    'py-3.5 px-5 bg-danger text-white hover:bg-danger-hover focus-visible:ring-danger-focus focus-visible:bg-danger active:bg-danger-pressed disabled:bg-disabled disabled:cursor-not-allowed':
-      color === 'danger',
-    'dark:bg-danger-dark dark:hover:bg-danger-hover-dark dark:focus-visible:ring-danger-focus-dark dark:focus-visible:bg-danger-dark dark:active:bg-danger-pressed-dark dark:disabled:bg-disabled-dark':
-      color === 'danger',
-
-    // Outline
-    'py-3.5 px-5 bg-transparent text-primary border-2 border-primary focus-visible:ring-primary-active':
-      color === 'outline',
-    'dark:text-primary-dark dark:border-primary-dark dark:focus-visible:ring-primary-focus-dark':
-      color === 'outline',
-
-    // Size modifiers
-    'p-2': size === 'small',
-    'w-full text-center': size === 'full',
+    // Variants
+    'bg-[var(--color-primary-default)] text-white hover:bg-[var(--color-primary-dark)] disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:text-gray-400':
+ variant === 'fill',
+    'bg-transparent text-[var(--color-primary-default)] border border-[var(--color-primary-default)] hover:bg-primary-bg disabled:border-gray-200 disabled:hover:bg-transparent disabled:text-gray-400':
+ variant === 'outline',
+    'bg-transparent text-[var(--color-primary-default)] hover:text-[var(--color-primary-dark)] hover:underline disabled:text-gray-400 disabled:no-underline disabled:hover:text-gray-400':
+ variant === 'link',
   },
 ]);
 </script>
@@ -60,11 +40,19 @@ const classes = computed(() => [
 <template>
   <button
     v-bind="$attrs"
-    :class="classes"
+    :class=" classes"
     :aria-busy="isLoading"
-    :disabled="isLoading"
+    :disabled="isLoading || disabled"
   >
-    <Loader v-if="isLoading" class="w-4 h-4" />
-    <slot v-else />
+    <Loader
+      v-if="isLoading"
+      :color="variant === 'outline' || variant === 'link' ? 'primary' : 'white'"
+      class="w-4 h-4"
+    />
+    <template v-else>
+      <slot name="left-icon" />
+      <slot />
+      <slot name="right-icon" />
+    </template>
   </button>
 </template>

@@ -1,84 +1,61 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
 import Logo from '@/components/Logo.vue';
 import MenuItem from '@/components/MenuItem.vue';
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 
 interface MenuItemData {
-  to: string;
-  icon: string;
-  text: string;
+ to: string;
+ icon: string;
+ text: string;
+ group?: string;
 }
 
-const menuItems: MenuItemData[] = [
-  { to: '/', icon: 'home', text: 'Início' },
-  { to: '/experiences', icon: 'hub', text: 'Experiências' },
-  { to: '/technologies', icon: 'code', text: 'Tecnologias' },
-  { to: '/projects', icon: 'handyman', text: 'Projetos' },
-  { to: '/settings', icon: 'settings', text: 'Configurações' }
-];
-
-const sidebarWidth = ref<string>('w-[65px]');
-const isExpanded = ref<boolean>(localStorage.getItem('isExpanded') === 'true');
-
-const EXPANDED_WIDTH = '240px';
-const COLLAPSED_WIDTH = '65px';
-
-const emit = defineEmits<{
-  (e: 'onWidthChange', width: string): void;
+defineProps<{
+ isExpanded: boolean;
 }>();
 
-watchEffect(() => {
-  sidebarWidth.value = isExpanded.value ? 'w-[240px]' : 'w-[65px]';
-  emit('onWidthChange', isExpanded.value ? EXPANDED_WIDTH : COLLAPSED_WIDTH);
-});
-
-const toggleSidebar = (): void => {
-  isExpanded.value = !isExpanded.value;
-  localStorage.setItem('isExpanded', String(isExpanded.value));
-};
+const menuItems: MenuItemData[] = [
+  { to: '/', icon: 'dashboard', text: 'Overview' },
+  { to: '/experiences', icon: 'hub', text: 'Experiências', group: 'Portfólio' },
+  { to: '/technologies', icon: 'code', text: 'Tecnologias', group: 'Portfólio' },
+  { to: '/projects', icon: 'handyman', text: 'Projetos', group: 'Portfólio' },
+  { to: '/design-system', icon: 'settings', text: 'Design System', group: 'Sistema' }
+];
 </script>
 
 <template>
   <aside
     :class="[
-      'flex flex-col text-secondary dark:text-secondary-dark border-r border-neutral dark:border-neutral-dark overflow-hidden min-h-screen p-6 transition-all ease-in-out duration-200',
-      { 'px-2': !isExpanded },
-      sidebarWidth
+      'fixed left-0 top-0 h-full bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700 z-50 flex flex-col overflow-x-hidden transition-all duration-300',
+      isExpanded ? 'w-[288px]' : 'w-[80px]'
     ]"
   >
-    <div class="header flex flex-col gap-3 h-24" :class="{ 'flex-row justify-between items-start': isExpanded }">
+    <div :class="['py-7 flex items-center gap-2', isExpanded ? 'px-6' : 'px-0 justify-center']">
       <Logo :is-expanded="isExpanded" />
+    </div>
 
-      <button class="menu-toggle transition-all duration-200 focus:outline-none cursor-pointer" @click="toggleSidebar">
-        <span 
-          class="material-icons transition-all duration-200 p-1" 
-          :style="{ transform: !isExpanded ? 'rotate(-180deg)' : 'none' }"
+    <nav class="flex-1 px-4 mt-4 space-y-1 overflow-y-auto overflow-x-hidden">
+      <template v-for="(item, index) in menuItems" :key="item.to">
+        <div
+          v-if="item.group && item.group !== menuItems[index - 1]?.group"
+          :class="['mt-6 flex items-center', isExpanded ? 'px-4 py-4' : 'justify-center py-5']"
         >
-          chevron_left
-        </span>
-      </button>
-    </div>
+          <span v-if="isExpanded" class="font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-[11px] truncate">
+            {{ item.group }}
+          </span>
+          <div v-else class="h-[1px] w-8 bg-gray-200 dark:bg-gray-800 rounded-full" />
+        </div>
+        <MenuItem
+          :to="item.to"
+          :icon="item.icon"
+          :text="item.text"
+          :is-expanded="isExpanded"
+        />
+      </template>
+    </nav>
 
-    <div class="menu space-y-4">
-      <MenuItem
-        v-for="item in menuItems.slice(0, -1)"
-        :key="item.to"
-        :to="item.to"
-        :icon="item.icon"
-        :text="item.text"
-        :is-expanded="isExpanded"
-      />
-    </div>
-
-    <div class="flex-1" />
-
-    <div class="menu">
-      <MenuItem
-        :to="menuItems[menuItems.length - 1]?.to"
-        :icon="menuItems[menuItems.length - 1]?.icon"
-        :text="menuItems[menuItems.length - 1]?.text"
-        :is-expanded="isExpanded"
-      />
+    <div class="mt-auto pt-4">
+      <ThemeSwitcher :is-expanded="isExpanded" />
     </div>
   </aside>
 </template>

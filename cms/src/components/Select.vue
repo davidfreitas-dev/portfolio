@@ -10,14 +10,14 @@ import { type Option } from '@/types';
 import Icon from '@/components/Icon.vue';
 
 const props = defineProps<{
-  options: Option[];
-  modelValue: Option | null;
-  label?: string;
-  error?: string;
+ options: Option[];
+ modelValue: Option | null;
+ label?: string;
+ error?: string;
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: Option | null): void;
+ (e: 'update:modelValue', value: Option | null): void;
 }>();
 
 const { modelValue, error } = toRefs(props);
@@ -35,7 +35,7 @@ watch(selectedOption, (newValue) => {
 
 <template>
   <div class="flex flex-col gap-1 relative w-full">
-    <label v-if="props.label" class="text-font font-semibold dark:text-font-dark">
+    <label v-if="props.label" class="text-gray-700 font-semibold dark:text-gray-100">
       {{ props.label }}
     </label>
 
@@ -43,18 +43,18 @@ watch(selectedOption, (newValue) => {
       <div class="relative w-full">
         <ListboxButton
           :class="[
-            'flex items-center gap-3 h-[52px] w-full p-4 bg-transparent rounded-xl text-base text-left placeholder:text-secondary focus:outline-none focus:ring-2',
+            'flex items-center gap-3 h-[44px] w-full px-4 py-2 bg-transparent rounded-lg text-[14px] text-left placeholder:text-[var(--color-gray-400)] focus:outline-none focus:ring-1',
             error
-              ? 'border border-danger focus:ring-danger'
-              : 'border border-neutral text-font dark:border-neutral-dark dark:text-font-dark dark:placeholder:text-secondary-dark focus:ring-primary'
+              ? 'border border-[var(--color-danger)] focus:ring-[var(--color-danger)] focus:border-[var(--color-danger)]'
+              : 'border border-[var(--color-gray-300)] text-[var(--color-gray-700)] dark:border-[var(--color-gray-600)] dark:text-gray-100 dark:placeholder:text-[var(--color-gray-400)] focus:ring-[var(--color-primary-default)] focus:border-[var(--color-primary-default)]'
           ]"
         >
-          <span class="flex-1 truncate text-font dark:text-font-dark">
+          <span class="flex-1 truncate text-gray-700 dark:text-gray-100">
             {{ selectedOption?.label || 'Selecione uma opção' }}
           </span>
           <Icon
             name="keyboard_arrow_down"
-            class="text-font dark:text-font-dark transform transition-transform duration-200"
+            class="text-gray-700 dark:text-gray-100 transform transition-transform duration-200"
             :class="{ 'rotate-180': open }"
           />
         </ListboxButton>
@@ -65,7 +65,7 @@ watch(selectedOption, (newValue) => {
           leave-to-class="opacity-0"
         >
           <ListboxOptions
-            class="absolute mt-1.5 max-h-60 w-full overflow-auto rounded-xl bg-white dark:bg-background-dark text-base shadow-lg focus:outline-none border border-neutral dark:border-neutral-dark z-10"
+            class="absolute mt-1.5 max-h-60 w-full overflow-auto rounded-lg bg-white dark:bg-gray-800 text-[14px] shadow-lg focus:outline-none border border-[var(--color-gray-300)] dark:border-gray-600 z-10"
           >
             <ListboxOption
               v-for="option in props.options"
@@ -76,13 +76,13 @@ watch(selectedOption, (newValue) => {
             >
               <li
                 :class="[
-                  active ? 'bg-accent/50 dark:bg-accent-dark/40 text-font dark:text-font-dark' : 'text-secondary dark:text-secondary-dark',
-                  'relative cursor-pointer select-none py-4 pl-12 pr-4',
+                  active ? 'bg-[var(--color-gray-100)] dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-100',
+                  'relative cursor-pointer select-none py-4 pl-12 pr-4 transition-colors duration-150',
                 ]"
               >
                 <span
                   :class="[
-                    selected ? 'font-semibold text-font dark:text-font-dark' : 'font-normal',
+                    selected ? 'font-semibold' : 'font-normal',
                     'block truncate',
                   ]"
                 >
@@ -90,7 +90,7 @@ watch(selectedOption, (newValue) => {
                 </span>
                 <span
                   v-if="selected"
-                  class="absolute inset-y-0 left-0 flex items-center pl-3 text-primary"
+                  class="absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--color-primary-default)]"
                 >
                   <Icon name="check" />
                 </span>
@@ -101,6 +101,6 @@ watch(selectedOption, (newValue) => {
       </div>
     </Listbox>
 
-    <span v-if="error" class="text-sm text-danger">{{ error }}</span>
+    <span v-if="error" class="text-[14px] text-[var(--color-danger)]">{{ error }}</span>
   </div>
 </template>

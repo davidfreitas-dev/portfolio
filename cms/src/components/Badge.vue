@@ -1,16 +1,15 @@
 <script setup lang="ts">
-type colorType = 'primary' | 'success' | 'warning' | 'danger';
+type colorType = 'success' | 'warning' | 'danger';
 
 const { label, color } = defineProps<{
-  label: string;
-  color: colorType;
+ label: string;
+ color: colorType;
 }>();
 
 const colorClasses = {
-  primary: 'bg-primary-accent text-primary dark:bg-primary-accent-dark dark:text-primary-dark',
-  success: 'bg-success-accent text-success dark:bg-success-accent-dark dark:text-success-dark',
-  warning: 'bg-warning-accent text-warning dark:bg-warning-accent-dark dark:text-warning-dark',
-  danger: 'bg-danger-accent text-danger dark:bg-danger-accent-dark dark:text-danger-dark',
+  success: 'bg-[var(--color-success-accent)] text-[var(--color-success)] dark:bg-[var(--color-success-accent-dark)] dark:text-[var(--color-gray-100)]',
+  warning: 'bg-[var(--color-warning-accent)] text-[var(--color-warning-focus)] dark:bg-[var(--color-warning-accent-dark)] dark:text-[var(--color-gray-100)]',
+  danger: 'bg-[var(--color-danger-accent)] text-[var(--color-danger)] dark:bg-[var(--color-danger-accent-dark)] dark:text-[var(--color-gray-100)]',
 };
 </script>
 

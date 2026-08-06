@@ -127,15 +127,15 @@ const deleteExperience = async () => {
     <div class="header flex justify-between items-center flex-wrap gap-4">
       <Breadcrumb title="Experiências" description="Gerencie suas experiências aqui." />
       <div class="flex gap-2 ml-auto">
-        <Button class="h-fit" @click="openCreateModal">
+        <Button @click="openCreateModal">
           <Icon name="add" class="md:mr-2" />
           <span class="hidden md:block">Nova Experiência</span>
         </Button>
       </div>
     </div>
-    
-    <div class="relative rounded-3xl border border-neutral dark:border-neutral-dark my-8">
-      <div class="filters grid grid-cols-1 md:grid-cols-2 gap-4 w-full border-b border-neutral dark:border-neutral-dark p-5">
+ 
+    <div class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-md my-8">
+      <div class="filters grid grid-cols-1 md:grid-cols-2 gap-4 w-full border-b border-gray-200 dark:border-gray-600 p-5">
         <InputSearch
           v-model="search"
           label="Buscar por título"
@@ -156,25 +156,25 @@ const deleteExperience = async () => {
           :items="experiences"
         >
           <template #row="{ item: exp }">
-            <td class="px-6 py-4 max-w-[200px] truncate text-font dark:text-white">
+            <td class="px-6 py-4 max-w-[200px] truncate text-gray-700 dark:text-gray-100">
               {{ exp.title }}
             </td>
-            <td class="px-6 py-4 max-w-[300px] truncate text-font dark:text-white">
+            <td class="px-6 py-4 max-w-[300px] truncate text-gray-500 dark:text-gray-300">
               {{ exp.description }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-font dark:text-white">
+            <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-300">
               {{ $filters.formatPeriod([exp.start_date, exp.end_date]) }}
             </td>
             <td class="px-6 py-4 w-[5%] min-w-[50px]">
               <div class="flex item-center gap-3">
                 <button
-                  class="p-2 h-10 w-10 bg-primary-accent dark:bg-primary-accent-dark text-primary dark:text-primary-dark rounded-full cursor-pointer"
+                  class="p-2 h-10 w-10 bg-primary-bg dark:bg-gray-600 text-primary-default rounded-full cursor-pointer"
                   @click="openEditModal(exp)"
                 >
                   <Icon name="edit" />
                 </button>
                 <button
-                  class="p-2 h-10 w-10 bg-danger-accent dark:bg-danger-accent-dark text-danger dark:text-danger-dark rounded-full cursor-pointer"
+                  class="p-2 h-10 w-10 bg-gray-100 dark:bg-gray-600 text-danger dark:text-danger-dark rounded-full cursor-pointer"
                   @click="handleDeleteExperience(exp.id!)"
                 >
                   <Icon name="delete" />
@@ -187,7 +187,7 @@ const deleteExperience = async () => {
 
       <div
         v-if="!isLoading && !experiences.length"
-        class="text-secondary dark:text-gray-400 text-center my-10"
+        class="text-gray-500 dark:text-gray-300 text-center my-10"
       >
         Nenhuma experiência encontrada.
       </div>
@@ -199,7 +199,7 @@ const deleteExperience = async () => {
       :total-items="experiencesStore.totalItems"
       :items-per-page="itemsPerPage"
     />
-    
+ 
     <Modal
       ref="experienceModal"
       :title="isEditing ? 'Editar Experiência' : 'Nova Experiência'"
@@ -212,7 +212,7 @@ const deleteExperience = async () => {
         @cancel="experienceModal?.closeModal()"
       />
     </Modal>
-    
+ 
     <Dialog
       ref="dialogRef"
       header="Tem certeza que deseja deletar esta experiência?"

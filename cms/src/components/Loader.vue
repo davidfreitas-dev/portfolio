@@ -4,11 +4,11 @@ import { computed } from 'vue';
 type DotColor = 'white' | 'primary';
 
 const { color = 'white' } = defineProps<{
-  color?: DotColor;
+ color?: DotColor;
 }>();
 
 const bgColor = computed(() => {
-  return color === 'primary' ? 'bg-primary dark:bg-primary-dark' : 'bg-white';
+  return color === 'primary' ? 'bg-primary-default' : 'bg-white';
 });
 </script>
 
@@ -22,22 +22,22 @@ const bgColor = computed(() => {
 
 <style scoped>
 @keyframes sk-bouncedelay {
-  0%, 80%, 100% {
-    transform: scale(0);
-  }
-  40% {
-    transform: scale(1.0);
-  }
+ 0%, 80%, 100% {
+ transform: scale(0);
+ }
+ 40% {
+ transform: scale(1.0);
+ }
 }
 .animate-dot-delay-1 {
-  animation: sk-bouncedelay 1.3s infinite ease-in-out both;
-  animation-delay: -0.32s;
+ animation: sk-bouncedelay 1.3s infinite ease-in-out both;
+ animation-delay: -0.32s;
 }
 .animate-dot-delay-2 {
-  animation: sk-bouncedelay 1.3s infinite ease-in-out both;
-  animation-delay: -0.16s;
+ animation: sk-bouncedelay 1.3s infinite ease-in-out both;
+ animation-delay: -0.16s;
 }
 .animate-dot-delay-3 {
-  animation: sk-bouncedelay 1.3s infinite ease-in-out both;
+ animation: sk-bouncedelay 1.3s infinite ease-in-out both;
 }
 </style>
