@@ -25,8 +25,8 @@ export const authService = {
     await api.post('/auth/logout');
   },
 
-  async forgotPassword(payload: ForgotPasswordPayload): Promise<void> {
-    await api.post('/auth/forgot', payload);
+  async forgotPassword(payload: ForgotPasswordPayload): Promise<ApiResponse> {
+    return await api.post('/auth/forgot', payload) as unknown as ApiResponse;
   },
 
   async validateResetCode(payload: ValidateResetCodePayload): Promise<void> {

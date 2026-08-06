@@ -123,7 +123,7 @@ onMounted(() => {
         inputmode="numeric"
         maxlength="1"
         :disabled="disabled"
-        class="text-font dark:text-font-dark bg-transparent text-center text-2xl font-bold w-full h-[52px] rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 disabled:cursor-not-allowed"
+        class="text-font dark:text-font-dark bg-transparent text-center text-2xl font-bold w-full h-[64px] rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 disabled:cursor-not-allowed"
         :class="[
           error 
             ? 'border border-danger focus:ring-danger' 

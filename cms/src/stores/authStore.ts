@@ -8,6 +8,7 @@ import type {
   ResetPasswordPayload,
   ValidateResetCodePayload,
   RequestLoginPayload,
+  ApiResponse,
 } from '@/types';
 
 export class UnauthorizedRoleError extends Error {
@@ -99,8 +100,8 @@ export const useAuthStore = defineStore('auth', () => {
     await authService.requestLogin(payload);
   }
 
-  async function forgotPassword(payload: ForgotPasswordPayload): Promise<void> {
-    await authService.forgotPassword(payload);
+  async function forgotPassword(payload: ForgotPasswordPayload): Promise<ApiResponse> {
+    return await authService.forgotPassword(payload);
   }
 
   async function validateResetCode(payload: ValidateResetCodePayload): Promise<void> {
