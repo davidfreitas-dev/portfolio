@@ -85,8 +85,8 @@ const handleResetPassword = async () => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center w-full min-h-screen md:bg-gray-100 dark:md:bg-gray-700 p-4 md:p-8">
-    <div class="w-full max-w-[1000px] flex flex-col md:flex-row bg-white dark:bg-gray-600 md:shadow-xl rounded-2xl overflow-hidden relative">
+  <div class="flex items-center justify-center w-full min-h-screen md:bg-gray-100 dark:md:bg-gray-900 p-4 md:p-8">
+    <div class="w-full max-w-[1000px] flex flex-col md:flex-row bg-white dark:bg-gray-800 md:shadow-xl rounded-2xl overflow-hidden relative">
       <!-- Left: Branding & Welcome -->
       <div class="w-full md:w-5/12 bg-primary-default relative p-8 md:p-12 flex flex-col justify-between text-white overflow-hidden">
         <!-- Decorative background elements -->
