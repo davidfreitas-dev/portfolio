@@ -10,6 +10,7 @@ import Breadcrumb from '@/components/Breadcrumb.vue';
 import Icon from '@/components/Icon.vue';
 import Button from '@/components/Button.vue';
 import InputSearch from '@/components/InputSearch.vue';
+import Select from '@/components/Select.vue';
 import Table from '@/components/Table.vue';
 import Loader from '@/components/Loader.vue';
 import Badge from '@/components/Badge.vue';
@@ -17,6 +18,7 @@ import ProjectForm, { type ProjectFormData } from '@/forms/ProjectForm.vue';
 import Modal, { type ModalExpose } from '@/components/Modal.vue';
 import Dialog from '@/components/Dialog.vue';
 import Pagination from '@/components/Pagination.vue';
+import type { Option } from '@/types';
 
 const projectsStore = useProjectsStore();
 const { isLoading, withLoading } = useLoading();
@@ -43,9 +45,16 @@ const itemsPerPage = 5;
 const search = ref('');
 const normalizedSearch = computed(() => search.value.trim().toLowerCase());
 
+const statusOptions: Option[] = [
+  { label: 'Todos', value: 'all' },
+  { label: 'Ativo', value: 1 },
+  { label: 'Inativo', value: 0 },
+];
+const selectedStatus = ref<Option | null>(statusOptions[0]);
+
 const loadProjects = async () => {
   await withLoading(() =>
-    projectsStore.fetchProjects(page.value, itemsPerPage, normalizedSearch.value)
+    projectsStore.fetchProjects(page.value, itemsPerPage, normalizedSearch.value, selectedStatus.value?.value)
   );
 };
 
@@ -54,6 +63,11 @@ const debouncedLoadProjects = debounce(loadProjects, '500ms');
 watch(search, () => {
   page.value = 1;
   debouncedLoadProjects();
+});
+
+watch(selectedStatus, () => {
+  page.value = 1;
+  loadProjects();
 });
 
 watch(page, () => {
@@ -160,9 +174,14 @@ const getProjectImage = (image: string) => `${apiUrl}/images/projects/${image}`;
       <div class="filters grid grid-cols-1 md:grid-cols-2 gap-4 w-full border-b border-gray-200 dark:border-gray-600 p-5">
         <InputSearch
           v-model="search"
-          label="Buscar por título"
-          floating-label
+          placeholder="Buscar por título"
         />
+        <div class="mt-2 md:mt-0">
+          <Select
+            v-model="selectedStatus"
+            :options="statusOptions"
+          />
+        </div>
       </div>
 
       <Loader
@@ -196,18 +215,20 @@ const getProjectImage = (image: string) => `${apiUrl}/images/projects/${image}`;
               <Badge :label="proj.is_active ? 'Ativo' : 'Inativo'" :color="proj.is_active ? 'success' : 'danger'" />
             </td>
             <td class="px-6 py-4 w-[5%] min-w-[50px]">
-              <div class="flex item-center gap-3">
+              <div class="flex items-center gap-2">
                 <button
-                  class="p-2 h-10 w-10 bg-primary-bg dark:bg-gray-600 text-primary-default rounded-full cursor-pointer"
+                  class="flex items-center justify-center h-9 w-9 text-gray-400 dark:text-gray-500 hover:text-primary-default dark:hover:text-primary-default hover:bg-primary-50 dark:hover:bg-gray-700/50 rounded-lg transition-all duration-200 hover:scale-105"
+                  title="Editar"
                   @click="openEditModal(proj)"
                 >
-                  <Icon name="edit" />
+                  <Icon name="edit" class="w-4 h-4" />
                 </button>
                 <button
-                  class="p-2 h-10 w-10 bg-gray-100 dark:bg-gray-600 text-danger dark:text-danger-dark rounded-full cursor-pointer"
+                  class="flex items-center justify-center h-9 w-9 text-gray-400 dark:text-gray-500 hover:text-danger dark:hover:text-danger hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 hover:scale-105"
+                  title="Deletar"
                   @click="handleDeleteProject(proj.id!)"
                 >
-                  <Icon name="delete" />
+                  <Icon name="delete" class="w-4 h-4" />
                 </button>
               </div>
             </td>
@@ -217,7 +238,7 @@ const getProjectImage = (image: string) => `${apiUrl}/images/projects/${image}`;
 
       <div
         v-if="!isLoading && !projects.length"
-        class="text-gray-500 dark:text-gray-300 text-center my-10"
+        class="text-gray-500 dark:text-gray-300 text-center py-10"
       >
         Nenhum projeto encontrado.
       </div>

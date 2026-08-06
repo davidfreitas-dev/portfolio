@@ -27,7 +27,7 @@ test('should return list of projects', function () {
     $page = 1;
     $limit = 10;
     $search = '';
-    $onlyActive = false;
+    $isActive = null;
     
     $projects = [
         new Project('Project 1', 'Desc 1', 'project-1', 'Summary 1', null, null, null, 1, true, [], 1),
@@ -35,20 +35,44 @@ test('should return list of projects', function () {
     ];
 
     $this->repository->shouldReceive('findAll')
-        ->with($page, $limit, $search, $onlyActive)
+        ->with($page, $limit, $search, $isActive)
         ->once()
         ->andReturn([
             'projects' => $projects,
             'total' => 2
         ]);
 
-    $result = $this->service->listProjects($page, $limit, $search, $onlyActive);
+    $result = $this->service->listProjects($page, $limit, $search, $isActive);
 
     expect($result)->toBeArray()
         ->and($result['projects'])->toBe($projects)
         ->and($result['total_items'])->toBe(2)
         ->and($result['current_page'])->toBe(1)
         ->and($result['total_pages'])->toBe(1);
+});
+
+test('should return list of filtered projects by status', function () {
+    $page = 1;
+    $limit = 10;
+    $search = '';
+    
+    $projects = [
+        new Project('Project 1', 'Desc 1', 'project-1', 'Summary 1', null, null, null, 1, false, [], 1),
+    ];
+
+    $this->repository->shouldReceive('findAll')
+        ->with($page, $limit, $search, false)
+        ->once()
+        ->andReturn([
+            'projects' => $projects,
+            'total' => 1
+        ]);
+
+    $result = $this->service->listProjects($page, $limit, $search, false);
+
+    expect($result)->toBeArray()
+        ->and($result['projects'])->toBe($projects)
+        ->and($result['total_items'])->toBe(1);
 });
 
 test('should return a single project', function () {

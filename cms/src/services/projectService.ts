@@ -2,9 +2,13 @@ import api from '@/api';
 import type { ApiResponse, Project, ProjectListResponse } from '@/types';
 
 export const projectService = {
-  async fetchProjects(page = 1, limit = 10, search = ''): Promise<ProjectListResponse> {
+  async fetchProjects(page = 1, limit = 10, search = '', status?: string | number): Promise<ProjectListResponse> {
+    const params: Record<string, any> = { page, limit, search };
+    if (status !== undefined && status !== 'all') {
+      params.is_active = status;
+    }
     const response = await api.get<ApiResponse<ProjectListResponse>>('/admin/projects', {
-      params: { page, limit, search }
+      params
     }) as unknown as ApiResponse<ProjectListResponse>;
     if (!response.data) throw new Error('No projects data received');
     return response.data;

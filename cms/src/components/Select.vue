@@ -43,10 +43,10 @@ watch(selectedOption, (newValue) => {
       <div class="relative w-full">
         <ListboxButton
           :class="[
-            'flex items-center gap-3 h-[44px] w-full px-4 py-2 bg-transparent rounded-lg text-[14px] text-left placeholder:text-gray-400 focus:outline-none focus:ring-1',
+            'flex items-center gap-3 h-[44px] w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-[14px] text-left placeholder:text-gray-400 focus:outline-none focus:ring-1',
             error
               ? 'border border-danger focus:ring-danger focus:border-danger'
-              : 'border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400 focus:ring-primary-default focus:border-primary-default'
+              : 'border border-gray-200 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400 focus:ring-primary-default focus:border-primary-default'
           ]"
         >
           <span class="flex-1 truncate text-gray-700 dark:text-gray-100">
@@ -65,7 +65,7 @@ watch(selectedOption, (newValue) => {
           leave-to-class="opacity-0"
         >
           <ListboxOptions
-            class="absolute mt-1.5 max-h-60 w-full overflow-auto rounded-lg bg-white dark:bg-gray-800 text-[14px] shadow-lg focus:outline-none border border-gray-300 dark:border-gray-600 z-10"
+            class="absolute mt-1.5 max-h-60 w-full overflow-auto rounded-lg bg-gray-100 dark:bg-gray-700 text-[14px] shadow-lg focus:outline-none border border-gray-200 dark:border-gray-600 z-10"
           >
             <ListboxOption
               v-for="option in props.options"
@@ -76,7 +76,7 @@ watch(selectedOption, (newValue) => {
             >
               <li
                 :class="[
-                  active ? 'bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-100',
+                  active ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-100',
                   'relative cursor-pointer select-none py-4 pl-12 pr-4 transition-colors duration-150',
                 ]"
               >

@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <div class="overflow-x-auto scrollbar">
     <table class="min-w-full text-left">
-      <thead class="border-b border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-200">
+      <thead class="border-b border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-200">
         <tr>
           <th
             v-for="(header, index) in headers"
@@ -31,7 +31,7 @@ defineProps<{
         <tr
           v-for="(item, index) in items"
           :key="index"
-          :class="index !== items.length - 1 ? 'border-b border-gray-300 dark:border-gray-600' : ''"
+          :class="index !== items.length - 1 ? 'border-b border-gray-200 dark:border-gray-600' : ''"
         >
           <slot
             name="row"

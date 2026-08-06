@@ -166,18 +166,20 @@ const deleteExperience = async () => {
               {{ $filters.formatPeriod([exp.start_date, exp.end_date]) }}
             </td>
             <td class="px-6 py-4 w-[5%] min-w-[50px]">
-              <div class="flex item-center gap-3">
+              <div class="flex items-center gap-2">
                 <button
-                  class="p-2 h-10 w-10 bg-primary-bg dark:bg-gray-600 text-primary-default rounded-full cursor-pointer"
+                  class="flex items-center justify-center h-9 w-9 text-gray-400 dark:text-gray-500 hover:text-primary-default dark:hover:text-primary-default hover:bg-primary-50 dark:hover:bg-gray-700/50 rounded-lg transition-all duration-200 hover:scale-105"
+                  title="Editar"
                   @click="openEditModal(exp)"
                 >
-                  <Icon name="edit" />
+                  <Icon name="edit" class="w-4 h-4" />
                 </button>
                 <button
-                  class="p-2 h-10 w-10 bg-gray-100 dark:bg-gray-600 text-danger dark:text-danger-dark rounded-full cursor-pointer"
+                  class="flex items-center justify-center h-9 w-9 text-gray-400 dark:text-gray-500 hover:text-danger dark:hover:text-danger hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 hover:scale-105"
+                  title="Deletar"
                   @click="handleDeleteExperience(exp.id!)"
                 >
-                  <Icon name="delete" />
+                  <Icon name="delete" class="w-4 h-4" />
                 </button>
               </div>
             </td>
@@ -187,7 +189,7 @@ const deleteExperience = async () => {
 
       <div
         v-if="!isLoading && !experiences.length"
-        class="text-gray-500 dark:text-gray-300 text-center my-10"
+        class="text-gray-500 dark:text-gray-300 text-center py-10"
       >
         Nenhuma experiência encontrada.
       </div>

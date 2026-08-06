@@ -55,4 +55,18 @@ class ProjectTest extends AppTestCase
         $this->assertEquals('success', $envelope['status']);
         $this->assertStringContainsString('Feature Test Project', $envelope['data']['title']);
     }
+
+    public function test_can_filter_projects_by_status(): void
+    {
+        $request = $this->createRequest('GET', '/admin/projects?is_active=0');
+        $request = $this->withAdminToken($request);
+        
+        $response = $this->request($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        
+        $envelope = json_decode((string)$response->getBody(), true);
+        $this->assertEquals('success', $envelope['status']);
+        $this->assertArrayHasKey('projects', $envelope['data']);
+    }
 }

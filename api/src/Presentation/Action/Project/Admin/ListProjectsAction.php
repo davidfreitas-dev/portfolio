@@ -25,9 +25,9 @@ class ListProjectsAction
         $page = (int)($queryParams['page'] ?? 1);
         $limit = (int)($queryParams['limit'] ?? 10);
         $search = (string)($queryParams['search'] ?? '');
+        $isActive = isset($queryParams['is_active']) ? (string)$queryParams['is_active'] === '1' : null;
 
-        // onlyActive = false (shows all)
-        $result = $this->projectService->listProjects($page, $limit, $search, false);
+        $result = $this->projectService->listProjects($page, $limit, $search, $isActive);
 
         $data = [
             'projects' => $this->transformer->transformCollection($result['projects']),

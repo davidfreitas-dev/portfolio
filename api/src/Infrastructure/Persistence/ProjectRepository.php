@@ -14,7 +14,7 @@ class ProjectRepository implements ProjectRepositoryInterface
     {
     }
 
-    public function findAll(int $page, int $limit, string $search, bool $onlyActive = false): array
+    public function findAll(int $page, int $limit, string $search, ?bool $isActive = null): array
     {
         $params = [];
         $where = ["deleted_at IS NULL"];
@@ -25,8 +25,9 @@ class ProjectRepository implements ProjectRepositoryInterface
             $params[":search"] = "%$search%";
         }
 
-        if ($onlyActive) {
-            $where[] = "is_active = 1";
+        if ($isActive !== null) {
+            $where[] = "is_active = :is_active";
+            $params[":is_active"] = $isActive ? 1 : 0;
         }
 
         $whereClause = implode(" AND ", $where);

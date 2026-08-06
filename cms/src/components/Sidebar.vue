@@ -18,8 +18,8 @@ const menuItems: MenuItemData[] = [
   { to: '/', icon: 'dashboard', text: 'Overview' },
   { to: '/experiences', icon: 'hub', text: 'Experiências', group: 'Portfólio' },
   { to: '/technologies', icon: 'code', text: 'Tecnologias', group: 'Portfólio' },
-  { to: '/projects', icon: 'handyman', text: 'Projetos', group: 'Portfólio' },
-  { to: '/design-system', icon: 'settings', text: 'Design System', group: 'Sistema' }
+  { to: '/projects', icon: 'rocket', text: 'Projetos', group: 'Portfólio' },
+  { to: '/design-system', icon: 'palette', text: 'Design System', group: 'Sistema' }
 ];
 </script>
 
