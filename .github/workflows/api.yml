@@ -37,7 +37,7 @@ jobs:
           restore-keys: composer-
 
       - name: Install dependencies
-        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+        run: composer install --optimize-autoloader --no-interaction --prefer-dist
 
       - name: Validate composer.json
         run: composer validate --no-check-publish

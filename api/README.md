@@ -177,3 +177,4 @@ api/
 **Ver documentação completa:** [docs/API_DOCUMENTATION.md](./docs/API_DOCUMENTATION.md)
 
 **Importar no Postman:** `docs/postman_collection.json`
+
