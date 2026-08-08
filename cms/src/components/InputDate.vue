@@ -15,7 +15,7 @@ interface TimeValue {
 const props = withDefaults(defineProps<{
   label?: string;
   placeholder?: string;
-  modelValue: Date | Date[] | null;
+  modelValue: Date | Date[] | string | null;
   disabled?: boolean;
   error?: string;
   mode?: 'date' | 'range' | 'time';
@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: Date | Date[] | null): void;
+  (e: 'update:modelValue', value: Date | Date[] | string | null): void;
   (e: 'onKeyupEnter'): void;
   (e: 'blur'): void;
 }>();

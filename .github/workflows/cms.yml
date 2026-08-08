@@ -1,18 +1,14 @@
-# Simple workflow for deploying static content to server
+# Workflow for deploying CMS static content to server
 name: Personal Portfolio CMS CI
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches:
       - main
     paths:
       - 'cms/**'
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Impede que múltiplos deploys rodem simultaneamente
 concurrency:
   group: deploy-cms
   cancel-in-progress: true
@@ -21,18 +17,19 @@ env:
   VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
 jobs:
+  # Etapa 1: Build
   build:
-    name: Build and Deploy CMS
+    name: Build CMS
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cms
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Debug Current Directory
-        run: ls -la
       
-      - name: Set up Node
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -41,20 +38,42 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: cms
       
       - name: Build CMS
         run: npm run build
-        working-directory: cms
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-dist
+          path: cms/dist/
+          retention-days: 1
+
+  # Etapa 2: Deploy
+  deploy:
+    name: Deploy CMS to Server
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cms-dist
+          path: dist/
 
       - name: Deploy CMS to Server
-        uses: easingthemes/ssh-deploy@main
+        uses: easingthemes/ssh-deploy@v5.1.0
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          ARGS: "-rlgoDzvc -i"
-          SOURCE: "./cms/dist/"
-          TARGET: ${{ secrets.CMS_REMOTE_TARGET }}
+          ARGS: "-rlgoDzvc --delete"
+          SOURCE: "dist/"
+          TARGET: ${{ secrets.REMOTE_TARGET }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
           EXCLUDE: "/.git/, .gitignore, .env.example, node_modules, README.md"
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "::error::Deploy do CMS falhou! Verifique os logs."

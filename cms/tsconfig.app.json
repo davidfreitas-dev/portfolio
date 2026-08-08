@@ -11,7 +11,7 @@
     "noUncheckedSideEffectImports": true,
 
     /* Alias */
-    "ignoreDeprecations": "6.0",
+
     "paths": {
       "@/*": ["./src/*"]
     },
