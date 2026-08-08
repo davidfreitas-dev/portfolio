@@ -22,13 +22,13 @@ class ContactAction
     {
         $data = $request->getParsedBody();
         $dto = ContactRequestDTO::fromArray($data ?? []);
-        
+
         $errors = $dto->validate();
         if (!empty($errors)) {
             return $this->responder->respond($response, [
                 'status' => 'error',
                 'message' => 'Erro de validação',
-                'errors' => $errors
+                'errors' => $errors,
             ], 400);
         }
 
@@ -36,12 +36,12 @@ class ContactAction
             $this->contactService->handleContactRequest($dto);
             return $this->responder->respond($response, [
                 'status' => 'success',
-                'message' => 'Mensagem enviada com sucesso!'
+                'message' => 'Mensagem enviada com sucesso!',
             ], 200);
         } catch (\Exception $e) {
             return $this->responder->respond($response, [
                 'status' => 'error',
-                'message' => 'Ocorreu um erro ao enviar sua mensagem. Tente novamente mais tarde.'
+                'message' => 'Ocorreu um erro ao enviar sua mensagem. Tente novamente mais tarde.',
             ], 500);
         }
     }

@@ -52,8 +52,11 @@
     },
     "scripts": {
         "start": "php -S localhost:8080 -t public",
+        "cs-check": "php-cs-fixer fix --config=tools/.php-cs-fixer.dist.php --dry-run --diff --verbose",
         "cs-fix": "php-cs-fixer fix --config=tools/.php-cs-fixer.dist.php --verbose",
         "rector": "rector process --config tools/rector.php",
-        "rector:dry": "rector process --config tools/rector.php --dry-run"
+        "rector:dry": "rector process --config tools/rector.php --dry-run",
+        "test": "pest",
+        "test:unit": "pest tests/Unit"
     }
 }

@@ -87,7 +87,7 @@ services:
     depends_on:
       api:
         condition: service_started
-      admin:
+      cms:
         condition: service_healthy
 
   cms:

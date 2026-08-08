@@ -35,13 +35,13 @@ class RefreshAction
             }
 
             $user = (array) $decoded['user'];
-            
+
             // Gerar novo access token
             $newJwt = $this->jwtService->generatePrivateToken($user);
-            
+
             // Opcional: Rotação de refresh token (gerar um novo a cada uso)
             $newRefreshToken = $this->jwtService->generateRefreshToken($user);
-            
+
             $cookieString = 'refresh_token=' . urlencode($newRefreshToken) . '; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=604800';
             $response = $response->withAddedHeader('Set-Cookie', $cookieString);
 

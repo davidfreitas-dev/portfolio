@@ -13,12 +13,12 @@ class Database
         string $database,
         string $username,
         string $password,
-        string $charset
+        string $charset,
     ) {
         $this->conn = new \PDO(
             "mysql:dbname=$database;host=$host;charset=$charset",
             $username,
-            $password
+            $password,
         );
         $this->conn->exec("SET time_zone='America/Sao_Paulo'");
     }

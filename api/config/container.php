@@ -58,7 +58,7 @@ $containerBuilder->addDefinitions([
             $dbSettings['database'],
             $dbSettings['username'],
             $dbSettings['password'],
-            $dbSettings['charset']
+            $dbSettings['charset'],
         );
     },
 

@@ -1,6 +1,6 @@
 # API REST com Slim Framework e Arquitetura Limpa
 
-API REST moderna construída com Slim Framework 4, PHP 8.4, e inspirada em princípios de Arquitetura Limpa (Clean Architecture) e Domain-Driven Design (DDD).
+API REST moderna construída com Slim Framework 4, PHP 8.4, fundamentada em princípios de Arquitetura Limpa (Clean Architecture) e Domain-Driven Design (DDD), e utilizando o padrão ADR (Action-Domain-Responder) na camada de apresentação.
 
 Esta API serve como o backend para o portfólio, incluindo autenticação com JWT, manipulação de arquivos e uma estrutura organizada para escalabilidade.
 
@@ -24,7 +24,7 @@ Esta API serve como o backend para o portfólio, incluindo autenticação com JW
   - Uso de DTOs para validação.
   - Senhas com hash.
   - Rate Limiting e CORS configuráveis.
-- **Arquitetura Robusta**: Separação de camadas (Presentation, Application, Domain, Infrastructure).
+- **Arquitetura Robusta**: Separação clara de responsabilidades (Application, Domain, Infrastructure) e uso do padrão ADR (Action-Domain-Responder) na camada de Presentation.
 - **Ambiente Docker**: Ambiente containerizado com Nginx, PHP e MySQL.
 
 ### 🔐 Autenticação
@@ -156,7 +156,7 @@ O projeto segue uma arquitetura em camadas:
 - **Domain Layer**: Entidades (`User`, `Project`, etc.), exceções e interfaces de repositórios.
 - **Application Layer**: Casos de uso e DTOs.
 - **Infrastructure Layer**: Implementações concretas (repositórios, mailer, etc.).
-- **Presentation Layer**: Actions, Responders e Middlewares (Slim).
+- **Presentation Layer (ADR)**: Actions, Responders e Middlewares (Slim). A camada adota o Action-Domain-Responder, onde cada endpoint possui uma Action única que delega o processamento e passa o resultado para um Responder responsável por formatar a saída HTTP (JSON).
 
 ### Estrutura
 ```

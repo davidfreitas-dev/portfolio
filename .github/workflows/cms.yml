@@ -68,7 +68,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
           ARGS: "-rlgoDzvc --delete"
           SOURCE: "dist/"
-          TARGET: ${{ secrets.REMOTE_TARGET }}
+          TARGET: "/var/www/portfolio/cms/"
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}

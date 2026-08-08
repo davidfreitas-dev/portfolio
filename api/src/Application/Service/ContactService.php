@@ -33,7 +33,7 @@ class ContactService
             htmlspecialchars($dto->name),
             htmlspecialchars($dto->email),
             htmlspecialchars($dto->subject),
-            nl2br(htmlspecialchars($dto->message))
+            nl2br(htmlspecialchars($dto->message)),
         );
 
         return $this->mailer->send($toEmail, $toName, $subject, $contentHtml);

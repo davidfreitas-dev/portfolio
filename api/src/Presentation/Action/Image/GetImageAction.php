@@ -27,7 +27,7 @@ class GetImageAction
         // Determinando o caminho do storage de forma robusta
         $storagePath = $_ENV['STORAGE_PATH'] ?? (defined('APP_ROOT') ? APP_ROOT . DIRECTORY_SEPARATOR . 'storage' : \dirname(__DIR__, 4) . DIRECTORY_SEPARATOR . 'storage');
         $storagePath = \rtrim((string) $storagePath, DIRECTORY_SEPARATOR);
-        
+
         $imagePath = $storagePath . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $imageName;
 
         $isDefault = false;
