@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-type DotColor = 'white' | 'primary';
+type DotColor = 'white' | 'primary' | 'secondary';
 
 const { color = 'white' } = defineProps<{
  color?: DotColor;
 }>();
 
 const bgColor = computed(() => {
-  return color === 'primary' ? 'bg-primary-default' : 'bg-white';
+  if (color === 'primary') return 'bg-primary-default';
+  if (color === 'secondary') return 'bg-gray-600';
+  return 'bg-white';
 });
 </script>
 

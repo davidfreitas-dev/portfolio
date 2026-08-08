@@ -6,6 +6,7 @@ import axios, {
   type AxiosError,
 } from 'axios';
 import { useAuthStore } from '@/stores/authStore';
+import router from '@/router';
 import type { ApiResponse, AuthTokensData } from '@/types';
 
 // Typed API instance
@@ -93,7 +94,7 @@ async function refreshAccessToken(): Promise<string> {
     } catch (refreshError) {
       processQueue(refreshError);
       useAuthStore().clearSession();
-      window.location.href = '/login';
+      router.push({ name: 'Login', query: { expired: '1' } });
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

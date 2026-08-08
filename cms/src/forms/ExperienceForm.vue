@@ -108,6 +108,7 @@ const handleCancel = () => {
       <Button
         type="button"
         variant="outline"
+        color="secondary"
         @click="handleCancel"
       >
         Cancelar

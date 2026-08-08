@@ -34,7 +34,7 @@ watch(selectedOption, (newValue) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-1 relative w-full">
+  <div class="flex flex-col gap-2 relative w-full">
     <label v-if="props.label" class="text-gray-700 font-semibold dark:text-gray-100">
       {{ props.label }}
     </label>
@@ -45,7 +45,7 @@ watch(selectedOption, (newValue) => {
           :class="[
             'flex items-center gap-3 h-[44px] w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-[14px] text-left placeholder:text-gray-400 focus:outline-none focus:ring-1',
             error
-              ? 'border border-danger focus:ring-danger focus:border-danger'
+              ? 'border border-danger dark:border-danger-dark focus:ring-danger dark:focus:ring-danger-dark focus:border-danger dark:focus:border-danger-dark'
               : 'border border-gray-200 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400 focus:ring-primary-default focus:border-primary-default'
           ]"
         >
@@ -101,6 +101,6 @@ watch(selectedOption, (newValue) => {
       </div>
     </Listbox>
 
-    <span v-if="error" class="text-[14px] text-danger">{{ error }}</span>
+    <span v-if="error" class="text-[14px] text-danger dark:text-danger-dark">{{ error }}</span>
   </div>
 </template>

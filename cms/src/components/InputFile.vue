@@ -16,11 +16,16 @@ const emit = defineEmits<{
 const API_URL = import.meta.env.VITE_API_URL;
 
 const preview = ref<string | undefined>(undefined);
+const fileInput = ref<HTMLInputElement | null>(null);
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0] ?? null;
   emit('update:modelValue', file);
+};
+
+const triggerFileInput = () => {
+  fileInput.value?.click();
 };
 
 watch(
@@ -36,6 +41,9 @@ watch(
         : `${API_URL}/images/${val}`;
     } else {
       preview.value = undefined;
+      if (fileInput.value) {
+        fileInput.value.value = '';
+      }
     }
   },
   { immediate: true }
@@ -45,41 +53,89 @@ const previewSize = computed(() => previewSizeProp ?? 'h-44 w-44');
 </script>
 
 <template>
-  <label class="text-gray-700 dark:text-gray-100 font-semibold">{{ label }}</label>
+  <div class="flex flex-col gap-3 relative w-full">
+    <label v-if="label" class="text-gray-700 dark:text-gray-100 font-semibold">{{ label }}</label>
 
-  <div v-if="preview" :class="`${previewSize} mt-2`">
-    <img
-      :src="preview"
-      alt="Preview"
-      class="object-contain rounded-lg"
+    <div 
+      :class="[
+        'relative flex items-center justify-center border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-2xl bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/30 transition-colors cursor-pointer group overflow-hidden',
+        previewSize
+      ]" 
+      @click="triggerFileInput"
     >
+      <!-- Preview Image -->
+      <img
+        v-if="preview"
+        :src="preview"
+        alt="Preview"
+        class="absolute inset-0 w-full h-full object-cover"
+      >
+
+      <!-- Overlay on Hover when there is a preview -->
+      <div v-if="preview" class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-white"
+        ><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>
+      </div>
+
+      <!-- Add Icon (when no preview) -->
+      <div v-else class="flex flex-col items-center justify-center text-gray-500">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="mb-3"
+        >
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
+          <line
+            x1="16"
+            x2="22"
+            y1="5"
+            y2="5"
+          />
+          <line
+            x1="19"
+            x2="19"
+            y1="2"
+            y2="8"
+          />
+          <circle
+            cx="9"
+            cy="9"
+            r="2"
+          />
+          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+        </svg>
+        <span class="font-bold text-sm tracking-wider uppercase">ADD</span>
+      </div>
+
+      <!-- Hidden Input -->
+      <input
+        ref="fileInput"
+        type="file"
+        class="hidden"
+        accept="image/svg+xml,image/png,image/jpeg,image/gif,image/webp"
+        @change="handleFileChange"
+      >
+    </div>
+
+    <p class="text-sm text-gray-400 dark:text-gray-500">
+      SVG, PNG, JPG or GIF (MAX. 800x800px).
+    </p>
   </div>
-
-  <input
-    type="file"
-    class="mt-2"
-    @change="handleFileChange"
-  >
-
-  <p class="text-sm text-gray-400 dark:text-gray-400 mt-1">
-    SVG, PNG, JPG or GIF (MAX. 800x800px).
-  </p>
 </template>
-
-<style scoped>
-input[type=file]::file-selector-button {
- color: #fff;
- background: #bbbbbb;
- border: none;
- border-radius: 6px;
- height: 40px;
- padding: 0 1rem;
- margin-right: 20px;
- cursor: pointer;
- transition: background .2s ease-in-out;
-}
-
-input[type=file]::file-selector-button:hover {
- background: #01c38d;
-}
-</style>

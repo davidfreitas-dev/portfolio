@@ -6,10 +6,12 @@ defineOptions({ inheritAttrs: false });
 
 type ButtonVariant = 'fill' | 'outline' | 'link';
 type ButtonSize = 'large' | 'medium' | 'small' | 'full';
+type ButtonColor = 'primary' | 'secondary';
 
-const { size = 'medium', variant = 'fill', isLoading = false, disabled = false } = defineProps<{
+const { size = 'medium', variant = 'fill', color = 'primary', isLoading = false, disabled = false } = defineProps<{
  size?: ButtonSize;
  variant?: ButtonVariant;
+ color?: ButtonColor;
  isLoading?: boolean;
  disabled?: boolean;
 }>();
@@ -26,13 +28,21 @@ const classes = computed(() => [
     'h-[36px] px-4 text-[13px] rounded-md': size === 'small',
     'w-full text-center h-[52px] text-[15px] rounded-xl': size === 'full',
 
-    // Variants
+    // Primary Variants
     'bg-primary-default text-white hover:bg-primary-dark disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:text-gray-400':
- variant === 'fill',
+      variant === 'fill' && color === 'primary',
     'bg-transparent text-primary-default border border-primary-default hover:bg-primary-bg disabled:border-gray-200 disabled:hover:bg-transparent disabled:text-gray-400':
- variant === 'outline',
+      variant === 'outline' && color === 'primary',
     'bg-transparent text-primary-default hover:text-primary-dark hover:underline disabled:text-gray-400 disabled:no-underline disabled:hover:text-gray-400':
- variant === 'link',
+      variant === 'link' && color === 'primary',
+
+    // Secondary Variants
+    'bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-800 dark:hover:bg-gray-500 disabled:bg-gray-200 dark:disabled:bg-gray-800 disabled:hover:bg-gray-200 dark:disabled:hover:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-600':
+      variant === 'fill' && color === 'secondary',
+    'bg-transparent text-gray-600 dark:text-gray-300 border border-gray-700 dark:border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:border-gray-200 dark:disabled:border-gray-700 disabled:hover:bg-transparent disabled:text-gray-400 dark:disabled:text-gray-600':
+      variant === 'outline' && color === 'secondary',
+    'bg-transparent text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:underline disabled:text-gray-400 dark:disabled:text-gray-600 disabled:no-underline disabled:hover:text-gray-400 dark:disabled:hover:text-gray-600':
+      variant === 'link' && color === 'secondary',
   },
 ]);
 </script>
@@ -46,7 +56,7 @@ const classes = computed(() => [
   >
     <Loader
       v-if="isLoading"
-      :color="variant === 'outline' || variant === 'link' ? 'primary' : 'white'"
+      :color="variant === 'outline' || variant === 'link' ? color : 'white'"
       class="w-4 h-4"
     />
     <template v-else>

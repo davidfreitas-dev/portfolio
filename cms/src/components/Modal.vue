@@ -8,6 +8,7 @@ import {
   TransitionChild,
   TransitionRoot
 } from '@headlessui/vue';
+import Button from '@/components/Button.vue';
 
 const emit = defineEmits<{
  (e: 'onModalClose'): void;
@@ -99,14 +100,15 @@ const alignmentClass = computed(() => {
                         {{ title }}
                       </DialogTitle>
  
-                      <button
-                        type="button"
-                        class="text-gray-400 dark:text-gray-300 bg-transparent hover:border-brand hover:text-brand rounded-lg text-sm p-1.5 ml-auto inline-flex items-center outline-none cursor-pointer"
+                      <Button
+                        variant="link"
+                        color="secondary"
+                        class="!p-1.5 ml-auto"
                         @click="closeModal"
                       >
                         <Icon name="close" class="text-xl" />
                         <span class="sr-only">Close modal</span>
-                      </button>
+                      </Button>
                     </div>
 
                     <div class="modal-body overflow-y-auto p-0.5">

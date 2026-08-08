@@ -48,7 +48,7 @@ const updateValue = (event: Event) => {
       :class="[
         'text-gray-700 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 text-[14px] w-full rounded-lg px-4 py-3 resize-none focus:outline-none focus:ring-1 disabled:cursor-not-allowed',
         error
-          ? 'border border-danger focus:ring-danger focus:border-danger'
+          ? 'border border-danger dark:border-danger-dark focus:ring-danger dark:focus:ring-danger-dark focus:border-danger dark:focus:border-danger-dark'
           : 'border border-gray-200 dark:border-gray-600 focus:ring-primary-default focus:border-primary-default dark:focus:ring-primary-default'
       ]"
       @input="updateValue"
@@ -56,6 +56,6 @@ const updateValue = (event: Event) => {
       @blur="$emit('blur', $event)"
     />
 
-    <span v-if="error" class="text-[14px] text-danger">{{ error }}</span>
+    <span v-if="error" class="text-[14px] text-danger dark:text-danger-dark">{{ error }}</span>
   </div>
 </template>

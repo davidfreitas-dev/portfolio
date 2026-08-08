@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useVuelidate } from '@vuelidate/core';
 import { required, email, minLength } from '@vuelidate/validators';
 import { useAuthStore } from '@/stores/authStore';
@@ -10,8 +10,10 @@ import type { ApiResponse } from '@/types';
 import axios from 'axios';
 import Input from '@/components/Input.vue';
 import Button from '@/components/Button.vue';
+import Dialog from '@/components/Dialog.vue';
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 const { isLoading, withLoading } = useLoading();
 
@@ -64,6 +66,18 @@ const submitForm = async () => {
     router.push({ name: 'Home' });
   });
 };
+
+const expiredDialog = ref<InstanceType<typeof Dialog> | null>(null);
+
+onMounted(() => {
+  if (route.query.expired === '1') {
+    // Timeout gives time for the Dialog to mount
+    setTimeout(() => {
+      expiredDialog.value?.openModal();
+      router.replace({ query: {} }); // Limpa o parâmetro da URL
+    }, 100);
+  }
+});
 </script>
 
 <template>
@@ -180,5 +194,13 @@ const submitForm = async () => {
         </form>
       </div>
     </div>
+    
+    <Dialog
+      ref="expiredDialog"
+      header="Sessão Expirada"
+      message="Sua sessão expirou por inatividade. Por favor, faça login novamente para continuar."
+      confirm-text="Entendido"
+      hide-cancel
+    />
   </div>
 </template>

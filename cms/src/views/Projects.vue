@@ -170,7 +170,7 @@ const getProjectImage = (image: string) => `${apiUrl}/images/projects/${image}`;
       </div>
     </div>
 
-    <div class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-md my-8">
+    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-md my-8">
       <div class="filters grid grid-cols-1 md:grid-cols-2 gap-4 w-full border-b border-gray-200 dark:border-gray-600 p-5">
         <InputSearch
           v-model="search"
@@ -202,8 +202,14 @@ const getProjectImage = (image: string) => `${apiUrl}/images/projects/${image}`;
                 v-if="proj.image && typeof proj.image === 'string'"
                 :src="getProjectImage(proj.image)"
                 alt="Project cover"
-                class="w-10 h-10 object-cover rounded-lg"
+                class="w-10 h-10 object-cover rounded"
               >
+              <div
+                v-else
+                class="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded text-gray-400 dark:text-gray-500"
+              >
+                <Icon name="image" class="w-5 h-5" />
+              </div>
             </td>
             <td class="px-6 py-4 truncate text-gray-700 dark:text-gray-100">
               {{ proj.title }}
@@ -217,18 +223,18 @@ const getProjectImage = (image: string) => `${apiUrl}/images/projects/${image}`;
             <td class="px-6 py-4 w-[5%] min-w-[50px]">
               <div class="flex items-center gap-2">
                 <button
-                  class="flex items-center justify-center h-9 w-9 text-gray-400 dark:text-gray-500 hover:text-primary-default dark:hover:text-primary-default hover:bg-primary-50 dark:hover:bg-gray-700/50 rounded-lg transition-all duration-200 hover:scale-105"
+                  class="flex items-center justify-center h-9 w-9 text-gray-400 dark:text-gray-500 hover:text-primary-default dark:hover:text-primary-default hover:bg-primary-bg dark:hover:bg-primary-dark/20 rounded-lg transition-all duration-200 hover:scale-105 cursor-pointer"
                   title="Editar"
                   @click="openEditModal(proj)"
                 >
-                  <Icon name="edit" class="w-4 h-4" />
+                  <Icon name="edit" class="w-5 h-5" />
                 </button>
                 <button
-                  class="flex items-center justify-center h-9 w-9 text-gray-400 dark:text-gray-500 hover:text-danger dark:hover:text-danger hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 hover:scale-105"
+                  class="flex items-center justify-center h-9 w-9 text-gray-400 dark:text-gray-500 hover:text-danger dark:hover:text-danger hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 hover:scale-105 cursor-pointer"
                   title="Deletar"
                   @click="handleDeleteProject(proj.id!)"
                 >
-                  <Icon name="delete" class="w-4 h-4" />
+                  <Icon name="delete" class="w-5 h-5" />
                 </button>
               </div>
             </td>

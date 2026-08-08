@@ -93,7 +93,7 @@ const dateValue = computed({
       @keydown.enter="emit('onKeyupEnter')"
     />
 
-    <span v-if="error" class="text-[14px] text-danger">{{ error }}</span>
+    <span v-if="error" class="text-[14px] text-danger dark:text-danger-dark">{{ error }}</span>
   </div>
 </template>
 
@@ -162,10 +162,23 @@ const dateValue = computed({
   border: 1px solid var(--color-danger) !important;
 }
 
+.has-error .dp__theme_dark .dp__input,
+.dark .has-error .dp__input {
+  border: 1px solid var(--color-danger-dark) !important;
+}
+
 .has-error .dp__input:focus,
 .has-error .dp__input_focus {
   box-shadow: 0 0 0 1px var(--color-danger) !important;
   border-color: var(--color-danger) !important;
+}
+
+.has-error .dp__theme_dark .dp__input:focus,
+.has-error .dp__theme_dark .dp__input_focus,
+.dark .has-error .dp__input:focus,
+.dark .has-error .dp__input_focus {
+  box-shadow: 0 0 0 1px var(--color-danger-dark) !important;
+  border-color: var(--color-danger-dark) !important;
 }
 
 /* Esconder o ícone de calendário extra */

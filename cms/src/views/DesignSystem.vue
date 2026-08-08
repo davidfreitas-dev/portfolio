@@ -51,15 +51,15 @@ const colorGroups = [
       { name: 'Grey 300', class: 'bg-gray-300', textClass: 'text-gray-700' },
       { name: 'Grey 200', class: 'bg-gray-200', textClass: 'text-gray-700' },
       { name: 'Grey 100', class: 'bg-gray-100', textClass: 'text-gray-700' },
-      { name: 'White', class: 'bg-white border border-gray-200 dark:border-gray-700', textClass: 'text-gray-700' },
+      { name: 'White', class: 'bg-white', textClass: 'text-gray-700' },
     ]
   },
   {
     title: 'Feedback (Status)',
     colors: [
-      { name: 'Success', class: 'bg-success' },
-      { name: 'Warning', class: 'bg-warning', textClass: 'text-gray-700' },
-      { name: 'Danger', class: 'bg-danger' },
+      { name: 'Success', class: 'bg-success dark:bg-success-dark' },
+      { name: 'Warning', class: 'bg-warning dark:bg-warning-dark', textClass: 'text-gray-700 dark:text-gray-900' },
+      { name: 'Danger', class: 'bg-danger dark:bg-danger-dark' },
     ]
   }
 ];
@@ -162,7 +162,7 @@ const colorGroups = [
         <!-- Variantes -->
         <div>
           <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-100 mb-4">
-            Variantes (Default, Hover, Disabled, Loading)
+            Variantes (Default, Hover, Disabled)
           </h3>
           <div class="flex flex-wrap items-center gap-6">
             <div class="flex flex-col gap-3">
@@ -171,9 +171,6 @@ const colorGroups = [
               </Button>
               <Button variant="fill" disabled>
                 Fill Disabled
-              </Button>
-              <Button variant="fill" is-loading>
-                Loading
               </Button>
             </div>
  
@@ -184,9 +181,6 @@ const colorGroups = [
               <Button variant="outline" disabled>
                 Outline Disabled
               </Button>
-              <Button variant="outline" is-loading>
-                Loading
-              </Button>
             </div>
  
             <div class="flex flex-col gap-3">
@@ -196,8 +190,40 @@ const colorGroups = [
               <Button variant="link" disabled>
                 Link Disabled
               </Button>
-              <Button variant="link" is-loading>
-                Loading
+            </div>
+          </div>
+        </div>
+
+        <!-- Variantes Secundárias -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-100 mb-4">
+            Variantes Secundárias
+          </h3>
+          <div class="flex flex-wrap items-center gap-6">
+            <div class="flex flex-col gap-3">
+              <Button variant="fill" color="secondary">
+                Secondary Fill
+              </Button>
+              <Button variant="fill" color="secondary" disabled>
+                Secondary Disabled
+              </Button>
+            </div>
+ 
+            <div class="flex flex-col gap-3">
+              <Button variant="outline" color="secondary">
+                Secondary Outline
+              </Button>
+              <Button variant="outline" color="secondary" disabled>
+                Secondary Disabled
+              </Button>
+            </div>
+ 
+            <div class="flex flex-col gap-3">
+              <Button variant="link" color="secondary">
+                Secondary Link
+              </Button>
+              <Button variant="link" color="secondary" disabled>
+                Secondary Disabled
               </Button>
             </div>
           </div>

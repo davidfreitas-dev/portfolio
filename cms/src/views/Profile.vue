@@ -125,10 +125,10 @@ const confirmPassword = async (event: Event) => {
     </div>
 
     <section class="account my-7">
-      <h1 class="section-title text-gray-700 dark:text-gray-100 text-2xl font-semibold mb-3">
-        Minha Conta
-      </h1>
       <div class="p-7 bg-white dark:bg-gray-800 shadow-md rounded-3xl">
+        <h2 class="text-gray-700 dark:text-gray-100 text-xl font-semibold mb-5">
+          Minha Conta
+        </h2>
         <form class="flex flex-col gap-5">
           <Input
             v-model="formData.name"
