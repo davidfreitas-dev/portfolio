@@ -51,20 +51,28 @@ const goToPage = (page: number) => {
     </span>
 
     <nav>
-      <ul class="flex items-center gap-1.5 md:gap-3 text-sm text-gray-400 dark:text-gray-300">
+      <ul class="flex items-center gap-1 md:gap-2 text-sm font-medium">
         <li>
           <a
-            class="bg-white dark:bg-gray-800 hover:bg-primary-default hover:text-white border border-gray-300 dark:border-gray-600 hover:border-primary-default transition-colors rounded-md md:rounded-lg cursor-pointer select-none py-1 px-2.5 md:py-2.5 md:px-4"
-            :class="{ 'cursor-not-allowed': state.currentPage === 1 }"
-            @click="goToFirst"
+            class="flex items-center justify-center h-9 px-3 transition-all duration-200 rounded-lg select-none"
+            :class="[
+              state.currentPage === 1 
+                ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' 
+                : 'text-gray-600 dark:text-gray-400 hover:text-primary-default dark:hover:text-primary-default hover:bg-primary-bg dark:hover:bg-primary-dark/20 cursor-pointer'
+            ]"
+            @click="state.currentPage !== 1 && goToFirst()"
           >
             Primeira
           </a>
         </li> 
         <li v-for="page in visiblePages" :key="page">
           <a
-            class="hover:bg-primary-default hover:text-white border border-gray-300 dark:border-gray-600 hover:border-primary-default transition-colors rounded-md md:rounded-lg cursor-pointer select-none py-1 px-2.5 md:py-2.5 md:px-4"
-            :class="{ 'bg-primary-default text-white border-primary-default': page === state.currentPage }"
+            class="flex items-center justify-center h-9 w-9 transition-all duration-200 rounded-lg select-none cursor-pointer"
+            :class="[
+              page === state.currentPage 
+                ? 'bg-primary-default text-white shadow-md' 
+                : 'text-gray-600 dark:text-gray-400 hover:text-primary-default dark:hover:text-primary-default hover:bg-primary-bg dark:hover:bg-primary-dark/20'
+            ]"
             @click="goToPage(page)"
           >
             {{ page }}
@@ -72,9 +80,13 @@ const goToPage = (page: number) => {
         </li>
         <li>
           <a
-            class="bg-white dark:bg-gray-800 hover:bg-primary-default hover:text-white border border-gray-300 dark:border-gray-600 hover:border-primary-default transition-colors rounded-md md:rounded-lg cursor-pointer select-none py-1 px-2.5 md:py-2.5 md:px-4"
-            :class="{ 'cursor-not-allowed': state.currentPage === totalPages }"
-            @click="goToLast"
+            class="flex items-center justify-center h-9 px-3 transition-all duration-200 rounded-lg select-none"
+            :class="[
+              state.currentPage === totalPages 
+                ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' 
+                : 'text-gray-600 dark:text-gray-400 hover:text-primary-default dark:hover:text-primary-default hover:bg-primary-bg dark:hover:bg-primary-dark/20 cursor-pointer'
+            ]"
+            @click="state.currentPage !== totalPages && goToLast()"
           >
             Última
           </a>

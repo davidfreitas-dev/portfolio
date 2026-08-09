@@ -58,7 +58,7 @@ const previewSize = computed(() => previewSizeProp ?? 'h-44 w-44');
 
     <div 
       :class="[
-        'relative flex items-center justify-center border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-2xl bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/30 transition-colors cursor-pointer group overflow-hidden',
+        'relative flex items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-success bg-transparent hover:bg-success-accent dark:hover:bg-success-accent-dark transition-colors cursor-pointer group overflow-hidden',
         previewSize
       ]" 
       @click="triggerFileInput"
@@ -88,7 +88,7 @@ const previewSize = computed(() => previewSizeProp ?? 'h-44 w-44');
       </div>
 
       <!-- Add Icon (when no preview) -->
-      <div v-else class="flex flex-col items-center justify-center text-gray-500">
+      <div v-else class="flex flex-col items-center justify-center text-gray-500 group-hover:text-success dark:group-hover:text-success-dark transition-colors">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="28"

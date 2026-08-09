@@ -12,7 +12,9 @@ import Badge from '@/components/Badge.vue';
 import Loader from '@/components/Loader.vue';
 import Container from '@/components/Container.vue';
 import InputSearch from '@/components/InputSearch.vue';
+import Pagination from '@/components/Pagination.vue';
 
+const currentPage = ref(1);
 const inputValue = ref('');
 const inputFilled = ref('Texto preenchido');
 const dateValue = ref<Date | null>(null);
@@ -204,7 +206,11 @@ const colorGroups = [
               <Button variant="fill" color="secondary">
                 Secondary Fill
               </Button>
-              <Button variant="fill" color="secondary" disabled>
+              <Button
+                variant="fill"
+                color="secondary"
+                disabled
+              >
                 Secondary Disabled
               </Button>
             </div>
@@ -213,7 +219,11 @@ const colorGroups = [
               <Button variant="outline" color="secondary">
                 Secondary Outline
               </Button>
-              <Button variant="outline" color="secondary" disabled>
+              <Button
+                variant="outline"
+                color="secondary"
+                disabled
+              >
                 Secondary Disabled
               </Button>
             </div>
@@ -222,7 +232,11 @@ const colorGroups = [
               <Button variant="link" color="secondary">
                 Secondary Link
               </Button>
-              <Button variant="link" color="secondary" disabled>
+              <Button
+                variant="link"
+                color="secondary"
+                disabled
+              >
                 Secondary Disabled
               </Button>
             </div>
@@ -390,12 +404,25 @@ const colorGroups = [
             Loader
           </h3>
           <div class="flex flex-wrap items-center gap-6">
-            <div class="p-4 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+            <div class="p-4 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center">
               <Loader color="primary" />
             </div>
             <div class="p-4 rounded-lg bg-primary-default flex items-center justify-center">
               <Loader color="white" />
             </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-gray-700 dark:text-gray-100 mb-4">
+            Paginação
+          </h3>
+          <div class="p-2">
+            <Pagination
+              v-model="currentPage"
+              :total-items="50"
+              :items-per-page="10"
+            />
           </div>
         </div>
 

@@ -165,7 +165,7 @@ const handleCancel = () => {
     <div class="flex justify-end gap-3 mt-4">
       <Button
         type="button"
-        variant="outline"
+        variant="fill"
         color="secondary"
         @click="handleCancel"
       >

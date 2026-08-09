@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import { useProfileStore } from '@/stores/profileStore';
@@ -19,7 +19,22 @@ const authStore = useAuthStore();
 const profileStore = useProfileStore();
 
 const isDropdownOpen = ref(false);
+const dropdownRef = ref<HTMLElement | null>(null);
 const logoutDialog = ref<InstanceType<typeof Dialog> | null>(null);
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+    isDropdownOpen.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 
 const userName = computed(() => profileStore.user?.name || 'Usuário');
 const userRole = computed(() => {
@@ -54,9 +69,9 @@ const toggleDropdown = () => {
       <Icon name="menu" />
     </button>
  
-    <div class="relative">
+    <div class="relative" ref="dropdownRef">
       <div 
-        class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+        class="flex items-center gap-3 cursor-pointer"
         @click="toggleDropdown"
       >
         <div class="w-10 h-10 rounded-full bg-primary-default flex items-center justify-center text-white">

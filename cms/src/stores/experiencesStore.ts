@@ -12,8 +12,8 @@ export const useExperiencesStore = defineStore('experiences', () => {
   const fetchExperiences = async (page = 1, limit = 10, search = '') => {
     const data = await experienceService.fetchExperiences(page, limit, search);
     experiences.value = data.experiences || [];
-    totalItems.value = data.total ?? 0;
-    totalPages.value = data.pages ?? 1;
+    totalItems.value = data.pagination?.total_items ?? data.total ?? 0;
+    totalPages.value = data.pagination?.total_pages ?? data.pages ?? 1;
   };
 
   const fetchExperienceById = async (id: number) => {
