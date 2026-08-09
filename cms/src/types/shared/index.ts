@@ -8,10 +8,16 @@ export interface ApiResponse<T = unknown> {
 
 /** Interface base para dados paginados da API */
 export interface PaginatedData {
-  total: number;
-  page: number;
-  limit: number;
-  pages: number;
+  total?: number;
+  page?: number;
+  limit?: number;
+  pages?: number;
+  pagination?: {
+    total_items: number;
+    current_page: number;
+    items_per_page: number;
+    total_pages: number;
+  };
 }
 
 export interface Option {
