@@ -1,3 +1,8 @@
+---
+name: developer-guidelines
+trigger: always_on
+---
+
 # Project: Developer Guidelines
 
 This document consolidates the guidelines for the project ecosystem:
