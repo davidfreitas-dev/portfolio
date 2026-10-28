@@ -108,54 +108,56 @@ const handleCancel = () => {
 </script>
 
 <template>
-  <form class="flex flex-col gap-4" @submit.prevent="submitForm">
-    <InputFile
-      v-model="formData.image"
-      label="Imagem do Projeto"
-      image-path="projects"
-    />
+  <form class="flex flex-col flex-1 min-h-0 overflow-hidden" @submit.prevent="submitForm">
+    <div class="form-body flex-1 min-h-0 overflow-y-auto p-6 flex flex-col gap-4">
+      <InputFile
+        v-model="formData.image"
+        label="Imagem do Projeto"
+        image-path="projects"
+      />
 
-    <Input
-      v-model="formData.title"
-      label="Título"
-      placeholder="Ex: Meu Portfólio em Vue 3"
-      :error="v$.title.$dirty && v$.title.$error ? 'Informe um título válido (mín. 3 caracteres)' : ''"
-      @blur="v$.title.$touch"
-    />
+      <Input
+        v-model="formData.title"
+        label="Título"
+        placeholder="Ex: Meu Portfólio em Vue 3"
+        :error="v$.title.$dirty && v$.title.$error ? 'Informe um título válido (mín. 3 caracteres)' : ''"
+        @blur="v$.title.$touch"
+      />
 
-    <Textarea
-      v-model="formData.description"
-      label="Descrição"
-      placeholder="Breve descrição do projeto..."
-      :error="v$.description.$dirty && v$.description.$error ? 'Informe uma descrição válida (mín. 5 caracteres)' : ''"
-      @blur="v$.description.$touch"
-    />
+      <Textarea
+        v-model="formData.description"
+        label="Descrição"
+        placeholder="Breve descrição do projeto..."
+        :error="v$.description.$dirty && v$.description.$error ? 'Informe uma descrição válida (mín. 5 caracteres)' : ''"
+        @blur="v$.description.$touch"
+      />
 
-    <Input
-      v-model="formData.link"
-      label="Link do Projeto"
-      placeholder="https://meuprojeto.com"
-      :error="v$.link.$dirty && v$.link.$error ? 'Informe um link válido' : ''"
-      @blur="v$.link.$touch"
-    />
+      <Input
+        v-model="formData.link"
+        label="Link do Projeto"
+        placeholder="https://meuprojeto.com"
+        :error="v$.link.$dirty && v$.link.$error ? 'Informe um link válido' : ''"
+        @blur="v$.link.$touch"
+      />
 
-    <InputTag
-      v-model="formData.technologies"
-      label="Tecnologias"
-      placeholder="Digite a tecnologia e pressione Enter (ex: Vue.js, PHP, Docker)..."
-    />
+      <InputTag
+        v-model="formData.technologies"
+        label="Tecnologias"
+        placeholder="Digite a tecnologia e pressione Enter (ex: Vue.js, PHP, Docker)..."
+      />
 
-    <Select
-      v-model="selectedStatus"
-      :options="[
-        { label: 'Ativo', value: 1 },
-        { label: 'Inativo', value: 0 }
-      ]"
-      label="Status"
-      :error="v$.is_active.$dirty && v$.is_active.$error ? 'O status do projeto é obrigatório' : ''"
-    />
+      <Select
+        v-model="selectedStatus"
+        :options="[
+          { label: 'Ativo', value: 1 },
+          { label: 'Inativo', value: 0 }
+        ]"
+        label="Status"
+        :error="v$.is_active.$dirty && v$.is_active.$error ? 'O status do projeto é obrigatório' : ''"
+      />
+    </div>
 
-    <div class="flex justify-end gap-3 mt-4">
+    <div class="modal-footer flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-800/50 shrink-0">
       <Button
         type="button"
         variant="fill"
@@ -174,3 +176,24 @@ const handleCancel = () => {
     </div>
   </form>
 </template>
+
+<style scoped>
+.form-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.form-body::-webkit-scrollbar {
+  width: 6px;
+  background-color: transparent;
+}
+
+.form-body::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 9999px;
+}
+
+:global(.dark) .form-body::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+}
+</style>

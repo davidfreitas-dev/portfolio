@@ -90,32 +90,33 @@ const alignmentClass = computed(() => {
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
             <DialogPanel
-              class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 w-[95%] md:w-[75%] lg:w-[65%]"
+              class="relative flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-4rem)] w-[95%] md:w-[75%] lg:w-[65%] transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left shadow-xl transition-all my-auto sm:my-8"
             >
-              <div class="p-6">
-                <div class="sm:flex sm:items-start">
-                  <div class="w-full">
-                    <div class="modal-header flex justify-between items-center mb-5">
-                      <DialogTitle as="h3" class="text-2xl font-semibold leading-6 text-gray-700 dark:text-gray-100">
-                        {{ title }}
-                      </DialogTitle>
- 
-                      <Button
-                        variant="link"
-                        color="secondary"
-                        class="!p-1.5 ml-auto"
-                        @click="closeModal"
-                      >
-                        <Icon name="close" class="text-xl" />
-                        <span class="sr-only">Close modal</span>
-                      </Button>
-                    </div>
+              <div class="modal-header flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700/60 shrink-0">
+                <DialogTitle as="h3" class="text-2xl font-semibold leading-6 text-gray-700 dark:text-gray-100">
+                  {{ title }}
+                </DialogTitle>
 
-                    <div class="modal-body overflow-y-auto p-0.5">
-                      <slot />
-                    </div>
-                  </div>
-                </div>
+                <Button
+                  variant="link"
+                  color="secondary"
+                  class="!p-1.5 ml-auto"
+                  @click="closeModal"
+                >
+                  <Icon name="close" class="text-xl" />
+                  <span class="sr-only">Close modal</span>
+                </Button>
+              </div>
+
+              <div class="modal-body flex-1 min-h-0 flex flex-col overflow-y-auto">
+                <slot />
+              </div>
+
+              <div
+                v-if="$slots.footer"
+                class="modal-footer flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-800/50 shrink-0"
+              >
+                <slot name="footer" />
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -127,12 +128,21 @@ const alignmentClass = computed(() => {
 
 <style scoped>
 .modal-body {
- overflow-y: auto; /* Garante que o scroll vertical funcione */
- -webkit-overflow-scrolling: touch; /* Melhora o desempenho de rolagem em dispositivos móveis */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Oculta a barra de rolagem */
 .modal-body::-webkit-scrollbar {
- display: none;
+  width: 6px;
+  background-color: transparent;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 9999px;
+}
+
+:global(.dark) .modal-body::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
 }
 </style>

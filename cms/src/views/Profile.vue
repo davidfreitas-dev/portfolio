@@ -173,7 +173,7 @@ const confirmPassword = async (event: Event) => {
       title="Confirme sua senha"
       align="center"
     >
-      <form class="flex flex-col gap-5">
+      <form class="flex flex-col gap-5 p-6" @submit.prevent="confirmPassword">
         <Input
           v-model="currentPassword"
           type="password"

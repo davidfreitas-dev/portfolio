@@ -73,41 +73,43 @@ const handleCancel = () => {
 </script>
 
 <template>
-  <form class="flex flex-col gap-4" @submit.prevent="submitForm">
-    <Input
-      v-model="formData.title"
-      label="Título"
-      placeholder="Ex: Analista de Dados, Tech Lead..."
-      :error="v$.title.$dirty && v$.title.$error ? 'Informe o título (mín. 3 caracteres)' : ''"
-      @blur="v$.title.$touch"
-    />
+  <form class="flex flex-col flex-1 min-h-0 overflow-hidden" @submit.prevent="submitForm">
+    <div class="form-body flex-1 min-h-0 overflow-y-auto p-6 flex flex-col gap-4">
+      <Input
+        v-model="formData.title"
+        label="Título"
+        placeholder="Ex: Analista de Dados, Tech Lead..."
+        :error="v$.title.$dirty && v$.title.$error ? 'Informe o título (mín. 3 caracteres)' : ''"
+        @blur="v$.title.$touch"
+      />
 
-    <Textarea
-      v-model="formData.description"
-      label="Descrição"
-      placeholder="Resumo da experiência"
-      :error="v$.description.$dirty && v$.description.$error ? 'Informe a descrição' : ''"
-      @blur="v$.description.$touch"
-    />
+      <Textarea
+        v-model="formData.description"
+        label="Descrição"
+        placeholder="Resumo da experiência"
+        :error="v$.description.$dirty && v$.description.$error ? 'Informe a descrição' : ''"
+        @blur="v$.description.$touch"
+      />
 
-    <InputDate
-      v-model="formData.start_date"
-      label="Data de início"
-      :error="v$.start_date.$dirty && v$.start_date.$error ? 'Informe a data de início' : ''"
-      @blur="v$.start_date.$touch"
-    />
+      <InputDate
+        v-model="formData.start_date"
+        label="Data de início"
+        :error="v$.start_date.$dirty && v$.start_date.$error ? 'Informe a data de início' : ''"
+        @blur="v$.start_date.$touch"
+      />
 
-    <InputDate
-      v-model="formData.end_date"
-      label="Data de término"
-      :error="v$.end_date.$dirty && v$.end_date.$error ? 'Data inválida' : ''"
-      @blur="v$.end_date.$touch"
-    />
+      <InputDate
+        v-model="formData.end_date"
+        label="Data de término"
+        :error="v$.end_date.$dirty && v$.end_date.$error ? 'Data inválida' : ''"
+        @blur="v$.end_date.$touch"
+      />
+    </div>
 
-    <div class="flex justify-end gap-3 mt-4">
+    <div class="modal-footer flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-800/50 shrink-0">
       <Button
         type="button"
-        variant="outline"
+        variant="fill"
         color="secondary"
         @click="handleCancel"
       >
@@ -123,3 +125,24 @@ const handleCancel = () => {
     </div>
   </form>
 </template>
+
+<style scoped>
+.form-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.form-body::-webkit-scrollbar {
+  width: 6px;
+  background-color: transparent;
+}
+
+.form-body::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 9999px;
+}
+
+:global(.dark) .form-body::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+}
+</style>

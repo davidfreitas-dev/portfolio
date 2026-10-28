@@ -9,6 +9,7 @@ Esta API serve como o backend para o portfólio, incluindo autenticação com JW
 - [✨ Features](#-features)
 - [🚀 Tecnologias](#-tecnologias)
 - [🔧 Instalação e Execução (Docker)](#-instalação-e-execução-docker)
+- [🗄️ Banco de Dados (Reset e Recriação)](#️-banco-de-dados-reset-e-recriação)
 - [✅ Testes Automatizados](#-testes-automatizados)
 - [🌱 Seeders](#-seeders)
 - [🏗️ Arquitetura](#️-arquitetura)
@@ -100,6 +101,66 @@ docker compose exec api composer install
 
 ---
 
+## 🗄️ Banco de Dados (Reset e Recriação)
+
+Caso precise limpar completamente e recriar o banco de dados (seja de desenvolvimento ou de testes), você pode optar por uma das duas abordagens via Docker:
+
+### Opção 1: Recriar via Volumes Docker (Recomendado)
+
+Como os arquivos `schema.sql` e `seed.sql` estão montados no diretório de inicialização (`/docker-entrypoint-initdb.d/`), ao remover o volume do banco, o container recria a estrutura e popula os dados automaticamente na inicialização.
+
+**Banco de Desenvolvimento:**
+```bash
+# Para o container e remove o volume do banco de desenvolvimento
+docker compose down database -v
+
+# Recria o container e reexecuta automaticamente o schema e o seed
+docker compose up -d database
+```
+
+**Banco de Testes:**
+```bash
+# Para o container e remove o volume do banco de testes
+docker compose down database_test -v
+
+# Recria o container e reexecuta automaticamente o schema e o seed
+docker compose up -d database_test
+```
+
+> **Dica:** Para resetar **todos** os serviços e volumes do projeto de uma só vez, execute `docker compose down -v` seguido de `docker compose up -d`.
+
+---
+
+### Opção 2: Recriar sem reiniciar os containers (MySQL CLI)
+
+Se preferir recriar o banco mantendo os containers em execução:
+
+**Banco de Desenvolvimento:**
+```bash
+# 1. Dropar e recriar a base de dados
+docker compose exec -T database mysql -u${DB_USER} -p${DB_PASS} -e "DROP DATABASE IF EXISTS ${DB_NAME}; CREATE DATABASE ${DB_NAME};"
+
+# 2. Executar o schema (tabelas)
+docker compose exec -T database mysql -u${DB_USER} -p${DB_PASS} ${DB_NAME} < api/database/schema.sql
+
+# 3. Executar os seeds (dados iniciais)
+docker compose exec -T database mysql -u${DB_USER} -p${DB_PASS} ${DB_NAME} < api/database/seed.sql
+```
+
+**Banco de Testes:**
+```bash
+# 1. Dropar e recriar a base de dados de testes
+docker compose exec -T database_test mysql -u${DB_TEST_USER} -p${DB_TEST_PASS} -e "DROP DATABASE IF EXISTS ${DB_TEST_NAME}; CREATE DATABASE ${DB_TEST_NAME};"
+
+# 2. Executar o schema de testes
+docker compose exec -T database_test mysql -u${DB_TEST_USER} -p${DB_TEST_PASS} ${DB_TEST_NAME} < api/database/schema.sql
+
+# 3. Executar os seeds de testes
+docker compose exec -T database_test mysql -u${DB_TEST_USER} -p${DB_TEST_PASS} ${DB_TEST_NAME} < api/database/seed.sql
+```
+
+---
+
 ## ✅ Testes Automatizados
 
 A API utiliza o **Pest PHP** para testes automatizados, integrando testes unitários (Service Layer) e testes de integração/feature (Actions e fluxos de API).
@@ -115,9 +176,9 @@ A API utiliza o **Pest PHP** para testes automatizados, integrando testes unitá
 2. **Variáveis de Ambiente:** Certifique-se de que as variáveis `DB_TEST_*` no seu `.env` estão apontando para o container de teste.
 3. **Preparação do Banco:**
 ```bash
-# Entre no container do banco de teste e execute o schema/seed
-docker exec -i api-database_test-1 mysql -u<user> -p<pass> <database> < database/schema.sql
-docker exec -i api-database_test-1 mysql -u<user> -p<pass> <database> < database/seed.sql
+# Executa o schema e seed no container do banco de testes
+docker compose exec -T database_test mysql -u${DB_TEST_USER} -p${DB_TEST_PASS} ${DB_TEST_NAME} < api/database/schema.sql
+docker compose exec -T database_test mysql -u${DB_TEST_USER} -p${DB_TEST_PASS} ${DB_TEST_NAME} < api/database/seed.sql
 ```
 
 ### 🏃 Executando os Testes
