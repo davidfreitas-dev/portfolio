@@ -5,8 +5,7 @@ import { required, email } from '@vuelidate/validators';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/composables/useToast';
 import { useLoading } from '@/composables/useLoading';
-import type { ApiResponse } from '@/types';
-import axios from 'axios';
+import { getApiErrorMessage } from '@/api';
 import { useRouter } from 'vue-router';
 import Input from '@/components/Input.vue';
 import Button from '@/components/Button.vue';
@@ -41,15 +40,7 @@ const submitForm = async () => {
       showToast('success', response.message || 'Enviamos um link de recuperação para o seu e-mail');
       router.push({ name: 'ValidateCode', query: { email: formData.value.email } });
     } catch (error: unknown) {
-      let message = 'Ocorreu um erro ao enviar o e-mail';
- 
-      if (axios.isAxiosError<ApiResponse>(error)) {
-        message = error.response?.data?.message || message;
-      } else if (error instanceof Error) {
-        message = error.message;
-      }
- 
-      showToast('error', message);
+      showToast('error', getApiErrorMessage(error, 'Ocorreu um erro ao enviar o e-mail'));
     }
   });
 };

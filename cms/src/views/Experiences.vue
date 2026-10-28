@@ -3,6 +3,7 @@ import { ref, computed, onMounted, type VNode, watch } from 'vue';
 import { debounce } from 'vue-debounce';
 import { useLoading } from '@/composables/useLoading';
 import { useToast } from '@/composables/useToast';
+import { getApiErrorMessage } from '@/api';
 import { useExperiencesStore } from '@/stores/experiencesStore';
 import type { CreateExperiencePayload } from '@/services/experienceService';
 import dayjs from 'dayjs';
@@ -28,9 +29,13 @@ const search = ref('');
 const normalizedSearch = computed(() => search.value.trim().toLowerCase());
 
 const loadExperiences = async () => {
-  await withLoading(() =>
-    experiencesStore.fetchExperiences(page.value, itemsPerPage, normalizedSearch.value)
-  );
+  try {
+    await withLoading(() =>
+      experiencesStore.fetchExperiences(page.value, itemsPerPage, normalizedSearch.value)
+    );
+  } catch (err: unknown) {
+    showToast('error', getApiErrorMessage(err, 'Falha ao carregar experiências.'));
+  }
 };
 
 const debouncedLoadExperiences = debounce(loadExperiences, '500ms');
@@ -95,8 +100,8 @@ const handleSubmit = async (payload: ExperienceFormData) => {
     });
     experienceModal.value?.closeModal();
     await loadExperiences();
-  } catch(err) {
-    console.error(err);
+  } catch (err: unknown) {
+    showToast('error', getApiErrorMessage(err, 'Falha ao salvar a experiência.'));
   }
 };
 
@@ -115,11 +120,15 @@ const handleDeleteExperience = (id: number) => {
 
 const deleteExperience = async () => {
   if (!experienceToDelete.value) return;
-  await withLoading(async () => {
-    await experiencesStore.deleteExperience(experienceToDelete.value!);
-  });
-  showToast('success', 'Experiência deletada com sucesso!');
-  await loadExperiences();
+  try {
+    await withLoading(async () => {
+      await experiencesStore.deleteExperience(experienceToDelete.value!);
+    });
+    showToast('success', 'Experiência deletada com sucesso!');
+    await loadExperiences();
+  } catch (err: unknown) {
+    showToast('error', getApiErrorMessage(err, 'Falha ao excluir a experiência.'));
+  }
 };
 </script>
 

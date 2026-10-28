@@ -17,7 +17,7 @@ export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthData> {
     // api returns ApiResponse directly due to interceptor unwrapping response.data
     const response = await api.post<ApiResponse<AuthData>>('/auth/login', credentials) as unknown as ApiResponse<AuthData>;
-    if (!response.data) throw new Error('No data received');
+    if (!response.data) throw new Error(response.message || 'Dados de autenticação não recebidos');
     return response.data;
   },
 

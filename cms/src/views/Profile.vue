@@ -7,6 +7,7 @@ import { useProfileStore } from '@/stores/profileStore';
 import { storeToRefs } from 'pinia';
 import { useLoading } from '@/composables/useLoading';
 import { useToast } from '@/composables/useToast';
+import { getApiErrorMessage } from '@/api';
 import Container from '@/components/Container.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
 import Input from '@/components/Input.vue';
@@ -75,8 +76,12 @@ const handleSave = async (event: Event) => {
   }
 
   await withSaving(async () => {
-    await updateUserData();
-    showToast('success', 'Informações atualizadas com sucesso.');
+    try {
+      await updateUserData();
+      showToast('success', 'Informações atualizadas com sucesso.');
+    } catch (error: unknown) {
+      showToast('error', getApiErrorMessage(error, 'Falha ao atualizar dados.'));
+    }
   });
 };
 
@@ -110,8 +115,8 @@ const confirmPassword = async (event: Event) => {
 
       await updateUserData();
       showToast('success', 'Informações atualizadas com sucesso.');
-    } catch {
-      showToast('error', 'Senha incorreta. Tente novamente.');
+    } catch (error: unknown) {
+      showToast('error', getApiErrorMessage(error, 'Falha ao atualizar dados.'));
     }
   });
 };

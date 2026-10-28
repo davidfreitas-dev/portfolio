@@ -6,8 +6,7 @@ import { required, minLength, sameAs } from '@vuelidate/validators';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/composables/useToast';
 import { useLoading } from '@/composables/useLoading';
-import type { ApiResponse } from '@/types';
-import axios from 'axios';
+import { getApiErrorMessage } from '@/api';
 import Input from '@/components/Input.vue';
 import Button from '@/components/Button.vue';
 
@@ -72,13 +71,7 @@ const handleResetPassword = async () => {
 
       router.push('/login'); 
     } catch (error: unknown) {
-      let message = 'Falha ao redefinir a senha.';
-
-      if (axios.isAxiosError<ApiResponse>(error)) {
-        message = error.response?.data?.message || message;
-      }
-
-      showToast('error', message);
+      showToast('error', getApiErrorMessage(error, 'Falha ao redefinir a senha.'));
     }
   });
 };

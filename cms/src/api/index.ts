@@ -102,4 +102,5 @@ async function refreshAccessToken(): Promise<string> {
   }
 );
 
+export { getApiErrorMessage } from './errorHandler';
 export default api;

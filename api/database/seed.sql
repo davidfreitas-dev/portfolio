@@ -1,3 +1,6 @@
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 -- 👥 roles
 INSERT INTO roles (id, name, description) VALUES 
 (1, 'admin', 'Administrador com acesso total ao sistema'),

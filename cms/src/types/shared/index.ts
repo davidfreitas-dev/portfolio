@@ -1,9 +1,10 @@
-/** Envelope padrão de toda resposta da API */
+/** Envelope padrão de toda resposta da API conforme api/docs/API.md */
 export interface ApiResponse<T = unknown> {
   code: number;
-  status: 'success' | 'error' | 'fail';
+  status: 'success' | 'error';
   message: string;
   data?: T;
+  errors?: Record<string, string>;
 }
 
 /** Interface base para dados paginados da API */

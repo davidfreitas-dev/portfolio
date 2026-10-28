@@ -20,10 +20,10 @@ export const useProfileStore = defineStore('profile', () => {
       const data = await profileService.fetchProfile();
       user.value = data;
       return data;
-    } catch {
+    } catch (error) {
       authStore.clearSession();
       user.value = null;
-      return null;
+      throw error;
     } finally {
       isLoading.value = false;
     }

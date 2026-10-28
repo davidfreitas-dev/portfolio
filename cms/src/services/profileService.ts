@@ -14,7 +14,7 @@ export type UpdatePasswordPayload = {
 export const profileService = {
   async fetchProfile(): Promise<UserProfile> {
     const response = await api.get<ApiResponse<UserProfile>>('/users/me') as unknown as ApiResponse<UserProfile>;
-    if (!response.data) throw new Error('No profile data received');
+    if (!response.data) throw new Error(response.message || 'Dados do perfil não recebidos');
     return response.data;
   },
 

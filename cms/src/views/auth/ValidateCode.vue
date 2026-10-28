@@ -6,8 +6,7 @@ import { required, minLength, maxLength, numeric } from '@vuelidate/validators';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/composables/useToast';
 import { useLoading } from '@/composables/useLoading';
-import type { ApiResponse } from '@/types';
-import axios from 'axios';
+import { getApiErrorMessage } from '@/api';
 import InputOtp from '@/components/InputOtp.vue';
 import Button from '@/components/Button.vue';
 
@@ -67,15 +66,7 @@ const handleValidateCode = async () => {
         }
       }); 
     } catch (error: unknown) {
-      let message = 'Falha ao validar o código.';
- 
-      if (axios.isAxiosError<ApiResponse>(error)) {
-        message = error.response?.data?.message || message;
-      } else if (error instanceof Error) {
-        message = error.message;
-      }
- 
-      showToast('error', message);
+      showToast('error', getApiErrorMessage(error, 'Falha ao validar o código.'));
     }
   });
 };

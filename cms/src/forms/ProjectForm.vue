@@ -7,7 +7,7 @@ import Button from '@/components/Button.vue';
 import InputFile from '@/components/InputFile.vue';
 import Textarea from '@/components/Textarea.vue';
 import Select from '@/components/Select.vue';
-import TagInput from '@/components/TagInput.vue';
+import InputTag from '@/components/InputTag.vue';
 
 export interface ProjectFormData {
   id?: number;
@@ -139,7 +139,7 @@ const handleCancel = () => {
       @blur="v$.link.$touch"
     />
 
-    <TagInput
+    <InputTag
       v-model="formData.technologies"
       label="Tecnologias"
       placeholder="Digite a tecnologia e pressione Enter (ex: Vue.js, PHP, Docker)..."

@@ -9,13 +9,13 @@ export const experienceService = {
     const response = await api.get<ApiResponse<ExperienceListResponse>>('/admin/experiences', {
       params: { page, limit, search }
     }) as unknown as ApiResponse<ExperienceListResponse>;
-    if (!response.data) throw new Error('No experiences data received');
+    if (!response.data) throw new Error(response.message || 'Dados de experiências não recebidos');
     return response.data;
   },
 
   async fetchExperienceById(id: number): Promise<Experience> {
     const response = await api.get<ApiResponse<Experience>>(`/admin/experiences/${id}`) as unknown as ApiResponse<Experience>;
-    if (!response.data) throw new Error('No experience data received');
+    if (!response.data) throw new Error(response.message || 'Dados da experiência não recebidos');
     return response.data;
   },
 

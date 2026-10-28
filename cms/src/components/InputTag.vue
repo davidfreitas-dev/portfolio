@@ -88,13 +88,13 @@ const focusInput = () => {
       <span
         v-for="(tag, index) in modelValue"
         :key="tag + index"
-        class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300"
+        class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md bg-success-accent text-success dark:bg-success-accent-dark dark:text-success-dark"
       >
         {{ tag }}
         <button
           type="button"
           :disabled="disabled"
-          class="hover:text-blue-600 dark:hover:text-blue-100 focus:outline-none"
+          class="hover:text-success-pressed dark:hover:text-white focus:outline-none transition-colors"
           @click.stop="removeTag(index)"
         >
           <Icon name="x" class="w-3.5 h-3.5" />

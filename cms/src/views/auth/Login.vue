@@ -6,8 +6,7 @@ import { required, email, minLength } from '@vuelidate/validators';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/composables/useToast';
 import { useLoading } from '@/composables/useLoading';
-import type { ApiResponse } from '@/types';
-import axios from 'axios';
+import { getApiErrorMessage } from '@/api';
 import Input from '@/components/Input.vue';
 import Button from '@/components/Button.vue';
 import Dialog from '@/components/Dialog.vue';
@@ -45,25 +44,16 @@ const submitForm = async () => {
         email: formData.value.email,
         password: formData.value.password
       });
-    } catch (error: unknown) {
-      let message = 'Falha na autenticação';
- 
-      if (axios.isAxiosError<ApiResponse>(error)) {
-        message = error.response?.data?.message || message;
-      } else if (error instanceof Error) {
-        message = error.message;
+
+      if (!authStore.isAuthenticated) {
+        showToast('error', 'Falha na autenticação');
+        return;
       }
- 
-      showToast('error', message);
-      return;
-    }
 
-    if (!authStore.isAuthenticated) {
-      showToast('error', 'Falha na autenticação');
-      return;
+      router.push({ name: 'Home' });
+    } catch (error: unknown) {
+      showToast('error', getApiErrorMessage(error, 'Falha na autenticação'));
     }
-
-    router.push({ name: 'Home' });
   });
 };
 

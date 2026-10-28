@@ -10,13 +10,13 @@ export const projectService = {
     const response = await api.get<ApiResponse<ProjectListResponse>>('/admin/projects', {
       params
     }) as unknown as ApiResponse<ProjectListResponse>;
-    if (!response.data) throw new Error('No projects data received');
+    if (!response.data) throw new Error(response.message || 'Dados de projetos não recebidos');
     return response.data;
   },
 
   async fetchProjectById(id: number): Promise<Project> {
     const response = await api.get<ApiResponse<Project>>(`/admin/projects/${id}`) as unknown as ApiResponse<Project>;
-    if (!response.data) throw new Error('No project data received');
+    if (!response.data) throw new Error(response.message || 'Dados do projeto não recebidos');
     return response.data;
   },
 

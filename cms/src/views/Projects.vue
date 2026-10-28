@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch, type VNode } from 'vue';
 import { debounce } from 'vue-debounce';
 import { useLoading } from '@/composables/useLoading';
 import { useToast } from '@/composables/useToast';
+import { getApiErrorMessage } from '@/api';
 import { useProjectsStore } from '@/stores/projectsStore';
 import Container from '@/components/Container.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
@@ -36,9 +37,13 @@ const statusOptions: Option[] = [
 const selectedStatus = ref<Option | null>(statusOptions[0]);
 
 const loadProjects = async () => {
-  await withLoading(() =>
-    projectsStore.fetchProjects(page.value, itemsPerPage, normalizedSearch.value, selectedStatus.value?.value)
-  );
+  try {
+    await withLoading(() =>
+      projectsStore.fetchProjects(page.value, itemsPerPage, normalizedSearch.value, selectedStatus.value?.value)
+    );
+  } catch (err: unknown) {
+    showToast('error', getApiErrorMessage(err, 'Falha ao carregar projetos.'));
+  }
 };
 
 const debouncedLoadProjects = debounce(loadProjects, '500ms');
@@ -109,8 +114,8 @@ const handleSubmit = async (payload: ProjectFormData) => {
 
     projectModal.value?.closeModal();
     await loadProjects();
-  } catch (err) {
-    console.error(err);
+  } catch (err: unknown) {
+    showToast('error', getApiErrorMessage(err, 'Falha ao salvar o projeto.'));
   }
 };
 
@@ -129,11 +134,15 @@ const handleDeleteProject = (id: number) => {
 
 const deleteProject = async () => {
   if (!projectToDelete.value) return;
-  await withLoading(async () => {
-    await projectsStore.deleteProject(projectToDelete.value!);
-  });
-  showToast('success', 'Projeto deletado com sucesso!');
-  await loadProjects();
+  try {
+    await withLoading(async () => {
+      await projectsStore.deleteProject(projectToDelete.value!);
+    });
+    showToast('success', 'Projeto deletado com sucesso!');
+    await loadProjects();
+  } catch (err: unknown) {
+    showToast('error', getApiErrorMessage(err, 'Falha ao excluir o projeto.'));
+  }
 };
 
 const apiUrl = import.meta.env.VITE_API_URL;
