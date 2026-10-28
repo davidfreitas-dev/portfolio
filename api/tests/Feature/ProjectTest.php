@@ -41,7 +41,8 @@ class ProjectTest extends AppTestCase
             'description' => 'Test Description',
             'slug' => $uniqueSlug,
             'summary' => 'Summary',
-            'sort_order' => 10
+            'sort_order' => 10,
+            'technologies' => ['PHP', 'Slim Framework', 'Docker'],
         ];
 
         $request = $this->createJsonRequest('POST', '/admin/projects', $data);
@@ -54,6 +55,7 @@ class ProjectTest extends AppTestCase
         $envelope = json_decode((string)$response->getBody(), true);
         $this->assertEquals('success', $envelope['status']);
         $this->assertStringContainsString('Feature Test Project', $envelope['data']['title']);
+        $this->assertEquals(['PHP', 'Slim Framework', 'Docker'], $envelope['data']['technologies']);
     }
 
     public function test_can_filter_projects_by_status(): void

@@ -69,28 +69,8 @@ CREATE TABLE projects (
   github_link VARCHAR(255),
   sort_order INT DEFAULT 0,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  technologies JSON NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- 🛠️ technologies
-CREATE TABLE technologies (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(64) NOT NULL,
-  slug VARCHAR(64) NOT NULL UNIQUE,
-  image VARCHAR(255),
-  sort_order INT DEFAULT 0,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- 🔗 project_technologies
-CREATE TABLE project_technologies (
-  project_id BIGINT NOT NULL,
-  technology_id BIGINT NOT NULL,
-  PRIMARY KEY (project_id, technology_id),
-  FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-  FOREIGN KEY (technology_id) REFERENCES technologies(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

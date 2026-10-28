@@ -28,12 +28,6 @@ use App\Presentation\Action\Project\Admin\ListProjectsAction as AdminListProject
 use App\Presentation\Action\Project\Admin\SaveProjectAction as AdminSaveProjectAction;
 use App\Presentation\Action\Project\GetProjectAction;
 use App\Presentation\Action\Project\ListProjectsAction;
-use App\Presentation\Action\Technology\Admin\DeleteTechnologyAction as AdminDeleteTechnologyAction;
-use App\Presentation\Action\Technology\Admin\GetTechnologyAction as AdminGetTechnologyAction;
-use App\Presentation\Action\Technology\Admin\ListTechnologiesAction as AdminListTechnologiesAction;
-use App\Presentation\Action\Technology\Admin\SaveTechnologyAction as AdminSaveTechnologyAction;
-use App\Presentation\Action\Technology\GetTechnologyAction;
-use App\Presentation\Action\Technology\ListTechnologiesAction;
 use App\Presentation\Action\User\ChangePasswordAction;
 use App\Presentation\Action\User\DeleteMeAction;
 use App\Presentation\Action\User\GetMeAction;
@@ -89,9 +83,6 @@ return function (App $app): void {
         $group->get('/projects', ListProjectsAction::class);
         $group->get('/projects/{id}', GetProjectAction::class);
 
-        $group->get('/technologies', ListTechnologiesAction::class);
-        $group->get('/technologies/{id}', GetTechnologyAction::class);
-
         $group->post('/contact', ContactAction::class);
     })
     ->add(HttpCacheMiddleware::class)
@@ -116,14 +107,6 @@ return function (App $app): void {
             $adminGroup->get('/{id}', AdminGetProjectAction::class);
             $adminGroup->post('', AdminSaveProjectAction::class);
             $adminGroup->delete('/{id}', AdminDeleteProjectAction::class);
-        });
-
-        // Technologies
-        $group->group('/technologies', function (RouteCollectorProxy $adminGroup): void {
-            $adminGroup->get('', AdminListTechnologiesAction::class);
-            $adminGroup->get('/{id}', AdminGetTechnologyAction::class);
-            $adminGroup->post('', AdminSaveTechnologyAction::class);
-            $adminGroup->delete('/{id}', AdminDeleteTechnologyAction::class);
         });
     })
     ->add(HttpCacheInvalidationMiddleware::class)

@@ -109,14 +109,14 @@ test('should create a project without image', function () {
         summary: 'New Summary',
         sort_order: 1,
         is_active: true,
-        technology_ids: [1, 2]
+        technologies: ['PHP', 'Vue.js']
     );
 
     $violations = Mockery::mock(ConstraintViolationListInterface::class);
     $violations->shouldReceive('count')->andReturn(0);
     $this->validator->shouldReceive('validate')->once()->andReturn($violations);
     
-    $project = new Project('New Project', 'New Desc', 'new-project', 'New Summary', null, null, null, 1, true, [1, 2]);
+    $project = new Project('New Project', 'New Desc', 'new-project', 'New Summary', null, null, null, 1, true, ['PHP', 'Vue.js']);
     
     $this->repository->shouldReceive('save')
         ->once()

@@ -10,14 +10,12 @@ use App\Application\Service\FileUploaderService;
 use App\Application\Service\JwtService;
 use App\Application\Service\MailService;
 use App\Application\Service\ProjectService;
-use App\Application\Service\TechnologyService;
 use App\Application\Service\UserService;
 use App\Domain\Contract\ErrorLogRepositoryInterface;
 use App\Domain\Contract\ExperienceRepositoryInterface;
 use App\Domain\Contract\MailerInterface;
 use App\Domain\Contract\OtpRepositoryInterface;
 use App\Domain\Contract\ProjectRepositoryInterface;
-use App\Domain\Contract\TechnologyRepositoryInterface;
 use App\Domain\Contract\UserRepositoryInterface;
 use App\Infrastructure\Http\Middleware\CorsMiddleware;
 use App\Infrastructure\Http\Middleware\ErrorMiddleware;
@@ -32,7 +30,6 @@ use App\Infrastructure\Persistence\ExperienceRepository;
 use App\Infrastructure\Persistence\OtpRepository;
 use App\Infrastructure\Persistence\ProjectRepository;
 use App\Infrastructure\Persistence\Redis\RedisCache;
-use App\Infrastructure\Persistence\TechnologyRepository;
 use App\Infrastructure\Persistence\UserRepository;
 use App\Presentation\Responder\JsonResponder;
 use DI\ContainerBuilder;
@@ -109,14 +106,6 @@ $containerBuilder->addDefinitions([
         $c->get(ValidatorInterface::class),
     ),
 
-    TechnologyRepositoryInterface::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\TechnologyRepository => new TechnologyRepository($c->get(Database::class)),
-
-    TechnologyService::class => fn (ContainerInterface $c): \App\Application\Service\TechnologyService => new TechnologyService(
-        $c->get(TechnologyRepositoryInterface::class),
-        $c->get(ValidatorInterface::class),
-        $c->get(FileUploaderService::class),
-    ),
-
     ErrorLogRepositoryInterface::class => fn (ContainerInterface $c): \App\Infrastructure\Persistence\ErrorLogRepository => new ErrorLogRepository($c->get(Database::class)),
 
     ErrorLoggerService::class => fn (ContainerInterface $c): \App\Application\Service\ErrorLoggerService => new ErrorLoggerService($c->get(ErrorLogRepositoryInterface::class)),
@@ -175,8 +164,6 @@ $containerBuilder->addDefinitions([
     \App\Presentation\Transformer\ProjectTransformer::class => fn (ContainerInterface $c): \App\Presentation\Transformer\ProjectTransformer => new \App\Presentation\Transformer\ProjectTransformer($c->get('settings')['api_url']),
 
     \App\Presentation\Transformer\ExperienceTransformer::class => fn (): \App\Presentation\Transformer\ExperienceTransformer => new \App\Presentation\Transformer\ExperienceTransformer(),
-
-    \App\Presentation\Transformer\TechnologyTransformer::class => fn (ContainerInterface $c): \App\Presentation\Transformer\TechnologyTransformer => new \App\Presentation\Transformer\TechnologyTransformer($c->get('settings')['api_url']),
 
     ErrorMiddleware::class => fn (ContainerInterface $c): \App\Infrastructure\Http\Middleware\ErrorMiddleware => new ErrorMiddleware(
         $c->get(JsonResponder::class),

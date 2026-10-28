@@ -1,5 +1,4 @@
 import type { PaginatedData } from '../shared';
-import type { Technology } from '../technologies';
 
 export interface Project {
   id: number;
@@ -11,7 +10,7 @@ export interface Project {
   github_link: string;
   image: string;
   is_active?: number;
-  technologies: Technology[];
+  technologies: string[];
 }
 
 export interface ProjectListResponse extends PaginatedData {

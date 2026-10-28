@@ -7,13 +7,7 @@ import Button from '@/components/Button.vue';
 import InputFile from '@/components/InputFile.vue';
 import Textarea from '@/components/Textarea.vue';
 import Select from '@/components/Select.vue';
-import MultiSelect from '@/components/MultiSelect.vue';
-
-export interface Technology {
-  id: number;
-  name: string;
-  image: string;
-}
+import TagInput from '@/components/TagInput.vue';
 
 export interface ProjectFormData {
   id?: number;
@@ -22,14 +16,13 @@ export interface ProjectFormData {
   link?: string;
   image?: File | string | null;
   is_active?: number;
-  technologies: Technology[];
+  technologies: string[];
 }
 
 const props = defineProps<{
   initialData?: ProjectFormData | null;
   mode?: 'create' | 'edit';
   loading?: boolean;
-  technologiesOptions: { label: string; value: number }[];
 }>();
 
 const emit = defineEmits<{
@@ -52,7 +45,7 @@ const formData = ref<ProjectFormData>({ ...emptyForm });
 watch(
   () => props.initialData,
   (newVal) => {
-    formData.value = newVal ? { ...newVal } : { ...emptyForm };
+    formData.value = newVal ? { ...newVal, technologies: [...(newVal.technologies || [])] } : { ...emptyForm };
   },
   { immediate: true }
 );
@@ -62,7 +55,7 @@ const rules = computed(() => ({
   title: { required, minLength: minLength(3) },
   description: { required, minLength: minLength(5) },
   link: { url },
-  technologies: { required },
+  technologies: {},
   is_active: { required },
   image: {}
 }));
@@ -146,10 +139,10 @@ const handleCancel = () => {
       @blur="v$.link.$touch"
     />
 
-    <MultiSelect
+    <TagInput
       v-model="formData.technologies"
-      :options="technologiesOptions"
       label="Tecnologias"
+      placeholder="Digite a tecnologia e pressione Enter (ex: Vue.js, PHP, Docker)..."
     />
 
     <Select

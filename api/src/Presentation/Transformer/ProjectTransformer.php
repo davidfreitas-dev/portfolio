@@ -31,13 +31,7 @@ class ProjectTransformer extends AbstractTransformer
             ],
             'sort_order' => $object->sortOrder,
             'is_active' => $object->isActive,
-            'technologies' => array_map(fn (array $tech): array => [
-                'id' => $tech['id'],
-                'name' => $tech['name'],
-                'slug' => $tech['slug'],
-                'image' => $tech['image'],
-                'image_url' => $tech['image'] ? sprintf('%s/images/technologies/%s', $this->apiUrl, $tech['image']) : null,
-            ], $object->technologies),
+            'technologies' => array_values($object->technologies),
             'created_at' => $object->createdAt?->format('Y-m-d H:i:s'),
             'updated_at' => $object->updatedAt?->format('Y-m-d H:i:s'),
         ];

@@ -22,7 +22,7 @@ export async function loadPortfolio() {
         
         // Render technologies chips if available
         const techChips = (project.technologies || [])
-            .map(tech => `<span class="tech-chip">${tech.name}</span>`)
+            .map(tech => `<span class="tech-chip">${typeof tech === 'string' ? tech : (tech.name || '')}</span>`)
             .join('');
         
         const slide = document.createElement('div');

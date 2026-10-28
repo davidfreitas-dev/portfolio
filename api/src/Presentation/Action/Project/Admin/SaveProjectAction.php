@@ -29,6 +29,20 @@ class SaveProjectAction
 
         $id = isset($data['id']) ? (int)$data['id'] : null;
 
+        $technologies = [];
+        if (isset($data['technologies'])) {
+            if (is_array($data['technologies'])) {
+                $technologies = array_values(array_filter(array_map('strval', $data['technologies'])));
+            } elseif (is_string($data['technologies'])) {
+                $decoded = json_decode($data['technologies'], true);
+                if (is_array($decoded)) {
+                    $technologies = array_values(array_filter(array_map('strval', $decoded)));
+                } else {
+                    $technologies = array_values(array_filter(array_map('trim', explode(',', $data['technologies']))));
+                }
+            }
+        }
+
         $dto = new ProjectRequestDTO(
             title: $data['title'] ?? '',
             description: $data['description'] ?? '',
@@ -39,7 +53,7 @@ class SaveProjectAction
             sort_order: (int)($data['sort_order'] ?? 0),
             is_active: (bool)($data['is_active'] ?? true),
             image: $image,
-            technology_ids: (array)($data['technology_ids'] ?? []),
+            technologies: $technologies,
         );
 
         if ($id) {

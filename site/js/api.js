@@ -43,7 +43,6 @@ async function postData(endpoint, data) {
 export const api = {
     getProjects: () => fetchData('/public/projects'),
     getExperiences: () => fetchData('/public/experiences'),
-    getTechnologies: () => fetchData('/public/technologies'),
     sendContactRequest: (data) => postData('/public/contact', data),
     getImageUrl: (folder, image) => `${CONFIG.API_URL}/images/${folder}/${image}`
 };

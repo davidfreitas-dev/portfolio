@@ -60,7 +60,7 @@ class ProjectService
             githubLink: $dto->github_link,
             sortOrder: $dto->sort_order,
             isActive: $dto->is_active,
-            technologies: $dto->technology_ids,
+            technologies: $dto->technologies,
         );
 
         return $this->repository->save($project);
@@ -97,7 +97,7 @@ class ProjectService
             githubLink: $dto->github_link ?? $existingProject->githubLink,
             sortOrder: $dto->sort_order,
             isActive: $dto->is_active,
-            technologies: $dto->technology_ids,
+            technologies: $dto->technologies,
             id: $id,
             createdAt: $existingProject->createdAt,
         );

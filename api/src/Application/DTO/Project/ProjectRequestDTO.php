@@ -23,7 +23,7 @@ readonly class ProjectRequestDTO
         public int $sort_order = 0,
         public bool $is_active = true,
         public ?UploadedFileInterface $image = null,
-        public array $technology_ids = [],
+        public array $technologies = [],
     ) {
     }
 

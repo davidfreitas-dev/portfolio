@@ -10,7 +10,7 @@ export interface ProjectPayload {
   link?: string;
   image?: File | string;
   is_active?: number;
-  technologies: { id: number; name: string }[];
+  technologies: string[];
 }
 
 export const useProjectsStore = defineStore('projects', () => {
@@ -41,7 +41,7 @@ export const useProjectsStore = defineStore('projects', () => {
     if (payload.image instanceof File) formData.append('image', payload.image);
     if (payload.is_active !== undefined) formData.append('is_active', String(payload.is_active));
     if (payload.technologies) {
-      formData.append('technologies', payload.technologies.map(t => t.id).join(','));
+      formData.append('technologies', JSON.stringify(payload.technologies));
     }
 
     await projectService.saveProject(formData);

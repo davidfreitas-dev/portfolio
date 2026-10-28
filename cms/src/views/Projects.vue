@@ -4,7 +4,6 @@ import { debounce } from 'vue-debounce';
 import { useLoading } from '@/composables/useLoading';
 import { useToast } from '@/composables/useToast';
 import { useProjectsStore } from '@/stores/projectsStore';
-import { useTechnologiesStore } from '@/stores/technologiesStore';
 import Container from '@/components/Container.vue';
 import Breadcrumb from '@/components/Breadcrumb.vue';
 import Icon from '@/components/Icon.vue';
@@ -23,22 +22,6 @@ import type { Option } from '@/types';
 const projectsStore = useProjectsStore();
 const { isLoading, withLoading } = useLoading();
 const { showToast } = useToast();
-
-const technologiesStore = useTechnologiesStore();
-const technologiesOptions = computed(() => {
-  return technologiesStore.technologies.map(tech => ({
-    label: tech.name,
-    value: tech.id!
-  }));
-});
-
-const loadTechnologies = async () => {
-  if (!technologiesStore.technologies.length) {
-    await withLoading(async () => {
-      await technologiesStore.fetchTechnologies();
-    });
-  }
-};
 
 const page = ref(1);
 const itemsPerPage = 5;
@@ -75,7 +58,6 @@ watch(page, () => {
 });
 
 onMounted(async () => {
-  await loadTechnologies();
   await loadProjects();
 });
 
@@ -265,7 +247,6 @@ const getProjectImage = (image: string) => `${apiUrl}/images/projects/${image}`;
       <ProjectForm
         :mode="isEditing ? 'edit' : 'create'"
         :initial-data="projectBeingEdited"
-        :technologies-options="technologiesOptions"
         @submit="handleSubmit"
         @cancel="projectModal?.closeModal()"
       />
