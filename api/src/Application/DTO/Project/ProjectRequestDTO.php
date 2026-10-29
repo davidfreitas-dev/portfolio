@@ -24,6 +24,7 @@ readonly class ProjectRequestDTO
         public bool $is_active = true,
         public ?UploadedFileInterface $image = null,
         public array $technologies = [],
+        public bool $remove_image = false,
     ) {
     }
 

@@ -8,9 +8,10 @@ export interface ProjectPayload {
   title: string;
   description: string;
   link?: string;
-  image?: File | string;
+  image?: File | string | null;
   is_active?: number;
   technologies: string[];
+  remove_image?: boolean;
 }
 
 export const useProjectsStore = defineStore('projects', () => {
@@ -39,6 +40,7 @@ export const useProjectsStore = defineStore('projects', () => {
     formData.append('description', payload.description);
     if (payload.link) formData.append('link', payload.link);
     if (payload.image instanceof File) formData.append('image', payload.image);
+    if (payload.remove_image) formData.append('remove_image', '1');
     if (payload.is_active !== undefined) formData.append('is_active', String(payload.is_active));
     if (payload.technologies) {
       formData.append('technologies', JSON.stringify(payload.technologies));

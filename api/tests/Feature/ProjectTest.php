@@ -71,4 +71,26 @@ class ProjectTest extends AppTestCase
         $this->assertEquals('success', $envelope['status']);
         $this->assertArrayHasKey('projects', $envelope['data']);
     }
+
+    public function test_can_update_project_and_remove_image(): void
+    {
+        $data = [
+            'id' => 1,
+            'title' => 'Project With Image Removed',
+            'description' => 'Updated Description',
+            'remove_image' => '1',
+        ];
+
+        $request = $this->createJsonRequest('POST', '/admin/projects', $data);
+        $request = $this->withAdminToken($request);
+
+        $response = $this->request($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $envelope = json_decode((string)$response->getBody(), true);
+        $this->assertEquals('success', $envelope['status']);
+        $this->assertNull($envelope['data']['image']);
+        $this->assertNull($envelope['data']['image_url']);
+    }
 }

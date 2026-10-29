@@ -60,8 +60,8 @@ class ProjectRepository implements ProjectRepositoryInterface
 
     public function save(Project $project): Project
     {
-        $technologiesJson = !empty($project->technologies) 
-            ? json_encode(array_values($project->technologies), JSON_UNESCAPED_UNICODE) 
+        $technologiesJson = !empty($project->technologies)
+            ? json_encode(array_values($project->technologies), JSON_UNESCAPED_UNICODE)
             : null;
 
         $params = [

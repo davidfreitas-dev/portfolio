@@ -35,14 +35,6 @@ const emptyForm: ExperienceFormData = {
 
 const formData = ref<ExperienceFormData>({ ...emptyForm });
 
-watch(
-  () => props.initialData,
-  (newVal) => {
-    formData.value = newVal ? { ...newVal } : { ...emptyForm };
-  },
-  { immediate: true }
-);
-
 const rules = computed(() => ({
   title: { required, minLength: minLength(3) },
   description: { required },
@@ -59,10 +51,20 @@ const state = computed(() => ({
 
 const v$ = useVuelidate(rules, state);
 
+watch(
+  () => props.initialData,
+  (newVal) => {
+    formData.value = newVal ? { ...newVal } : { ...emptyForm };
+    v$.value?.$reset();
+  },
+  { immediate: true }
+);
+
 const submitForm = async () => {
   const isValid = await v$.value.$validate();
   if (!isValid) return;
   emit('submit', formData.value);
+  v$.value.$reset();
 };
 
 const handleCancel = () => {

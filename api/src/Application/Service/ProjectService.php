@@ -45,8 +45,8 @@ class ProjectService
         $dto->validate($this->validator);
 
         $imageName = null;
+        $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'projects';
         if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface && $dto->image->getError() === UPLOAD_ERR_OK) {
-            $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'projects';
             $imageName = $this->fileUploader->upload($dto->image, $uploadPath, 'project');
         }
 
@@ -63,7 +63,14 @@ class ProjectService
             technologies: $dto->technologies,
         );
 
-        return $this->repository->save($project);
+        try {
+            return $this->repository->save($project);
+        } catch (\Throwable $e) {
+            if ($imageName) {
+                $this->fileUploader->delete($imageName, $uploadPath);
+            }
+            throw $e;
+        }
     }
 
     public function updateProject(int $id, ProjectRequestDTO $dto): Project
@@ -76,14 +83,20 @@ class ProjectService
         }
 
         $imageName = $existingProject->image;
-        if ($dto->image instanceof \Psr\Http\Message\UploadedFileInterface && $dto->image->getError() === UPLOAD_ERR_OK) {
-            $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'projects';
+        $uploadPath = $_ENV['STORAGE_PATH'] . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'projects';
+        $oldImageToDelete = null;
 
-            // Delete old image
+        $hasNewImage = $dto->image instanceof \Psr\Http\Message\UploadedFileInterface && $dto->image->getError() === UPLOAD_ERR_OK;
+
+        if ($dto->remove_image && !$hasNewImage) {
             if ($imageName) {
-                $this->fileUploader->delete($imageName, $uploadPath);
+                $oldImageToDelete = $imageName;
+                $imageName = null;
             }
-
+        } elseif ($hasNewImage) {
+            if ($imageName) {
+                $oldImageToDelete = $imageName;
+            }
             $imageName = $this->fileUploader->upload($dto->image, $uploadPath, 'project-' . $id);
         }
 
@@ -102,7 +115,13 @@ class ProjectService
             createdAt: $existingProject->createdAt,
         );
 
-        return $this->repository->save($project);
+        $savedProject = $this->repository->save($project);
+
+        if ($oldImageToDelete !== null) {
+            $this->fileUploader->delete($oldImageToDelete, $uploadPath);
+        }
+
+        return $savedProject;
     }
 
     public function deleteProject(int $id): bool

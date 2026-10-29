@@ -17,6 +17,7 @@ export interface ProjectFormData {
   image?: File | string | null;
   is_active?: number;
   technologies: string[];
+  remove_image?: boolean;
 }
 
 const props = defineProps<{
@@ -40,15 +41,7 @@ const emptyForm: ProjectFormData = {
 };
 
 const formData = ref<ProjectFormData>({ ...emptyForm });
-
-// Inicializa o formulário com dados existentes (edição)
-watch(
-  () => props.initialData,
-  (newVal) => {
-    formData.value = newVal ? { ...newVal, technologies: [...(newVal.technologies || [])] } : { ...emptyForm };
-  },
-  { immediate: true }
-);
+const removeImage = ref(false);
 
 // Validações
 const rules = computed(() => ({
@@ -70,6 +63,33 @@ const state = computed(() => ({
 }));
 
 const v$ = useVuelidate(rules, state);
+
+// Inicializa o formulário com dados existentes (edição)
+watch(
+  () => props.initialData,
+  (newVal) => {
+    removeImage.value = false;
+    formData.value = newVal ? { ...newVal, technologies: [...(newVal.technologies || [])] } : { ...emptyForm };
+    v$.value.$reset();
+  },
+  { immediate: true }
+);
+
+watch(
+  () => formData.value.image,
+  (newVal, oldVal) => {
+    if (newVal instanceof File) {
+      removeImage.value = false;
+    } else if (newVal === null && oldVal !== undefined && oldVal !== null) {
+      removeImage.value = true;
+    }
+  }
+);
+
+const handleImageClear = () => {
+  formData.value.image = null;
+  removeImage.value = true;
+};
 
 // Status do projeto
 const selectedStatus = ref<{ label: string; value: number }>(
@@ -95,7 +115,11 @@ watch(
 const submitForm = async () => {
   const isValid = await v$.value.$validate();
   if (!isValid) return;
-  emit('submit', formData.value);
+  emit('submit', {
+    ...formData.value,
+    remove_image: removeImage.value
+  });
+  v$.value.$reset();
 };
 
 // Cancelar e resetar
@@ -103,6 +127,7 @@ const handleCancel = () => {
   emit('cancel');
   formData.value = { ...emptyForm };
   selectedStatus.value = { label: 'Ativo', value: 1 };
+  removeImage.value = false;
   v$.value.$reset();
 };
 </script>
@@ -114,6 +139,7 @@ const handleCancel = () => {
         v-model="formData.image"
         label="Imagem do Projeto"
         image-path="projects"
+        @clear="handleImageClear"
       />
 
       <Input

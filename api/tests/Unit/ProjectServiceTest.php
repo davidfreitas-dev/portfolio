@@ -183,3 +183,81 @@ test('should delete a project and its image', function () {
 
     expect($result)->toBeTrue();
 });
+
+test('should update a project and remove its image when remove_image is true', function () {
+    $id = 1;
+    $existingProject = new Project('Existing Title', 'Existing Desc', image: 'old_project_image.png', id: $id);
+
+    $dto = new ProjectRequestDTO(
+        title: 'Updated Title',
+        description: 'Updated Desc',
+        remove_image: true,
+    );
+
+    $violations = Mockery::mock(ConstraintViolationListInterface::class);
+    $violations->shouldReceive('count')->andReturn(0);
+    $this->validator->shouldReceive('validate')->once()->andReturn($violations);
+
+    $this->repository->shouldReceive('findById')
+        ->with($id)
+        ->once()
+        ->andReturn($existingProject);
+
+    $this->repository->shouldReceive('save')
+        ->once()
+        ->with(Mockery::on(function ($p) {
+            return $p->image === null && $p->title === 'Updated Title';
+        }))
+        ->andReturn(new Project('Updated Title', 'Updated Desc', image: null, id: $id));
+
+    $this->fileUploader->shouldReceive('delete')
+        ->once()
+        ->with('old_project_image.png', Mockery::any());
+
+    $result = $this->service->updateProject($id, $dto);
+
+    expect($result->image)->toBeNull();
+});
+
+test('should update a project with new image and delete old image', function () {
+    $id = 1;
+    $existingProject = new Project('Existing Title', 'Existing Desc', image: 'old_project_image.png', id: $id);
+
+    $newImage = Mockery::mock(UploadedFileInterface::class);
+    $newImage->shouldReceive('getError')->andReturn(UPLOAD_ERR_OK);
+
+    $dto = new ProjectRequestDTO(
+        title: 'Updated Title',
+        description: 'Updated Desc',
+        image: $newImage,
+    );
+
+    $violations = Mockery::mock(ConstraintViolationListInterface::class);
+    $violations->shouldReceive('count')->andReturn(0);
+    $this->validator->shouldReceive('validate')->once()->andReturn($violations);
+
+    $this->repository->shouldReceive('findById')
+        ->with($id)
+        ->once()
+        ->andReturn($existingProject);
+
+    $this->fileUploader->shouldReceive('upload')
+        ->once()
+        ->with($newImage, Mockery::any(), 'project-1')
+        ->andReturn('new_project_image.png');
+
+    $this->repository->shouldReceive('save')
+        ->once()
+        ->with(Mockery::on(function ($p) {
+            return $p->image === 'new_project_image.png';
+        }))
+        ->andReturn(new Project('Updated Title', 'Updated Desc', image: 'new_project_image.png', id: $id));
+
+    $this->fileUploader->shouldReceive('delete')
+        ->once()
+        ->with('old_project_image.png', Mockery::any());
+
+    $result = $this->service->updateProject($id, $dto);
+
+    expect($result->image)->toBe('new_project_image.png');
+});

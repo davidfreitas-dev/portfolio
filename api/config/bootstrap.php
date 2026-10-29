@@ -13,8 +13,10 @@ if (!defined('APP_ROOT')) {
 require APP_ROOT . '/vendor/autoload.php';
 
 // Load environment variables
-$dotenv = Dotenv::createImmutable(APP_ROOT);
-$dotenv->safeLoad();
+if (file_exists(APP_ROOT . '/.env')) {
+    $dotenv = Dotenv::createImmutable(APP_ROOT);
+    $dotenv->safeLoad();
+}
 
 // Set up dependency injection container
 $container = require __DIR__ . '/container.php';

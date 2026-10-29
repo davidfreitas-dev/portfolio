@@ -26,6 +26,9 @@ class SaveProjectAction
         $data = $request->getParsedBody() ?? [];
         $files = $request->getUploadedFiles();
         $image = $files['image'] ?? null;
+        if ($image instanceof \Psr\Http\Message\UploadedFileInterface && $image->getError() === UPLOAD_ERR_NO_FILE) {
+            $image = null;
+        }
 
         $id = isset($data['id']) ? (int)$data['id'] : null;
 
@@ -43,6 +46,8 @@ class SaveProjectAction
             }
         }
 
+        $removeImage = filter_var($data['remove_image'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
         $dto = new ProjectRequestDTO(
             title: $data['title'] ?? '',
             description: $data['description'] ?? '',
@@ -54,6 +59,7 @@ class SaveProjectAction
             is_active: (bool)($data['is_active'] ?? true),
             image: $image,
             technologies: $technologies,
+            remove_image: $removeImage,
         );
 
         if ($id) {

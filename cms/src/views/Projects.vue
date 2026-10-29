@@ -102,6 +102,7 @@ const handleSubmit = async (payload: ProjectFormData) => {
         image: payload.image ?? undefined,
         is_active: payload.is_active,
         technologies: payload.technologies,
+        remove_image: payload.remove_image,
       });
     });
 

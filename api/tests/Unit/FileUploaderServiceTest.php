@@ -98,6 +98,48 @@ test('should throw validation exception if invalid mime type', function () {
     $this->service->upload($file, $this->uploadPath);
 })->throws(ValidationException::class, 'Tipo de arquivo inválido. Apenas imagens são permitidas.');
 
+test('should derive extension from mime type and not client filename', function () {
+    $file = \Mockery::mock(UploadedFileInterface::class);
+    $stream = \Mockery::mock(StreamInterface::class);
+
+    // Real PNG content, but client says it's .jpg
+    $pngContent = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==');
+
+    $file->shouldReceive('getError')->andReturn(UPLOAD_ERR_OK);
+    $file->shouldReceive('getSize')->andReturn(1024);
+    $file->shouldReceive('getClientFilename')->andReturn('fake-image.jpg');
+    $file->shouldReceive('getStream')->andReturn($stream);
+
+    $stream->shouldReceive('rewind')->andReturnNull();
+    $stream->shouldReceive('getContents')->andReturn($pngContent);
+
+    $file->shouldReceive('moveTo')->once()->with(\Mockery::on(function ($path) {
+        return str_contains($path, $this->uploadPath) && str_ends_with($path, '.png');
+    }));
+
+    $filename = $this->service->upload($file, $this->uploadPath, 'secure');
+
+    expect($filename)->toEndWith('.png');
+});
+
+test('should throw validation exception if dimensions exceed 4K limit', function () {
+    $file = \Mockery::mock(UploadedFileInterface::class);
+    $stream = \Mockery::mock(StreamInterface::class);
+
+    // PNG with header claiming 5000 x 5000 pixels
+    $pngHeader = "\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x13\x88\x00\x00\x13\x88\x08\x06\x00\x00\x00";
+
+    $file->shouldReceive('getError')->andReturn(UPLOAD_ERR_OK);
+    $file->shouldReceive('getSize')->andReturn(1024);
+    $file->shouldReceive('getClientFilename')->andReturn('huge.png');
+    $file->shouldReceive('getStream')->andReturn($stream);
+
+    $stream->shouldReceive('rewind')->andReturnNull();
+    $stream->shouldReceive('getContents')->andReturn($pngHeader);
+
+    $this->service->upload($file, $this->uploadPath);
+})->throws(ValidationException::class, 'Dimensões da imagem excedem o limite de 3840 x 3840 pixels.');
+
 test('should delete a file', function () {
     $filename = 'to_delete.png';
     $fullPath = $this->uploadPath . DIRECTORY_SEPARATOR . $filename;
